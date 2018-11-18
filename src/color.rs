@@ -1,18 +1,47 @@
 use std::ops::{Add, Mul, Sub};
 
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
-pub struct Color {
-  r: f32,
-  g: f32,
-  b: f32,
+pub struct ColorFloats {
+  pub r: f32,
+  pub g: f32,
+  pub b: f32,
+}
+
+#[derive(Debug, Default, Copy, Clone, PartialEq)]
+pub struct ColorBytes {
+  pub r: Byte,
+  pub g: Byte,
+  pub b: Byte,
+}
+
+type Byte = u8;
+
+#[inline]
+fn clamp(x: f32) -> f32 {
+  1.0_f32.min(0.0_f32.max(x))
 }
 
 #[inline]
-pub fn color(r: f32, g: f32, b: f32) -> Color {
-  Color { r, g, b }
+fn to_byte(x: f32) -> Byte {
+  (clamp(x) * 255.).round() as Byte
 }
 
-impl Mul<Color> for Color {
+impl Into<ColorBytes> for ColorFloats {
+  fn into(self) -> ColorBytes {
+    ColorBytes {
+      r: to_byte(self.r),
+      g: to_byte(self.g),
+      b: to_byte(self.b)
+    }
+  }
+}
+
+#[inline]
+pub fn color(r: f32, g: f32, b: f32) -> ColorFloats {
+  ColorFloats { r, g, b }
+}
+
+impl Mul<ColorFloats> for ColorFloats {
   type Output = Self;
 
   // Haddamard product
@@ -21,21 +50,21 @@ impl Mul<Color> for Color {
   }
 }
 
-impl Mul<f32> for Color {
+impl Mul<f32> for ColorFloats {
   type Output = Self;
   fn mul(self, rhs: f32) -> Self {
     color(self.r * rhs, self.g * rhs, self.b * rhs)
   }
 }
 
-impl Add for Color {
+impl Add for ColorFloats {
   type Output = Self;
   fn add(self, rhs: Self) -> Self {
     color(self.r + rhs.r, self.g + rhs.g, self.b + rhs.b)
   }
 }
 
-impl Sub for Color {
+impl Sub for ColorFloats {
   type Output = Self;
   fn sub(self, rhs: Self) -> Self {
     color(self.r - rhs.r, self.g - rhs.g, self.b - rhs.b)
