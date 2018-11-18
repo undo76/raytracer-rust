@@ -43,50 +43,50 @@ mod tests {
     fn substracting_two_points() {
         let p1 = point(3., 2., 1.);
         let p2 = point(5., 6., 7.);
-        assert_eq!(p1 - p2, vector(-2., -4., -6.));
+        assert_relative_eq!(p1 - p2, vector(-2., -4., -6.));
     }
 
     #[test]
     fn substracting_vector_from_point() {
         let p = point(3., 2., 1.);
         let v = vector(5., 6., 7.);
-        assert_eq!(p - v, point(-2., -4., -6.));
+        assert_relative_eq!(p - v, point(-2., -4., -6.));
     }
 
     #[test]
     fn substracting_two_vectors() {
         let v1 = point(3., 2., 1.);
         let v2 = point(5., 6., 7.);
-        assert_eq!(v1 - v2, vector(-2., -4., -6.));
+        assert_relative_eq!(v1 - v2, vector(-2., -4., -6.));
     }
 
     #[test]
     fn magnitude_of_100() {
-        assert_eq!(magnitude(&vector(1., 0., 0.)), 1.);
+        assert_relative_eq!(magnitude(&vector(1., 0., 0.)), 1.);
     }
 
     #[test]
     fn magnitude_of_123() {
-        assert_eq!(magnitude(&vector(1., 2., 3.)), (14.0_f32).sqrt());
+        assert_relative_eq!(magnitude(&vector(1., 2., 3.)), (14.0_f32).sqrt());
     }
 
     #[test]
     fn normalizing_vector() {
-        assert_eq!(normalize(&vector(4., 0., 0.)), vector(1., 0., 0.));
+        assert_relative_eq!(normalize(&vector(4., 0., 0.)), vector(1., 0., 0.));
     }
 
     #[test]
     fn dot_product() {
         let v1 = vector(1., 2., 3.);
         let v2 = vector(2., 3., 4.);
-        assert_eq!(dot(&v1, &v2), 20.)
+        assert_relative_eq!(dot(&v1, &v2), 20.)
     }
 
         #[test]
     fn cross_product() {
         let v1 = vector(1., 2., 3.);
         let v2 = vector(2., 3., 4.);
-        assert_eq!(cross(&v1, &v2), vector(-1., 2., -1.));
-        assert_eq!(cross(&v2, &v1), vector(1., -2., 1.));
+        assert_relative_eq!(cross(&v1, &v2), vector(-1., 2., -1.));
+        assert_relative_eq!(cross(&v2, &v1), vector(1., -2., 1.));
     }
 }

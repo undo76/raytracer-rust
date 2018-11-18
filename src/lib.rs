@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate approx;
+
 mod geom;
 mod color;
 mod canvas;

@@ -1,4 +1,5 @@
 use std::ops::{Add, Mul, Sub};
+use approx::{AbsDiffEq, RelativeEq};
 
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub struct ColorFloats {
@@ -71,6 +72,42 @@ impl Sub for ColorFloats {
   }
 }
 
+
+impl AbsDiffEq for ColorFloats{
+    type Epsilon = f32;
+
+    #[inline]
+    fn default_epsilon() -> f32 {
+        f32::default_epsilon()
+    }
+
+    #[inline]
+    fn abs_diff_eq(&self, other: &ColorFloats, epsilon: f32) -> bool {
+        f32::abs_diff_eq(&self.r, &other.r, epsilon.clone())
+            && f32::abs_diff_eq(&self.g, &other.g, epsilon.clone())
+            && f32::abs_diff_eq(&self.b, &other.b, epsilon.clone())
+    }
+}
+
+impl RelativeEq for ColorFloats {
+    #[inline]
+    fn default_max_relative() -> f32 {
+        f32::default_max_relative()
+    }
+
+    #[inline]
+    fn relative_eq(
+        &self,
+        other: &ColorFloats,
+        epsilon: f32,
+        max_relative: f32,
+    ) -> bool {
+        f32::relative_eq(&self.r, &other.r, epsilon.clone(), max_relative.clone())
+            && f32::relative_eq(&self.g, &other.g, epsilon.clone(), max_relative.clone())
+            && f32::relative_eq(&self.b, &other.b, epsilon.clone(), max_relative.clone())
+    }
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;
@@ -79,27 +116,27 @@ mod tests {
   fn adding_colors() {
     let c1 = color(0.9, 0.6, 0.75);
     let c2 = color(0.7, 0.1, 0.25);
-    assert_eq!(c1 + c2, color(0.9 + 0.7, 0.6 + 0.1, 0.75 + 0.25));
+    assert_relative_eq!(c1 + c2, color(0.9 + 0.7, 0.6 + 0.1, 0.75 + 0.25));
   }
 
   #[test]
   fn substracting_colors() {
     let c1 = color(0.9, 0.6, 0.75);
     let c2 = color(0.7, 0.1, 0.25);
-    assert_eq!(c1 - c2, color(0.9 - 0.7, 0.6 - 0.1, 0.75 - 0.25));
+    assert_relative_eq!(c1 - c2, color(0.9 - 0.7, 0.6 - 0.1, 0.75 - 0.25));
   }
 
   #[test]
   fn multiplying_colors() {
     let c1 = color(0.9, 0.6, 0.75);
     let c2 = color(0.7, 0.1, 0.25);
-    assert_eq!(c1 * c2, color(0.9 * 0.7, 0.6 * 0.1, 0.75 * 0.25));
+    assert_relative_eq!(c1 * c2, color(0.9 * 0.7, 0.6 * 0.1, 0.75 * 0.25));
   }
 
   #[test]
   fn multiplying_colors_by_a_scalar() {
     let c1 = color(0.9, 0.6, 0.75);
     let s = 2.;
-    assert_eq!(c1 * s, color(0.9 * s, 0.6 * s, 0.75 * s));
+    assert_relative_eq!(c1 * s, color(0.9 * s, 0.6 * s, 0.75 * s));
   }
 }

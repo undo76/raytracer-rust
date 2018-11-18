@@ -37,7 +37,7 @@ mod tests {
   fn multiplying_translation() {
     let transform = translation(5., -3., 2.);
     let p = point(-3., 4., 5.);
-    assert_eq!(transform * p, point(2., 1., 7.));
+    assert_relative_eq!(transform * p, point(2., 1., 7.));
   }
 
   #[test]
@@ -45,14 +45,14 @@ mod tests {
     let transform = translation(5., -3., 2.);
     let inv_transform = inverse(&transform);
     let p = point(-3., 4., 5.);
-    assert_eq!(inv_transform * p, point(-8., 7., 3.));
+    assert_relative_eq!(inv_transform * p, point(-8., 7., 3.));
   }
 
   #[test]
   fn translation_does_not_affect_vectors() {
     let transform = translation(5., -3., 2.);
     let v = vector(-3., 4., 5.);
-    assert_eq!(
+    assert_relative_eq!(
       transform.to_homogeneous() * v.to_homogeneous(),
       v.to_homogeneous()
     );
@@ -62,21 +62,41 @@ mod tests {
   fn scaling_point() {
     let transform = scale(2., 3., 4.);
     let p = point(-4., 6., 8.);
-    assert_eq!(transform * p, point(-8., 18., 32.));
+    assert_relative_eq!(transform * p, point(-8., 18., 32.));
   }
 
   #[test]
   fn scaling_vector() {
     let transform = scale(2., 3., 4.);
     let v = vector(-4., 6., 8.);
-    assert_eq!(transform * v, vector(-8., 18., 32.));
+    assert_relative_eq!(transform * v, vector(-8., 18., 32.));
   }
 
   #[test]
   fn scaling_inverse_vector() {
     let transform = inverse(&scale(2., 3., 4.));
     let v = vector(-4., 6., 8.);
-    assert_eq!(transform * v, vector(-2., 2., 2.));
+    assert_relative_eq!(transform * v, vector(-2., 2., 2.));
   }
 
+  #[test]
+  fn rotate_x() {
+    let p = point(0., 1., 0.);
+    let full_quarter = rotation_x(na::Real::frac_pi_2());
+    assert_relative_eq!(full_quarter * p, point(0., 0., 1.));
+  }
+
+  #[test]
+  fn rotate_y() {
+    let p = point(0., 0., 1.);
+    let full_quarter = rotation_y(na::Real::frac_pi_2());
+    assert_relative_eq!(full_quarter * p, point(1., 0., 0.));
+  }
+
+  #[test]
+  fn rotate_z() {
+    let p = point(0., 1., 0.);
+    let full_quarter = rotation_z(na::Real::frac_pi_2());
+    assert_relative_eq!(full_quarter * p, point(-1., 0., 0.));
+  }
 }
