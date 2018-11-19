@@ -1,4 +1,4 @@
-use super::geom::*;
+use crate::geom::*;
 use nalgebra as na;
 
 pub use nalgebra::inverse;

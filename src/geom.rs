@@ -1,5 +1,3 @@
-extern crate nalgebra;
-
 use nalgebra as na;
 
 pub type Point = na::Point3<f32>;
@@ -82,7 +80,7 @@ mod tests {
         assert_relative_eq!(dot(&v1, &v2), 20.)
     }
 
-        #[test]
+    #[test]
     fn cross_product() {
         let v1 = vector(1., 2., 3.);
         let v2 = vector(2., 3., 4.);

@@ -5,6 +5,7 @@ mod geom;
 mod color;
 mod canvas;
 mod transform;
+mod ray;
 mod clock;
 // mod projectile;
 
