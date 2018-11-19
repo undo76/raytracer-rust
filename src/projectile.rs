@@ -1,9 +1,9 @@
 #[cfg(test)]
 mod tests {
+  use crate::canvas::*;
+  use crate::color::*;
+  use crate::geom::*;
 
-  use super::super::canvas::*;
-  use super::super::color::*;
-  use super::super::geom::*;
   use std::fs::File;
   use std::io::prelude::*;
 

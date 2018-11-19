@@ -1,9 +1,9 @@
 #[cfg(test)]
 mod tests {
-  use super::super::canvas::*;
-  use super::super::color::*;
-  use super::super::geom::*;
-  use super::super::transform::*;
+  use crate::canvas::*;
+  use crate::color::*;
+  use crate::geom::*;
+  use crate::transform::*;
 
   use nalgebra as na;
   use std::fs::File;
