@@ -24,7 +24,7 @@ pub fn translation(x: f32, y: f32, z: f32) -> na::Translation3<f32> {
 }
 
 #[inline]
-pub fn scale(x: f32, y: f32, z: f32) -> na::Affine3<f32> {
+pub fn scaling(x: f32, y: f32, z: f32) -> na::Affine3<f32> {
   let m = na::Matrix4::new_nonuniform_scaling(&vector(x, y, z));
   na::Affine3::from_matrix_unchecked(m)
 }
@@ -67,21 +67,21 @@ mod tests {
 
   #[test]
   fn scaling_point() {
-    let transform = scale(2., 3., 4.);
+    let transform = scaling(2., 3., 4.);
     let p = point(-4., 6., 8.);
     assert_relative_eq!(transform * p, point(-8., 18., 32.));
   }
 
   #[test]
   fn scaling_vector() {
-    let transform = scale(2., 3., 4.);
+    let transform = scaling(2., 3., 4.);
     let v = vector(-4., 6., 8.);
     assert_relative_eq!(transform * v, vector(-8., 18., 32.));
   }
 
   #[test]
   fn scaling_inverse_vector() {
-    let transform = inverse(&scale(2., 3., 4.));
+    let transform = inverse(&scaling(2., 3., 4.));
     let v = vector(-4., 6., 8.);
     assert_relative_eq!(transform * v, vector(-2., 2., 2.));
   }
@@ -111,41 +111,51 @@ mod tests {
   fn shearing_x_y() {
     let p = point(2., 3., 4.);
     let transform = shearing(1., 0., 0., 0., 0., 0.);
-    assert_relative_eq!(transform * p, point(5., 3., 4.))
+    assert_relative_eq!(transform * p, point(5., 3., 4.));
   }
 
   #[test]
   fn shearing_x_z() {
     let p = point(2., 3., 4.);
     let transform = shearing(0., 1., 0., 0., 0., 0.);
-    assert_relative_eq!(transform * p, point(6., 3., 4.))
+    assert_relative_eq!(transform * p, point(6., 3., 4.));
   }
 
   #[test]
   fn shearing_y_x() {
     let p = point(2., 3., 4.);
     let transform = shearing(0., 0., 1., 0., 0., 0.);
-    assert_relative_eq!(transform * p, point(2., 5., 4.))
+    assert_relative_eq!(transform * p, point(2., 5., 4.));
   }
 
   #[test]
   fn shearing_y_z() {
     let p = point(2., 3., 4.);
     let transform = shearing(0., 0., 0., 1., 0., 0.);
-    assert_relative_eq!(transform * p, point(2., 7., 4.))
+    assert_relative_eq!(transform * p, point(2., 7., 4.));
   }
 
   #[test]
   fn shearing_z_x() {
     let p = point(2., 3., 4.);
     let transform = shearing(0., 0., 0., 0., 1., 0.);
-    assert_relative_eq!(transform * p, point(2., 3., 6.))
+    assert_relative_eq!(transform * p, point(2., 3., 6.));
   }
 
   #[test]
   fn shearing_z_y() {
     let p = point(2., 3., 4.);
     let transform = shearing(0., 0., 0., 0., 0., 1.);
-    assert_relative_eq!(transform * p, point(2., 3., 7.))
+    assert_relative_eq!(transform * p, point(2., 3., 7.));
+  }
+
+  #[test]
+  fn chain_transformations() {
+    let p = point(1., 0., 1.);
+    let a = rotation_x(na::Real::frac_pi_2());
+    let b = scaling(5., 5., 5.);
+    let c = translation(10., 5., 7.);
+    let t = c * b * a;
+    assert_relative_eq!(t * p, point(15., 0., 7.));
   }
 }
