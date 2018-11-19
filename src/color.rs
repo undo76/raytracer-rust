@@ -2,14 +2,14 @@ use std::ops::{Add, Mul, Sub};
 use approx::{AbsDiffEq, RelativeEq};
 
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
-pub struct ColorFloats {
+pub struct ColorRgbFloat {
   pub r: f32,
   pub g: f32,
   pub b: f32,
 }
 
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
-pub struct ColorBytes {
+pub struct ColorRgbByte {
   pub r: Byte,
   pub g: Byte,
   pub b: Byte,
@@ -27,9 +27,9 @@ fn to_byte(x: f32) -> Byte {
   (clamp(x) * 255.).round() as Byte
 }
 
-impl Into<ColorBytes> for ColorFloats {
-  fn into(self) -> ColorBytes {
-    ColorBytes {
+impl Into<ColorRgbByte> for ColorRgbFloat {
+  fn into(self) -> ColorRgbByte {
+    ColorRgbByte {
       r: to_byte(self.r),
       g: to_byte(self.g),
       b: to_byte(self.b)
@@ -38,11 +38,11 @@ impl Into<ColorBytes> for ColorFloats {
 }
 
 #[inline]
-pub fn color(r: f32, g: f32, b: f32) -> ColorFloats {
-  ColorFloats { r, g, b }
+pub fn color(r: f32, g: f32, b: f32) -> ColorRgbFloat {
+  ColorRgbFloat { r, g, b }
 }
 
-impl Mul<ColorFloats> for ColorFloats {
+impl Mul<ColorRgbFloat> for ColorRgbFloat {
   type Output = Self;
 
   // Haddamard product
@@ -51,21 +51,21 @@ impl Mul<ColorFloats> for ColorFloats {
   }
 }
 
-impl Mul<f32> for ColorFloats {
+impl Mul<f32> for ColorRgbFloat {
   type Output = Self;
   fn mul(self, rhs: f32) -> Self {
     color(self.r * rhs, self.g * rhs, self.b * rhs)
   }
 }
 
-impl Add for ColorFloats {
+impl Add for ColorRgbFloat {
   type Output = Self;
   fn add(self, rhs: Self) -> Self {
     color(self.r + rhs.r, self.g + rhs.g, self.b + rhs.b)
   }
 }
 
-impl Sub for ColorFloats {
+impl Sub for ColorRgbFloat {
   type Output = Self;
   fn sub(self, rhs: Self) -> Self {
     color(self.r - rhs.r, self.g - rhs.g, self.b - rhs.b)
@@ -73,7 +73,7 @@ impl Sub for ColorFloats {
 }
 
 
-impl AbsDiffEq for ColorFloats{
+impl AbsDiffEq for ColorRgbFloat{
     type Epsilon = f32;
 
     #[inline]
@@ -82,14 +82,14 @@ impl AbsDiffEq for ColorFloats{
     }
 
     #[inline]
-    fn abs_diff_eq(&self, other: &ColorFloats, epsilon: f32) -> bool {
+    fn abs_diff_eq(&self, other: &ColorRgbFloat, epsilon: f32) -> bool {
         f32::abs_diff_eq(&self.r, &other.r, epsilon.clone())
             && f32::abs_diff_eq(&self.g, &other.g, epsilon.clone())
             && f32::abs_diff_eq(&self.b, &other.b, epsilon.clone())
     }
 }
 
-impl RelativeEq for ColorFloats {
+impl RelativeEq for ColorRgbFloat {
     #[inline]
     fn default_max_relative() -> f32 {
         f32::default_max_relative()
@@ -98,7 +98,7 @@ impl RelativeEq for ColorFloats {
     #[inline]
     fn relative_eq(
         &self,
-        other: &ColorFloats,
+        other: &ColorRgbFloat,
         epsilon: f32,
         max_relative: f32,
     ) -> bool {

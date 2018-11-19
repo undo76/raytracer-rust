@@ -22,7 +22,7 @@ impl Canvas {
     3 * (x + y * self.width)
   }
 
-  pub fn set(& mut self, x: usize, y: usize, c: ColorBytes) {
+  pub fn set(& mut self, x: usize, y: usize, c: ColorRgbByte) {
     let start = self.idx(x, y);
     self.frame_buffer[start] = c.r;
     self.frame_buffer[start + 1] = c.g;
