@@ -1,8 +1,8 @@
 use crate::geom::*;
 
 pub struct Ray {
-  origin: Point,
-  direction: Vector,
+  pub origin: Point,
+  pub direction: Vector,
 }
 
 impl Ray {
