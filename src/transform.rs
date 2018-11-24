@@ -32,7 +32,10 @@ pub fn scaling(x: f32, y: f32, z: f32) -> na::Affine3<f32> {
 #[inline]
 pub fn shearing(xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) -> na::Affine3<f32> {
   na::Affine3::from_matrix_unchecked(na::Matrix4::new(
-    1., xy, xz, 0., yx, 1., yz, 0., zx, zy, 1., 0., 0., 0., 0., 0.,
+    1., xy, xz, 0., 
+    yx, 1., yz, 0., 
+    zx, zy, 1., 0., 
+    0., 0., 0., 1.,
   ))
 }
 

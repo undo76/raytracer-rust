@@ -1,13 +1,19 @@
 use core::fmt::Debug;
 use crate::geom::*;
 use crate::ray::*;
+use crate::transform::*;
+use nalgebra as na;
 
 #[derive(Debug)]
-pub struct Sphere();
+pub struct Sphere {
+  transform: na::Projective3<f32>
+}
 
 #[inline]
 pub fn sphere() -> Sphere {
-  Sphere()
+  Sphere {
+    transform: na::Projective3::identity()
+  }
 }
 
 #[derive(Debug)]
@@ -20,6 +26,7 @@ pub type Intersections<'a> = Vec<Intersection<'a>>;
 
 pub trait Shape: Debug {
   fn intersects(&self, ray: &Ray) -> Intersections;
+  fn set_transform(&mut self, trans: na::Projective3<f32>);
 }
 
 /// Returns the closest, not negative intersection
@@ -31,6 +38,10 @@ pub fn hit<'a>(xs: &'a Intersections) -> Option<&'a Intersection<'a>> {
 
 impl Shape for Sphere {
   fn intersects(&self, ray: &Ray) -> Intersections {
+
+    // FIXME: Inverse transformation could be memoized
+    let ray = ray.transform(&self.transform.inverse());
+
     let sphere_to_ray = ray.origin - point(0., 0., 0.);
     let a = dot(&ray.direction, &ray.direction);
     let b = 2. * dot(&ray.direction, &sphere_to_ray);
@@ -58,6 +69,10 @@ impl Shape for Sphere {
         },
       ];
     }
+  }
+
+  fn set_transform(&mut self, trans: na::Projective3<f32>) {
+    self.transform = trans;
   }
 }
 
@@ -135,5 +150,38 @@ mod tests {
     ];
     let h = hit(&xs);
     assert!(h.is_none());
+  }
+
+  #[test]
+  fn sphere_default_transformation() {
+    let s = sphere();
+    assert_eq!(s.transform, na::Projective3::identity())
+  }
+
+  #[test]
+  fn sphere_transformation() {
+    let mut s = sphere();
+    s.set_transform(na::convert(translation(2., 3., 4.)));
+    assert_eq!(s.transform, na::convert(translation(2., 3., 4.)))
+  }
+
+  #[test]
+  fn intersect_a_scaled_sphere_with_a_ray() {
+    let r = ray(point(0., 0., -5.), vector(0., 0., 1.));
+    let mut s = sphere();
+    s.set_transform(na::convert(scaling(2., 2., 2.)));
+    let xs = s.intersects(&r);
+    assert_eq!(xs.len(), 2);
+    assert_relative_eq!(xs[0].t, 3.);
+    assert_relative_eq!(xs[1].t, 7.);
+  }
+
+  #[test]
+  fn intersect_a_translated_sphere_with_a_ray() {
+    let r = ray(point(0., 0., -5.), vector(0., 0., 1.));
+    let mut s = sphere();
+    s.set_transform(na::convert(translation(5., 0., 0.)));
+    let xs = s.intersects(&r);
+    assert_eq!(xs.len(), 0);
   }
 }
