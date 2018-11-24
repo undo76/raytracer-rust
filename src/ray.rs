@@ -1,6 +1,6 @@
 use alga;
 use crate::geom::*;
-use crate::transform::*;
+
 
 pub struct Ray {
   pub origin: Point,
@@ -31,6 +31,7 @@ pub fn ray(origin: Point, direction: Vector) -> Ray {
 #[cfg(test)]
 mod tests {
   use super::*;
+  use crate::transform::*;
 
   #[test]
   fn creating_querying_ray() {
