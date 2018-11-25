@@ -2,8 +2,7 @@
 **/*.rs.bk
 
 /target
+*.ppm
 **/*.rs.bk
 Cargo.lock
-projectile.ppm
 .vscode/tasks.json
-clock.ppm
