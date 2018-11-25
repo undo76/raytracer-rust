@@ -1,12 +1,14 @@
 use core::fmt::Debug;
 use crate::geom::*;
 use crate::ray::*;
+use crate::color::*;
 use nalgebra as na;
 
 #[derive(Debug)]
 pub struct Sphere {
   transform: na::Projective3<f32>,
   transform_inverse: na::Projective3<f32>,
+  color: ColorRgbFloat,
 }
 
 #[inline]
@@ -14,6 +16,7 @@ pub fn sphere() -> Sphere {
   Sphere {
     transform: na::Projective3::identity(),
     transform_inverse: na::Projective3::identity(),
+    color: color(1., 1., 1.),
   }
 }
 
@@ -34,6 +37,8 @@ pub fn hit<'a>(xs: &'a Intersections) -> Option<&'a Intersection<'a>> {
 
 pub trait Shape: Debug {
   fn intersects(&self, ray: &Ray) -> Intersections;
+  fn set_color(&mut self, color: ColorRgbFloat);
+  fn get_color(&self) -> ColorRgbFloat;
   fn set_transform(&mut self, trans: na::Projective3<f32>);
   fn get_transform(&self) -> &na::Projective3<f32>;
   fn get_transform_inverse(&self) -> &na::Projective3<f32>;
@@ -69,6 +74,14 @@ impl Shape for Sphere {
         },
       ];
     }
+  }
+
+  fn set_color(&mut self, color: ColorRgbFloat) {
+    self.color = color;
+  }
+
+  fn get_color(&self) -> ColorRgbFloat {
+    self.color
   }
 
   fn set_transform(&mut self, trans: na::Projective3<f32>) {
