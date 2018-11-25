@@ -1,7 +1,7 @@
 use core::fmt::Debug;
+use crate::color::*;
 use crate::geom::*;
 use crate::ray::*;
-use crate::color::*;
 use nalgebra as na;
 
 #[derive(Debug)]
@@ -42,9 +42,19 @@ pub trait Shape: Debug {
   fn set_transform(&mut self, trans: na::Projective3<f32>);
   fn get_transform(&self) -> &na::Projective3<f32>;
   fn get_transform_inverse(&self) -> &na::Projective3<f32>;
+  fn normal_at(&self, p: &Point) -> na::Unit<Vector>;
 }
 
 impl Shape for Sphere {
+  fn normal_at(&self, p: &Point) -> na::Unit<Vector> {
+    let t_inv = &self.get_transform_inverse();
+    let object_point = *t_inv * p;
+    let object_normal = object_point - point(0., 0., 0.);
+    let mut world_normal = (*t_inv).matrix().transpose() * object_normal.to_homogeneous();
+    world_normal[3] = 0.;
+    na::Unit::new_normalize(Vector::from_homogeneous(world_normal).unwrap())
+  }
+
   fn intersects(&self, ray: &Ray) -> Intersections {
     let ray = ray.transform(self.get_transform_inverse());
     let sphere_to_ray = ray.origin - point(0., 0., 0.);
@@ -218,5 +228,32 @@ mod tests {
     s.set_transform(na::convert(translation(5., 0., 0.)));
     let xs = s.intersects(&r);
     assert_eq!(xs.len(), 0);
+  }
+
+  #[test]
+  fn normal_sphere_axis() {
+    let s = sphere();
+    let n = s.normal_at(&point(1., 0., 0.));
+    assert_relative_eq!(n.unwrap(), vector(1., 0., 0.));
+    let n = s.normal_at(&point(0., 1., 0.));
+    assert_relative_eq!(n.unwrap(), vector(0., 1., 0.));
+    let n = s.normal_at(&point(0., 0., 1.));
+    assert_relative_eq!(n.unwrap(), vector(0., 0., 1.));
+  }
+
+  #[test]
+  fn normal_sphere_translated() {
+    let mut s = sphere();
+    s.set_transform(na::convert(translation(0., 1., 0.)));
+    let n = s.normal_at(&point(0., 1.70710677, -0.70710677));
+    assert_relative_eq!(n.unwrap(), vector(0., 0.70710677, -0.70710677));
+  }
+
+    #[test]
+  fn normal_sphere_scaled() {
+    let mut s = sphere();
+    s.set_transform(na::convert(scaling(1., 0.5, 1.)));
+    let n = s.normal_at(&point(0., 0.70710677, -0.70710677));
+    assert_relative_eq!(n.unwrap(), vector(0., 0.97014254, -0.24253564));
   }
 }
