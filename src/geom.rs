@@ -33,6 +33,11 @@ pub fn cross(v1: &Vector, v2: &Vector) -> Vector {
     v1.cross(&v2)
 }
 
+#[inline]
+pub fn reflect(v: &Vector, n: &na::Unit<Vector>) -> Vector {
+    v - n.unwrap() * 2. * dot(v, n)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -86,5 +91,21 @@ mod tests {
         let v2 = vector(2., 3., 4.);
         assert_relative_eq!(cross(&v1, &v2), vector(-1., 2., -1.));
         assert_relative_eq!(cross(&v2, &v1), vector(1., -2., 1.));
+    }
+
+    #[test]
+    fn reflection() {
+        let v = vector(1., -1., 0.);
+        let n = vector(0., 1., 0.);
+        let r = reflect(&v, &na::Unit::new_unchecked(n));
+        assert_relative_eq!(r, vector(1., 1., 0.));
+    }
+
+    #[test]
+    fn reflection_slated() {
+        let v = vector(0., -1., 0.);
+        let n = vector(f32::sqrt(2.) / 2., f32::sqrt(2.) / 2., 0.);
+        let r = reflect(&v, &na::Unit::new_unchecked(n));
+        assert_relative_eq!(r, vector(1., 0., 0.));
     }
 }
