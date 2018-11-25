@@ -1,19 +1,18 @@
+#[cfg(test)]
 #[macro_use]
 extern crate approx;
 
-mod geom;
-mod color;
-mod canvas;
-mod transform;
-mod ray;
-mod shape;
-mod clock;
-// mod projectile;
+pub mod geom;
+pub mod color;
+pub mod canvas;
+pub mod transform;
+pub mod ray;
+pub mod shape;
 
 #[cfg(test)]
 mod tests {
     #[test]
     fn it_works() {
-        assert_eq!(2 + 2, 4);
+        assert_relative_eq!(2. + 2., 4.);
     }
 }

@@ -6,4 +6,4 @@
 Cargo.lock
 projectile.ppm
 .vscode/tasks.json
-.gitignore
+clock.ppm
