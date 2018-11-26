@@ -14,8 +14,8 @@ use std::io::prelude::*;
 
 fn main() {
   let origin = point(0., 0., -5.);
-  let color1 = color(1., 0., 1.);
-  let color2 = color(0., 0., 1.);
+  let color1 = RED;
+  let color2 = BLUE;
   let wall_size = 7.;
   let pixels = 200;
   let mut c = canvas(pixels, pixels);
