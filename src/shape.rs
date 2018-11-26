@@ -1,14 +1,16 @@
 use core::fmt::Debug;
+use nalgebra as na;
+
 use crate::color::*;
 use crate::geom::*;
+use crate::material::*;
 use crate::ray::*;
-use nalgebra as na;
 
 #[derive(Debug)]
 pub struct Sphere {
   transform: na::Projective3<f32>,
   transform_inverse: na::Projective3<f32>,
-  color: ColorRgbFloat,
+  material: Material,
 }
 
 #[inline]
@@ -16,7 +18,7 @@ pub fn sphere() -> Sphere {
   Sphere {
     transform: na::Projective3::identity(),
     transform_inverse: na::Projective3::identity(),
-    color: color(1., 1., 1.),
+    material: material()
   }
 }
 
@@ -39,6 +41,7 @@ pub trait Shape: Debug {
   fn intersects(&self, ray: &Ray) -> Intersections;
   fn set_color(&mut self, color: ColorRgbFloat);
   fn get_color(&self) -> ColorRgbFloat;
+  fn get_material(&self) -> &Material;
   fn set_transform(&mut self, trans: na::Projective3<f32>);
   fn get_transform(&self) -> &na::Projective3<f32>;
   fn get_transform_inverse(&self) -> &na::Projective3<f32>;
@@ -87,11 +90,15 @@ impl Shape for Sphere {
   }
 
   fn set_color(&mut self, color: ColorRgbFloat) {
-    self.color = color;
+    self.material.color = color;
   }
 
   fn get_color(&self) -> ColorRgbFloat {
-    self.color
+    self.material.color
+  }
+
+  fn get_material(&self) -> &Material {
+    &self.material
   }
 
   fn set_transform(&mut self, trans: na::Projective3<f32>) {
@@ -249,11 +256,20 @@ mod tests {
     assert_relative_eq!(n.unwrap(), vector(0., 0.70710677, -0.70710677));
   }
 
-    #[test]
+  #[test]
   fn normal_sphere_scaled() {
     let mut s = sphere();
     s.set_transform(na::convert(scaling(1., 0.5, 1.)));
     let n = s.normal_at(&point(0., 0.70710677, -0.70710677));
     assert_relative_eq!(n.unwrap(), vector(0., 0.97014254, -0.24253564));
+  }
+
+  #[test]
+  fn assign_material() {
+      let mut s = sphere();
+      let mut m = material();
+      m.ambient = 1.;
+      s.material = m;
+      assert_eq!(s.material.ambient, 1.);
   }
 }

@@ -15,6 +15,14 @@ pub struct ColorRgbByte {
   pub b: Byte,
 }
 
+
+/// Common colors
+pub const RED: ColorRgbFloat = color(1., 0., 0.,);
+pub const GREEN: ColorRgbFloat = color(0., 1., 0.,);
+pub const BLUE: ColorRgbFloat = color(0., 0., 1.,);
+pub const BLACK: ColorRgbFloat = color(0., 0., 0.,);
+pub const WHITE : ColorRgbFloat= color(1., 1., 1.,);
+
 type Byte = u8;
 
 #[inline]
@@ -38,7 +46,7 @@ impl Into<ColorRgbByte> for ColorRgbFloat {
 }
 
 #[inline]
-pub fn color(r: f32, g: f32, b: f32) -> ColorRgbFloat {
+pub const fn color(r: f32, g: f32, b: f32) -> ColorRgbFloat {
   ColorRgbFloat { r, g, b }
 }
 

@@ -3,6 +3,7 @@ extern crate raytracer_rust;
 use raytracer_rust::canvas::*;
 use raytracer_rust::color::*;
 use raytracer_rust::geom::*;
+use raytracer_rust::light::*;
 use raytracer_rust::ray::*;
 use raytracer_rust::shape::*;
 use raytracer_rust::transform::*;
@@ -19,6 +20,8 @@ fn main() {
   let pixels = 200;
   let mut c = canvas(pixels, pixels);
   let pixel_size = wall_size / (pixels as f32);
+
+  let light = point_light(point(-10., 10., -10.), WHITE);
 
   let mut s = sphere();
   s.set_transform(na::convert(scaling(1., 0.5, 1.)));
@@ -37,12 +40,26 @@ fn main() {
         wall_size / 2. - (y as f32) * pixel_size,
         10.,
       );
-      let r = ray(origin, normalize(&(pos - origin)));
+      let direction = normalize(&(pos - origin));
+      let r = ray(origin, direction);
       let mut intersections = s.intersects(&r);
       intersections.extend(s2.intersects(&r));
 
-      if let Some(Intersection { object, .. }) = hit(&intersections) {
-        c.set(x, y, object.get_color().into());
+      if let Some(&Intersection { t, object }) = hit(&intersections) {
+        let material = object.get_material();
+        let p = r.position(t);
+        c.set(
+          x,
+          y,
+          material
+            .lighting(
+              &light,
+              &p,
+              &na::Unit::new_unchecked(-direction),
+              &object.normal_at(&p),
+            )
+            .into(),
+        );
       }
     }
   }
