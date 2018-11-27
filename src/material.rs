@@ -1,6 +1,4 @@
-use crate::color::*;
-use crate::geom::*;
-use crate::light::*;
+use crate::*;
 
 use nalgebra as na;
 

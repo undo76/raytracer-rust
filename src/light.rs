@@ -1,5 +1,4 @@
-use crate::color::*;
-use crate::geom::*;
+use crate::*;
 
 pub struct PointLight {
   pub position: Point,

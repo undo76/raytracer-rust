@@ -2,14 +2,25 @@
 #[macro_use]
 extern crate approx;
 
-pub mod canvas;
-pub mod color;
-pub mod geom;
-pub mod light;
-pub mod material;
-pub mod ray;
-pub mod shape;
-pub mod transform;
+pub use crate::canvas::*;
+pub use crate::color::*;
+pub use crate::geom::*;
+pub use crate::light::*;
+pub use crate::material::*;
+pub use crate::ray::*;
+pub use crate::shape::*;
+pub use crate::transform::*;
+pub use crate::world::*;
+
+mod canvas;
+mod color;
+mod geom;
+mod light;
+mod material;
+mod ray;
+mod shape;
+mod transform;
+mod world;
 
 #[cfg(test)]
 mod tests {

@@ -1,8 +1,6 @@
 extern crate raytracer_rust;
 
-use raytracer_rust::canvas::*;
-use raytracer_rust::color::*;
-use raytracer_rust::geom::*;
+use raytracer_rust::*;
 
 use std::fs::File;
 use std::io::prelude::*;

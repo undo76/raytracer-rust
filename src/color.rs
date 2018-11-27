@@ -1,6 +1,8 @@
 use std::ops::{Add, Mul, Sub};
 use approx::{AbsDiffEq, RelativeEq};
 
+type Byte = u8;
+
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub struct ColorRgbFloat {
   pub r: f32,
@@ -15,7 +17,6 @@ pub struct ColorRgbByte {
   pub b: Byte,
 }
 
-
 /// Common colors
 pub const RED: ColorRgbFloat = color(1., 0., 0.,);
 pub const GREEN: ColorRgbFloat = color(0., 1., 0.,);
@@ -23,7 +24,6 @@ pub const BLUE: ColorRgbFloat = color(0., 0., 1.,);
 pub const BLACK: ColorRgbFloat = color(0., 0., 0.,);
 pub const WHITE : ColorRgbFloat= color(1., 1., 1.,);
 
-type Byte = u8;
 
 #[inline]
 fn clamp(x: f32) -> f32 {

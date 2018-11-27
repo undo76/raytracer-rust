@@ -1,10 +1,6 @@
+use crate::*;
 use core::fmt::Debug;
 use nalgebra as na;
-
-use crate::color::*;
-use crate::geom::*;
-use crate::material::*;
-use crate::ray::*;
 
 #[derive(Debug)]
 pub struct Sphere {
@@ -118,7 +114,6 @@ impl Shape for Sphere {
 #[cfg(test)]
 mod tests {
   use super::*;
-  use crate::transform::*;
 
   #[test]
   fn ray_intersects_sphere() {

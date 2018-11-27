@@ -1,12 +1,6 @@
 extern crate raytracer_rust;
 
-use raytracer_rust::canvas::*;
-use raytracer_rust::color::*;
-use raytracer_rust::geom::*;
-use raytracer_rust::light::*;
-use raytracer_rust::ray::*;
-use raytracer_rust::shape::*;
-use raytracer_rust::transform::*;
+use raytracer_rust::*;
 
 use nalgebra as na;
 use std::fs::File;
