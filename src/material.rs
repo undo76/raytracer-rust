@@ -37,10 +37,6 @@ impl Material {
   }
 }
 
-pub fn material() -> Material {
-  Material::default()
-}
-
 impl std::default::Default for Material {
   fn default() -> Self {
     Material {
@@ -63,7 +59,7 @@ mod tests {
     let eyev = na::Unit::new_normalize(vector(0., 0., -1.));
     let normalv = na::Unit::new_normalize(vector(0., 0., -1.));
     let light = point_light(point(0., 0., -10.), WHITE);
-    let m = material();
+    let m = Material::default();
     let result = m.lighting(&light, &position, &eyev, &normalv);
     assert_relative_eq!(result, color(1.9, 1.9, 1.9));
   }
@@ -74,7 +70,7 @@ mod tests {
     let eyev = na::Unit::new_normalize(vector(0., 0., -1.));
     let normalv = na::Unit::new_normalize(vector(0., 0., -1.));
     let light = point_light(point(0., 10., -10.), WHITE);
-    let m = material();
+    let m = Material::default();
     let result = m.lighting(&light, &position, &eyev, &normalv);
     assert_relative_eq!(result, color(0.7363961, 0.7363961, 0.7363961));
   }
@@ -85,7 +81,7 @@ mod tests {
     let eyev = na::Unit::new_normalize(vector(0., -f32::sqrt(2.) / 2., -f32::sqrt(2.) / 2.));
     let normalv = na::Unit::new_normalize(vector(0., 0., -1.));
     let light = point_light(point(0., 10., -10.), WHITE);
-    let m = material();
+    let m = Material::default();
     let result = m.lighting(&light, &position, &eyev, &normalv);
     assert_relative_eq!(result, color(1.636396, 1.636396, 1.636396));
   }
@@ -96,7 +92,7 @@ mod tests {
     let eyev = na::Unit::new_normalize(vector(0., 0., -1.));
     let normalv = na::Unit::new_normalize(vector(0., 0., -1.));
     let light = point_light(point(0., 0., 10.), WHITE);
-    let m = material();
+    let m = Material::default();
     let result = m.lighting(&light, &position, &eyev, &normalv);
     assert_relative_eq!(result, color(0.1, 0.1, 0.1));
   }

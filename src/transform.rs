@@ -3,6 +3,8 @@ use nalgebra as na;
 
 pub use nalgebra::inverse;
 
+pub type Transform = na::Projective3<f32>;
+
 #[inline]
 pub fn rotation_x(angle: f32) -> na::Rotation3<f32> {
   na::Rotation3::from_axis_angle(&na::Vector3::x_axis(), angle)

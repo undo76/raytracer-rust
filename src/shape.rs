@@ -1,20 +1,25 @@
-use crate::*;
 use core::fmt::Debug;
+use crate::*;
 use nalgebra as na;
 
 #[derive(Debug)]
 pub struct Sphere {
-  transform: na::Projective3<f32>,
-  transform_inverse: na::Projective3<f32>,
+  transform_inverse: Transform,
   material: Material,
 }
 
-#[inline]
-pub fn sphere() -> Sphere {
-  Sphere {
-    transform: na::Projective3::identity(),
-    transform_inverse: na::Projective3::identity(),
-    material: material()
+impl Sphere {
+  fn new(transform: Transform, material: Material) -> Sphere {
+    Sphere {
+      transform_inverse: transform.inverse(),
+      material,
+    }
+  }
+}
+
+impl Default for Sphere {
+  fn default() -> Sphere {
+    Sphere::new(Transform::identity(), Material::default())
   }
 }
 
@@ -38,9 +43,9 @@ pub trait Shape: Debug {
   fn set_color(&mut self, color: ColorRgbFloat);
   fn get_color(&self) -> ColorRgbFloat;
   fn get_material(&self) -> &Material;
-  fn set_transform(&mut self, trans: na::Projective3<f32>);
-  fn get_transform(&self) -> &na::Projective3<f32>;
-  fn get_transform_inverse(&self) -> &na::Projective3<f32>;
+  fn set_transform(&mut self, trans: Transform);
+  fn get_transform(&self) -> Transform;
+  fn get_transform_inverse(&self) -> &Transform;
   fn normal_at(&self, p: &Point) -> na::Unit<Vector>;
 }
 
@@ -97,16 +102,15 @@ impl Shape for Sphere {
     &self.material
   }
 
-  fn set_transform(&mut self, trans: na::Projective3<f32>) {
-    self.transform = trans;
+  fn set_transform(&mut self, trans: Transform) {
     self.transform_inverse = trans.inverse();
   }
 
-  fn get_transform(&self) -> &na::Projective3<f32> {
-    &self.transform
+  fn get_transform(&self) -> Transform {
+    self.transform_inverse.inverse()
   }
 
-  fn get_transform_inverse(&self) -> &na::Projective3<f32> {
+  fn get_transform_inverse(&self) -> &Transform {
     &self.transform_inverse
   }
 }
@@ -116,9 +120,9 @@ mod tests {
   use super::*;
 
   #[test]
-  fn ray_intersects_sphere() {
+  fn ray_intersects_sphere_default() {
     let r = ray(point(0., 0., -5.), vector(0., 0., 1.));
-    let s = sphere();
+    let s = Sphere::default();
     let xs = s.intersects(&r);
     assert_eq!(xs.len(), 2);
   }
@@ -126,7 +130,7 @@ mod tests {
   #[test]
   fn ray_intersects_sphere_at_two_points() {
     let r = ray(point(0., 0., -5.), vector(0., 0., 1.));
-    let s = sphere();
+    let s = Sphere::default();
     let xs = s.intersects(&r);
     assert_eq!(xs.len(), 2);
     assert_relative_eq!(xs[0].t, 4.);
@@ -136,7 +140,7 @@ mod tests {
   #[test]
   fn ray_intersects_sphere_at_a_tangent() {
     let r = ray(point(0., 1., -5.), vector(0., 0., 1.));
-    let s = sphere();
+    let s = Sphere::default();
     let xs = s.intersects(&r);
     assert_eq!(xs.len(), 2);
     assert_relative_eq!(xs[0].t, 5.);
@@ -146,7 +150,7 @@ mod tests {
   #[test]
   fn ray_misses_a_sphere() {
     let r = ray(point(0., 2., -5.), vector(0., 0., 1.));
-    let s = sphere();
+    let s = Sphere::default();
     let xs = s.intersects(&r);
     assert_eq!(xs.len(), 0);
   }
@@ -154,7 +158,7 @@ mod tests {
   #[test]
   fn ray_originates_inside_a_sphere() {
     let r = ray(point(0., 0., 0.), vector(0., 0., 1.));
-    let s = sphere();
+    let s = Sphere::default();
     let xs = s.intersects(&r);
     assert_eq!(xs.len(), 2);
     assert_relative_eq!(xs[0].t, -1.);
@@ -163,8 +167,8 @@ mod tests {
 
   #[test]
   fn intesections() {
-    let s1 = sphere();
-    let s2 = sphere();
+    let s1 = Sphere::default();
+    let s2 = Sphere::default();
     let xs = vec![
       Intersection {
         t: -1.,
@@ -179,8 +183,8 @@ mod tests {
 
   #[test]
   fn intesections_none() {
-    let s1 = sphere();
-    let s2 = sphere();
+    let s1 = Sphere::default();
+    let s2 = Sphere::default();
     let xs = vec![
       Intersection {
         t: -1.,
@@ -200,22 +204,22 @@ mod tests {
   }
 
   #[test]
-  fn sphere_default_transformation() {
-    let s = sphere();
-    assert_eq!(s.transform, na::Projective3::identity())
+  fn sphere_default_transform() {
+    let s = Sphere::default();
+    assert_eq!(s.get_transform(), Transform::identity())
   }
 
   #[test]
-  fn sphere_transformation() {
-    let mut s = sphere();
+  fn sphere_transform() {
+    let mut s = Sphere::default();
     s.set_transform(na::convert(translation(2., 3., 4.)));
-    assert_eq!(s.transform, na::convert(translation(2., 3., 4.)))
+    assert_eq!(s.get_transform(), na::convert(translation(2., 3., 4.)))
   }
 
   #[test]
   fn intersect_a_scaled_sphere_with_a_ray() {
     let r = ray(point(0., 0., -5.), vector(0., 0., 1.));
-    let mut s = sphere();
+    let mut s = Sphere::default();
     s.set_transform(na::convert(scaling(2., 2., 2.)));
     let xs = s.intersects(&r);
     assert_eq!(xs.len(), 2);
@@ -226,7 +230,7 @@ mod tests {
   #[test]
   fn intersect_a_translated_sphere_with_a_ray() {
     let r = ray(point(0., 0., -5.), vector(0., 0., 1.));
-    let mut s = sphere();
+    let mut s = Sphere::default();
     s.set_transform(na::convert(translation(5., 0., 0.)));
     let xs = s.intersects(&r);
     assert_eq!(xs.len(), 0);
@@ -234,7 +238,7 @@ mod tests {
 
   #[test]
   fn normal_sphere_axis() {
-    let s = sphere();
+    let s = Sphere::default();
     let n = s.normal_at(&point(1., 0., 0.));
     assert_relative_eq!(n.unwrap(), vector(1., 0., 0.));
     let n = s.normal_at(&point(0., 1., 0.));
@@ -245,7 +249,7 @@ mod tests {
 
   #[test]
   fn normal_sphere_translated() {
-    let mut s = sphere();
+    let mut s = Sphere::default();
     s.set_transform(na::convert(translation(0., 1., 0.)));
     let n = s.normal_at(&point(0., 1.70710677, -0.70710677));
     assert_relative_eq!(n.unwrap(), vector(0., 0.70710677, -0.70710677));
@@ -253,7 +257,7 @@ mod tests {
 
   #[test]
   fn normal_sphere_scaled() {
-    let mut s = sphere();
+    let mut s = Sphere::default();
     s.set_transform(na::convert(scaling(1., 0.5, 1.)));
     let n = s.normal_at(&point(0., 0.70710677, -0.70710677));
     assert_relative_eq!(n.unwrap(), vector(0., 0.97014254, -0.24253564));
@@ -261,10 +265,10 @@ mod tests {
 
   #[test]
   fn assign_material() {
-      let mut s = sphere();
-      let mut m = material();
-      m.ambient = 1.;
-      s.material = m;
-      assert_eq!(s.material.ambient, 1.);
+    let mut s = Sphere::default();
+    let mut m = Material::default();
+    m.ambient = 1.;
+    s.material = m;
+    assert_eq!(s.material.ambient, 1.);
   }
 }

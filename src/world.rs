@@ -7,11 +7,11 @@ pub struct World {
 }
 
 pub fn default_world() -> World {
-  let s1 = sphere();
+  let s1 = Sphere::default();
   //let m1 = s1.get_material();
   //m1.color = color(0.8, 1.0, 0.6);
 
-  let mut s2 = sphere();
+  let mut s2 = Sphere::default();
   s2.set_transform(na::convert(scaling(0.5, 0.5, 0.5)));
 
   World { 

@@ -17,11 +17,11 @@ fn main() {
 
   let light = point_light(point(-10., 10., -10.), WHITE);
 
-  let mut s = sphere();
+  let mut s = Sphere::default();
   s.set_transform(na::convert(scaling(1., 0.5, 1.)));
   s.set_color(color1);
 
-  let mut s2 = sphere();
+  let mut s2 = Sphere::default();
   s2.set_transform(na::convert(
     translation(-0.5, 0., 0.) * scaling(0.8, 0.8, 0.8),
   ));
