@@ -37,7 +37,7 @@ impl Material {
   }
 }
 
-impl std::default::Default for Material {
+impl Default for Material {
   fn default() -> Self {
     Material {
       color: WHITE,

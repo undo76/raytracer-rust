@@ -9,7 +9,7 @@ pub struct Sphere {
 }
 
 impl Sphere {
-  fn new(transform: Transform, material: Material) -> Sphere {
+  pub fn new(transform: Transform, material: Material) -> Sphere {
     Sphere {
       transform_inverse: transform.inverse(),
       material,
@@ -121,7 +121,7 @@ mod tests {
 
   #[test]
   fn ray_intersects_sphere_default() {
-    let r = ray(point(0., 0., -5.), vector(0., 0., 1.));
+    let r = Ray::new(point(0., 0., -5.), vector(0., 0., 1.));
     let s = Sphere::default();
     let xs = s.intersects(&r);
     assert_eq!(xs.len(), 2);
@@ -129,7 +129,7 @@ mod tests {
 
   #[test]
   fn ray_intersects_sphere_at_two_points() {
-    let r = ray(point(0., 0., -5.), vector(0., 0., 1.));
+    let r = Ray::new(point(0., 0., -5.), vector(0., 0., 1.));
     let s = Sphere::default();
     let xs = s.intersects(&r);
     assert_eq!(xs.len(), 2);
@@ -139,7 +139,7 @@ mod tests {
 
   #[test]
   fn ray_intersects_sphere_at_a_tangent() {
-    let r = ray(point(0., 1., -5.), vector(0., 0., 1.));
+    let r = Ray::new(point(0., 1., -5.), vector(0., 0., 1.));
     let s = Sphere::default();
     let xs = s.intersects(&r);
     assert_eq!(xs.len(), 2);
@@ -149,7 +149,7 @@ mod tests {
 
   #[test]
   fn ray_misses_a_sphere() {
-    let r = ray(point(0., 2., -5.), vector(0., 0., 1.));
+    let r = Ray::new(point(0., 2., -5.), vector(0., 0., 1.));
     let s = Sphere::default();
     let xs = s.intersects(&r);
     assert_eq!(xs.len(), 0);
@@ -157,7 +157,7 @@ mod tests {
 
   #[test]
   fn ray_originates_inside_a_sphere() {
-    let r = ray(point(0., 0., 0.), vector(0., 0., 1.));
+    let r = Ray::new(point(0., 0., 0.), vector(0., 0., 1.));
     let s = Sphere::default();
     let xs = s.intersects(&r);
     assert_eq!(xs.len(), 2);
@@ -218,7 +218,7 @@ mod tests {
 
   #[test]
   fn intersect_a_scaled_sphere_with_a_ray() {
-    let r = ray(point(0., 0., -5.), vector(0., 0., 1.));
+    let r = Ray::new(point(0., 0., -5.), vector(0., 0., 1.));
     let mut s = Sphere::default();
     s.set_transform(na::convert(scaling(2., 2., 2.)));
     let xs = s.intersects(&r);
@@ -229,7 +229,7 @@ mod tests {
 
   #[test]
   fn intersect_a_translated_sphere_with_a_ray() {
-    let r = ray(point(0., 0., -5.), vector(0., 0., 1.));
+    let r = Ray::new(point(0., 0., -5.), vector(0., 0., 1.));
     let mut s = Sphere::default();
     s.set_transform(na::convert(translation(5., 0., 0.)));
     let xs = s.intersects(&r);

@@ -35,7 +35,7 @@ fn main() {
         10.,
       );
       let direction = normalize(&(pos - origin));
-      let r = ray(origin, direction);
+      let r = Ray::new(origin, direction);
       let mut intersections = s.intersects(&r);
       intersections.extend(s2.intersects(&r));
 
