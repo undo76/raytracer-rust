@@ -5,10 +5,12 @@ pub struct PointLight {
   pub intensity: ColorRgbFloat,
 }
 
-pub fn point_light(position: Point, intensity: ColorRgbFloat) -> PointLight {
-  PointLight {
-    position,
-    intensity,
+impl PointLight {
+  pub fn new(position: Point, intensity: ColorRgbFloat) -> PointLight {
+    PointLight {
+      position,
+      intensity,
+    }
   }
 }
 
@@ -18,7 +20,7 @@ mod tests {
 
   #[test]
   fn point_light_creation() {
-    let light = point_light(point(0., 0., 0.), WHITE);
+    let light = PointLight::new(point(0., 0., 0.), WHITE);
     assert_eq!(light.position, point(0., 0., 0.,));
     assert_eq!(light.intesity, WHITE);
   }

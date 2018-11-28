@@ -24,9 +24,38 @@ impl Default for Sphere {
 }
 
 #[derive(Debug)]
+pub struct Hit<'a> {
+  pub intersection: &'a Intersection<'a>,
+  pub point: Point,
+  pub eyev: UnitVector,
+  pub normalv: UnitVector,
+  pub inside: bool,
+}
+
+#[derive(Debug)]
 pub struct Intersection<'a> {
   pub t: f32,
-  pub object: &'a Shape,
+  pub object: &'a dyn Shape,
+}
+
+impl<'a> Intersection<'a> {
+  pub fn new(t: f32, object: &'a dyn Shape) -> Intersection<'a> {
+    Intersection { t, object }
+  }
+
+  pub fn prepare_hit(&self, ray: &Ray) -> Hit {
+    let point = ray.position(self.t);
+    let eyev = UnitVector::new_normalize(-ray.direction);
+    let normalv = self.object.normal_at(&point);
+    let inside = dot(&normalv, &eyev) < 0.;
+    Hit {
+      intersection: &self,
+      point,
+      eyev,
+      inside,
+      normalv: if inside { -normalv } else { normalv },
+    }
+  }
 }
 
 pub type Intersections<'a> = Vec<Intersection<'a>>;
@@ -77,16 +106,7 @@ impl Shape for Sphere {
         t2 = t1;
         t1 = aux;
       }
-      return vec![
-        Intersection {
-          t: t1,
-          object: self,
-        },
-        Intersection {
-          t: t2,
-          object: self,
-        },
-      ];
+      return vec![Intersection::new(t1, self), Intersection::new(t2, self)];
     }
   }
 
@@ -170,12 +190,9 @@ mod tests {
     let s1 = Sphere::default();
     let s2 = Sphere::default();
     let xs = vec![
-      Intersection {
-        t: -1.,
-        object: &s1,
-      },
-      Intersection { t: 1., object: &s2 },
-      Intersection { t: 2., object: &s2 },
+      Intersection::new(-1., &s1),
+      Intersection::new(1., &s2),
+      Intersection::new(2., &s2),
     ];
     let h = hit(&xs);
     assert!(std::ptr::eq(h.unwrap(), &xs[1]));
@@ -186,18 +203,9 @@ mod tests {
     let s1 = Sphere::default();
     let s2 = Sphere::default();
     let xs = vec![
-      Intersection {
-        t: -1.,
-        object: &s1,
-      },
-      Intersection {
-        t: -2.,
-        object: &s2,
-      },
-      Intersection {
-        t: -3.,
-        object: &s2,
-      },
+      Intersection::new(-1., &s1),
+      Intersection::new(-2., &s2),
+      Intersection::new(-3., &s2),
     ];
     let h = hit(&xs);
     assert!(h.is_none());
@@ -270,5 +278,28 @@ mod tests {
     m.ambient = 1.;
     s.material = m;
     assert_eq!(s.material.ambient, 1.);
+  }
+
+  #[test]
+  fn precompute_state_of_intersection() {
+    let ray = Ray::new(point(0., 0., -5.), vector(0., 0., 1.));
+    let shape = Sphere::default();
+    let intersection = Intersection::new(4., &shape);
+    let hit = intersection.prepare_hit(&ray);
+    assert_relative_eq!(hit.point, point(0., 0., -1.));
+    assert_relative_eq!(hit.eyev.unwrap(), vector(0., 0., -1.));
+    assert_relative_eq!(hit.normalv.unwrap(), vector(0., 0., -1.));
+  }
+
+  #[test]
+  fn precompute_state_of_intersection_inside() {
+    let ray = Ray::new(point(0., 0., 0.), vector(0., 0., 1.));
+    let shape = Sphere::default();
+    let intersection = Intersection::new(1., &shape);
+    let hit = intersection.prepare_hit(&ray);
+    assert_relative_eq!(hit.point, point(0., 0., 1.));
+    assert_relative_eq!(hit.eyev.unwrap(), vector(0., 0., -1.));
+    assert_relative_eq!(hit.normalv.unwrap(), vector(0., 0., -1.));
+    assert_eq!(hit.inside, true);
   }
 }

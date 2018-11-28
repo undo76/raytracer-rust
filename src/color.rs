@@ -1,5 +1,5 @@
-use std::ops::{Add, Mul, Sub};
 use approx::{AbsDiffEq, RelativeEq};
+use std::ops::{Add, Mul, Sub};
 
 type Byte = u8;
 
@@ -18,12 +18,11 @@ pub struct ColorRgbByte {
 }
 
 /// Common colors
-pub const RED: ColorRgbFloat = color(1., 0., 0.,);
-pub const GREEN: ColorRgbFloat = color(0., 1., 0.,);
-pub const BLUE: ColorRgbFloat = color(0., 0., 1.,);
-pub const BLACK: ColorRgbFloat = color(0., 0., 0.,);
-pub const WHITE : ColorRgbFloat= color(1., 1., 1.,);
-
+pub const RED: ColorRgbFloat = color(1., 0., 0.);
+pub const GREEN: ColorRgbFloat = color(0., 1., 0.);
+pub const BLUE: ColorRgbFloat = color(0., 0., 1.);
+pub const BLACK: ColorRgbFloat = color(0., 0., 0.);
+pub const WHITE: ColorRgbFloat = color(1., 1., 1.);
 
 #[inline]
 fn clamp(x: f32) -> f32 {
@@ -40,7 +39,7 @@ impl Into<ColorRgbByte> for ColorRgbFloat {
     ColorRgbByte {
       r: to_byte(self.r),
       g: to_byte(self.g),
-      b: to_byte(self.b)
+      b: to_byte(self.b),
     }
   }
 }
@@ -80,39 +79,39 @@ impl Sub for ColorRgbFloat {
   }
 }
 
+impl std::iter::Sum for ColorRgbFloat {
+  fn sum<I: Iterator<Item = ColorRgbFloat>>(iter: I) -> Self {
+    iter.fold(BLACK, |acc, c| acc + c)
+  }
+}
 
-impl AbsDiffEq for ColorRgbFloat{
+impl AbsDiffEq for ColorRgbFloat {
   type Epsilon = f32;
 
   #[inline]
   fn default_epsilon() -> f32 {
-      f32::default_epsilon()
+    f32::default_epsilon()
   }
 
   #[inline]
   fn abs_diff_eq(&self, other: &ColorRgbFloat, epsilon: f32) -> bool {
-      f32::abs_diff_eq(&self.r, &other.r, epsilon.clone())
-          && f32::abs_diff_eq(&self.g, &other.g, epsilon.clone())
-          && f32::abs_diff_eq(&self.b, &other.b, epsilon.clone())
+    f32::abs_diff_eq(&self.r, &other.r, epsilon.clone())
+      && f32::abs_diff_eq(&self.g, &other.g, epsilon.clone())
+      && f32::abs_diff_eq(&self.b, &other.b, epsilon.clone())
   }
 }
 
 impl RelativeEq for ColorRgbFloat {
   #[inline]
   fn default_max_relative() -> f32 {
-      f32::default_max_relative()
+    f32::default_max_relative()
   }
 
   #[inline]
-  fn relative_eq(
-      &self,
-      other: &ColorRgbFloat,
-      epsilon: f32,
-      max_relative: f32,
-  ) -> bool {
-      f32::relative_eq(&self.r, &other.r, epsilon.clone(), max_relative.clone())
-          && f32::relative_eq(&self.g, &other.g, epsilon.clone(), max_relative.clone())
-          && f32::relative_eq(&self.b, &other.b, epsilon.clone(), max_relative.clone())
+  fn relative_eq(&self, other: &ColorRgbFloat, epsilon: f32, max_relative: f32) -> bool {
+    f32::relative_eq(&self.r, &other.r, epsilon.clone(), max_relative.clone())
+      && f32::relative_eq(&self.g, &other.g, epsilon.clone(), max_relative.clone())
+      && f32::relative_eq(&self.b, &other.b, epsilon.clone(), max_relative.clone())
   }
 }
 

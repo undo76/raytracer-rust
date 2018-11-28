@@ -15,7 +15,7 @@ fn main() {
   let mut c = canvas(pixels, pixels);
   let pixel_size = wall_size / (pixels as f32);
 
-  let light = point_light(point(-10., 10., -10.), WHITE);
+  let light = PointLight::new(point(-10., 10., -10.), WHITE);
 
   let mut s = Sphere::default();
   s.set_transform(na::convert(scaling(1., 0.5, 1.)));
@@ -39,7 +39,7 @@ fn main() {
       let mut intersections = s.intersects(&r);
       intersections.extend(s2.intersects(&r));
 
-      if let Some(&Intersection { t, object }) = hit(&intersections) {
+      if let Some(&Intersection { t, object, .. }) = hit(&intersections) {
         let material = object.get_material();
         let p = r.position(t);
         c.set(

@@ -2,6 +2,7 @@ use nalgebra as na;
 
 pub type Point = na::Point3<f32>;
 pub type Vector = na::Vector3<f32>;
+pub type UnitVector = na::Unit<Vector>;
 
 #[inline]
 pub fn point(x: f32, y: f32, z: f32) -> Point {
