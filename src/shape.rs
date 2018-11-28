@@ -1,6 +1,4 @@
-use core::fmt::Debug;
 use crate::*;
-use nalgebra as na;
 
 #[derive(Debug)]
 pub struct Sphere {
@@ -67,28 +65,28 @@ pub fn hit<'a>(xs: &'a Intersections) -> Option<&'a Intersection<'a>> {
     .min_by(|&x, &y| x.t.partial_cmp(&y.t).unwrap())
 }
 
-pub trait Shape: Debug {
-  fn intersects(&self, ray: &Ray) -> Intersections;
+pub trait Shape: core::fmt::Debug {
+  fn intersects(&self, ray: &Ray) -> Option<Intersections>;
   fn set_color(&mut self, color: ColorRgbFloat);
   fn get_color(&self) -> ColorRgbFloat;
   fn get_material(&self) -> &Material;
   fn set_transform(&mut self, trans: Transform);
   fn get_transform(&self) -> Transform;
   fn get_transform_inverse(&self) -> &Transform;
-  fn normal_at(&self, p: &Point) -> na::Unit<Vector>;
+  fn normal_at(&self, p: &Point) -> UnitVector;
 }
 
 impl Shape for Sphere {
-  fn normal_at(&self, p: &Point) -> na::Unit<Vector> {
+  fn normal_at(&self, p: &Point) -> UnitVector {
     let t_inv = &self.get_transform_inverse();
     let object_point = *t_inv * p;
     let object_normal = object_point - point(0., 0., 0.);
     let mut world_normal = (*t_inv).matrix().transpose() * object_normal.to_homogeneous();
     world_normal[3] = 0.;
-    na::Unit::new_normalize(Vector::from_homogeneous(world_normal).unwrap())
+    UnitVector::new_normalize(Vector::from_homogeneous(world_normal).unwrap())
   }
 
-  fn intersects(&self, ray: &Ray) -> Intersections {
+  fn intersects(&self, ray: &Ray) -> Option<Intersections> {
     let ray = ray.transform(self.get_transform_inverse());
     let sphere_to_ray = ray.origin - point(0., 0., 0.);
     let a = dot(&ray.direction, &ray.direction);
@@ -96,7 +94,7 @@ impl Shape for Sphere {
     let c = dot(&sphere_to_ray, &sphere_to_ray) - 1.;
     let discriminant = b * b - 4. * a * c;
     if discriminant < 0. {
-      return vec![];
+      return None;
     } else {
       let sqrt_disc = f32::sqrt(discriminant);
       let mut t1 = (-b - sqrt_disc) / (2. * a);
@@ -106,7 +104,7 @@ impl Shape for Sphere {
         t2 = t1;
         t1 = aux;
       }
-      return vec![Intersection::new(t1, self), Intersection::new(t2, self)];
+      return Some(vec![Intersection::new(t1, self), Intersection::new(t2, self)]);
     }
   }
 
@@ -138,12 +136,13 @@ impl Shape for Sphere {
 #[cfg(test)]
 mod tests {
   use super::*;
+  use nalgebra as na;
 
   #[test]
   fn ray_intersects_sphere_default() {
     let r = Ray::new(point(0., 0., -5.), vector(0., 0., 1.));
     let s = Sphere::default();
-    let xs = s.intersects(&r);
+    let xs = s.intersects(&r).unwrap();
     assert_eq!(xs.len(), 2);
   }
 
@@ -151,7 +150,7 @@ mod tests {
   fn ray_intersects_sphere_at_two_points() {
     let r = Ray::new(point(0., 0., -5.), vector(0., 0., 1.));
     let s = Sphere::default();
-    let xs = s.intersects(&r);
+    let xs = s.intersects(&r).unwrap();
     assert_eq!(xs.len(), 2);
     assert_relative_eq!(xs[0].t, 4.);
     assert_relative_eq!(xs[1].t, 6.);
@@ -161,7 +160,7 @@ mod tests {
   fn ray_intersects_sphere_at_a_tangent() {
     let r = Ray::new(point(0., 1., -5.), vector(0., 0., 1.));
     let s = Sphere::default();
-    let xs = s.intersects(&r);
+    let xs = s.intersects(&r).unwrap();
     assert_eq!(xs.len(), 2);
     assert_relative_eq!(xs[0].t, 5.);
     assert_relative_eq!(xs[1].t, 5.);
@@ -172,14 +171,14 @@ mod tests {
     let r = Ray::new(point(0., 2., -5.), vector(0., 0., 1.));
     let s = Sphere::default();
     let xs = s.intersects(&r);
-    assert_eq!(xs.len(), 0);
+    assert!(xs.is_none());
   }
 
   #[test]
   fn ray_originates_inside_a_sphere() {
     let r = Ray::new(point(0., 0., 0.), vector(0., 0., 1.));
     let s = Sphere::default();
-    let xs = s.intersects(&r);
+    let xs = s.intersects(&r).unwrap();
     assert_eq!(xs.len(), 2);
     assert_relative_eq!(xs[0].t, -1.);
     assert_relative_eq!(xs[1].t, 1.);
@@ -229,7 +228,7 @@ mod tests {
     let r = Ray::new(point(0., 0., -5.), vector(0., 0., 1.));
     let mut s = Sphere::default();
     s.set_transform(na::convert(scaling(2., 2., 2.)));
-    let xs = s.intersects(&r);
+    let xs = s.intersects(&r).unwrap();
     assert_eq!(xs.len(), 2);
     assert_relative_eq!(xs[0].t, 3.);
     assert_relative_eq!(xs[1].t, 7.);
@@ -241,7 +240,7 @@ mod tests {
     let mut s = Sphere::default();
     s.set_transform(na::convert(translation(5., 0., 0.)));
     let xs = s.intersects(&r);
-    assert_eq!(xs.len(), 0);
+    assert!(xs.is_none());
   }
 
   #[test]

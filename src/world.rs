@@ -11,7 +11,8 @@ impl World {
     let mut v = (*self)
       .shapes
       .iter()
-      .flat_map(|s| s.intersects(ray))
+      .filter_map(|s| s.intersects(ray))
+      .flatten()
       .collect::<Vec<_>>();
     v.sort_unstable_by(|x, y| x.t.partial_cmp(&y.t).unwrap());
     v
