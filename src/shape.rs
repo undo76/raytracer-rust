@@ -69,6 +69,7 @@ pub trait Shape: core::fmt::Debug {
   fn intersects(&self, ray: &Ray) -> Option<Intersections>;
   fn set_color(&mut self, color: ColorRgbFloat);
   fn get_color(&self) -> ColorRgbFloat;
+  fn set_material(&mut self, material: Material);
   fn get_material(&self) -> &Material;
   fn set_transform(&mut self, trans: Transform);
   fn get_transform(&self) -> Transform;
@@ -118,6 +119,10 @@ impl Shape for Sphere {
 
   fn get_material(&self) -> &Material {
     &self.material
+  }
+
+  fn set_material(&mut self, material: Material) {
+    self.material = material
   }
 
   fn set_transform(&mut self, trans: Transform) {

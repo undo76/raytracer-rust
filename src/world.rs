@@ -7,7 +7,7 @@ pub struct World {
 }
 
 impl World {
-  pub fn intersects(&self, ray: &Ray) -> Intersections {
+  fn intersects(&self, ray: &Ray) -> Intersections {
     let mut v = (*self)
       .shapes
       .iter()
@@ -18,7 +18,7 @@ impl World {
     v
   }
 
-  pub fn shade_hit(&self, hit: &Hit) -> ColorRgbFloat {
+  fn shade_hit(&self, hit: &Hit) -> ColorRgbFloat {
     self
       .lights
       .iter()
@@ -30,6 +30,15 @@ impl World {
           .lighting(&light, &hit.point, &hit.eyev, &hit.normalv)
       })
       .sum()
+  }
+
+  pub fn color_at(&self, ray: &Ray) -> ColorRgbFloat {
+    let intersects = self.intersects(ray);
+    let hit = intersects.iter().find(|x| x.t > 0.);
+    match hit {
+      Some(h) => self.shade_hit(&h.prepare_hit(ray)),
+      None => BLACK,
+    }
   }
 }
 
@@ -75,7 +84,7 @@ mod tests {
     let xs = world.intersects(&ray);
     let hit = xs[0].prepare_hit(&ray);
     let c = world.shade_hit(&hit);
-    assert_relative_eq!(c, color(0.38066125, 0.4758265, 0.28549594))
+    assert_relative_eq!(c, color(0.38066125, 0.4758265, 0.28549594));
   }
 
   #[test]
@@ -86,6 +95,27 @@ mod tests {
     let intersection = Intersection::new(0.5, &(*world.shapes[1]));
     let hit = intersection.prepare_hit(&ray);
     let c = world.shade_hit(&hit);
-    assert_relative_eq!(c, color(0.9049845, 0.9049845, 0.9049845))
+    assert_relative_eq!(c, color(0.9049845, 0.9049845, 0.9049845));
+  }
+
+  #[test]
+  fn color_at_intersection() {
+    let world = World::default();
+    let ray = Ray::new(point(0., 0., -5.), vector(0., 0., 1.));
+    let c = world.color_at(&ray);
+    assert_relative_eq!(c, color(0.38066125, 0.4758265, 0.28549594));
+  }
+
+  #[test]
+  fn color_at_behind() {
+    let mut world = World::default();
+    let mut material = Material::default();
+    material.ambient = 1.;
+    material.diffuse = 0.;
+    material.specular = 0.;
+    world.shapes[1].set_material(material);
+    let ray = Ray::new(point(0., 0., -0.75), vector(0., 0., 1.));
+    let c = world.color_at(&ray);
+    assert_relative_eq!(c, world.shapes[1].get_material().color);
   }
 }
