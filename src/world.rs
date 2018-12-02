@@ -7,6 +7,13 @@ pub struct World {
 }
 
 impl World {
+  pub fn new(shapes: Vec<Box<dyn Shape>>, lights: Vec<PointLight>) -> World {
+    World {
+      shapes,
+      lights,
+    }
+  }
+
   fn intersects(&self, ray: &Ray) -> Intersections {
     let mut v = (*self)
       .shapes

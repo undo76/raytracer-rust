@@ -2,7 +2,7 @@ use crate::*;
 
 use nalgebra as na;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub struct Material {
   pub color: ColorRgbFloat,
   pub ambient: f32,
