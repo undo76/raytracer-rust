@@ -25,23 +25,34 @@ impl World {
     v
   }
 
+  fn is_shadowed(&self, light: &PointLight, point: &Point) -> bool {
+    let v = light.position - point;
+    let distance = magnitude(&v);
+    let direction = normalize(&v);
+    let r = Ray::new(*point, direction);
+    let intersections = self.intersects(&r);
+    let hit = intersections.iter().find(|x| x.t > 0. && x.t < distance);
+    hit.is_some()
+  }
+
   fn shade_hit(&self, hit: &Hit) -> ColorRgbFloat {
     self
       .lights
       .iter()
       .map(|light| {
+        let in_shadow = self.is_shadowed(&light, &hit.point);
         hit
           .intersection
           .object
           .get_material()
-          .lighting(&light, &hit.point, &hit.eyev, &hit.normalv)
+          .lighting(&light, &hit.point, &hit.eyev, &hit.normalv, in_shadow)
       })
       .sum()
   }
 
   pub fn color_at(&self, ray: &Ray) -> ColorRgbFloat {
-    let intersects = self.intersects(ray);
-    let hit = intersects.iter().find(|x| x.t > 0.);
+    let intersections = self.intersects(ray);
+    let hit = intersections.iter().find(|x| x.t > 0.);
     match hit {
       Some(h) => self.shade_hit(&h.prepare_hit(ray)),
       None => BLACK,

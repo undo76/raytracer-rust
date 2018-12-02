@@ -51,6 +51,7 @@ fn main() {
               &p,
               &na::Unit::new_unchecked(-direction),
               &object.normal_at(&p),
+              false,
             )
             .into(),
         );

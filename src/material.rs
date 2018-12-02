@@ -18,6 +18,7 @@ impl Material {
     position: &Point,
     eyev: &na::Unit<Vector>,
     normalv: &na::Unit<Vector>,
+    in_shadow: bool,
   ) -> ColorRgbFloat {
     let effective_color = self.color * light.intensity;
     let lightv = normalize(&(light.position - position));
@@ -27,12 +28,12 @@ impl Material {
 
     let mut total = effective_color * self.ambient;
 
-    if light_dot_normal > 0. {
+    if !in_shadow && light_dot_normal > 0. {
       total = total + effective_color * self.diffuse * light_dot_normal;
       if reflect_dot_eye > 0. {
         total = total + light.intensity * self.specular * reflect_dot_eye;
       }
-    } 
+    }
     return total;
   }
 }
@@ -60,7 +61,7 @@ mod tests {
     let normalv = na::Unit::new_normalize(vector(0., 0., -1.));
     let light = PointLight::new(point(0., 0., -10.), WHITE);
     let m = Material::default();
-    let result = m.lighting(&light, &position, &eyev, &normalv);
+    let result = m.lighting(&light, &position, &eyev, &normalv, false);
     assert_relative_eq!(result, color(1.9, 1.9, 1.9));
   }
 
@@ -71,7 +72,7 @@ mod tests {
     let normalv = na::Unit::new_normalize(vector(0., 0., -1.));
     let light = PointLight::new(point(0., 10., -10.), WHITE);
     let m = Material::default();
-    let result = m.lighting(&light, &position, &eyev, &normalv);
+    let result = m.lighting(&light, &position, &eyev, &normalv, false);
     assert_relative_eq!(result, color(0.7363961, 0.7363961, 0.7363961));
   }
 
@@ -82,7 +83,7 @@ mod tests {
     let normalv = na::Unit::new_normalize(vector(0., 0., -1.));
     let light = PointLight::new(point(0., 10., -10.), WHITE);
     let m = Material::default();
-    let result = m.lighting(&light, &position, &eyev, &normalv);
+    let result = m.lighting(&light, &position, &eyev, &normalv, false);
     assert_relative_eq!(result, color(1.636396, 1.636396, 1.636396));
   }
 
@@ -93,7 +94,19 @@ mod tests {
     let normalv = na::Unit::new_normalize(vector(0., 0., -1.));
     let light = PointLight::new(point(0., 0., 10.), WHITE);
     let m = Material::default();
-    let result = m.lighting(&light, &position, &eyev, &normalv);
+    let result = m.lighting(&light, &position, &eyev, &normalv, false);
+    assert_relative_eq!(result, color(0.1, 0.1, 0.1));
+  }
+
+  #[test]
+  fn light_with_surface_in_shadow() {
+    let position = point(0., 0., 0.);
+    let eyev = na::Unit::new_normalize(vector(0., 0., -1.));
+    let normalv = na::Unit::new_normalize(vector(0., 0., -1.));
+    let light = PointLight::new(point(0., 0., -10.), color(1., 1., 1.));
+    let in_shadow = true;
+    let m = Material::default();
+    let result = m.lighting(&light, &position, &eyev, &normalv, in_shadow);
     assert_relative_eq!(result, color(0.1, 0.1, 0.1));
   }
 }
