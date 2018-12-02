@@ -12,29 +12,24 @@ const F_PI_2: f32 = std::f32::consts::FRAC_PI_2;
 
 fn main() {
   let mut floor_material = Material::default();
-  floor_material.color = color(1., 0.9, 0.9);
+  floor_material.color = color(1., 0.8, 0.8);
   floor_material.specular = 0.;
 
-  let floor = Box::new(Sphere::new(
-    na::convert(scaling(10., 0.01, 10.)),
-    floor_material,
-  ));
+  let floor = Box::new(Plane::new(Transform::identity(), floor_material));
 
   #[rustfmt::skip]
-  let left_wall = Box::new(Sphere::new(
+  let left_wall = Box::new(Plane::new(
     na::convert(translation(0., 0., 5.)
       * rotation_y(-F_PI_4)
-      * rotation_x(-F_PI_2)
-      * scaling(10., 0.01, 10.)),
+      * rotation_x(-F_PI_2)),
     floor_material,
   ));
 
   #[rustfmt::skip]
-  let right_wall = Box::new(Sphere::new(
+  let right_wall = Box::new(Plane::new(
     na::convert(translation(0., 0., 5.)
       * rotation_y(F_PI_4)
-      * rotation_x(F_PI_2)
-      * scaling(10., 0.01, 10.)),
+      * rotation_x(F_PI_2)),
     floor_material,
   ));
 
@@ -66,7 +61,8 @@ fn main() {
   let light2 = PointLight::new(point(10., 5., -10.), color(0.3, 0.3, 0.3));
 
   let world = World::new(
-    vec![floor, right_wall, left_wall, middle, left, right],
+    // vec![floor, right_wall, left_wall, middle, left, right],
+    vec![floor, middle, left, right],
     vec![light, light2],
   );
 
