@@ -42,8 +42,16 @@ fn main() {
   middle_material.color = color(1., 0.2, 1.);
   middle_material.specular = 1.;
   let middle = Box::new(Sphere::new(
-    na::convert(translation(1.5, 0.5, -0.5) * scaling(0.5, 0.5, 0.5)),
+    na::convert(translation(-0.5, 1., 0.5)),
     middle_material,
+  ));
+
+  let mut right_material = Material::default();
+  right_material.color = color(0.2, 0.2, 1.);
+  right_material.specular = 0.1;
+  let right = Box::new(Sphere::new(
+    na::convert(translation(1.5, 0.5, -0.5) * scaling(0.5, 0.5, 0.5)),
+    right_material,
   ));
 
   let mut left_material = Material::default();
@@ -56,7 +64,7 @@ fn main() {
 
   let light = PointLight::new(point(-10., 10., -10.), color(1., 1., 1.));
   let world = World::new(
-    vec![floor, right_wall, left_wall, middle, left],
+    vec![floor, right_wall, left_wall, middle, left, right],
     vec![light],
   );
   let mut camera = Camera::new(1000, 800, F_PI_3);
