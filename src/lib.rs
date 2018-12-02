@@ -10,6 +10,7 @@ pub use crate::light::*;
 pub use crate::material::*;
 pub use crate::ray::*;
 pub use crate::shape::*;
+pub use crate::sphere::*;
 pub use crate::transform::*;
 pub use crate::world::*;
 
@@ -21,6 +22,7 @@ mod light;
 mod material;
 mod ray;
 mod shape;
+mod sphere;
 mod transform;
 mod world;
 
