@@ -48,7 +48,7 @@ impl<'a> Intersection<'a> {
     let inside = dot(&normalv, &eyev) < 0.;
     Hit {
       intersection: &self,
-      point: point + normalv.unwrap() * 1.0e-2,
+      point,
       eyev,
       inside,
       normalv: if inside { -normalv } else { normalv },

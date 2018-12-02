@@ -31,7 +31,7 @@ impl World {
     let direction = normalize(&v);
     let r = Ray::new(*point, direction);
     let intersections = self.intersects(&r);
-    let hit = intersections.iter().find(|x| x.t > 0. && x.t < distance);
+    let hit = intersections.iter().find(|x| x.t > 1.0e-2 && x.t < distance);
     hit.is_some()
   }
 
@@ -52,7 +52,7 @@ impl World {
 
   pub fn color_at(&self, ray: &Ray) -> ColorRgbFloat {
     let intersections = self.intersects(ray);
-    let hit = intersections.iter().find(|x| x.t > 0.);
+    let hit = intersections.iter().find(|x| x.t >= 0.);
     match hit {
       Some(h) => self.shade_hit(&h.prepare_hit(ray)),
       None => BLACK,
