@@ -61,8 +61,8 @@ fn main() {
   let light2 = PointLight::new(point(10., 5., -10.), color(0.3, 0.3, 0.3));
 
   let world = World::new(
-    // vec![floor, right_wall, left_wall, middle, left, right],
-    vec![floor, middle, left, right],
+    vec![floor, right_wall, left_wall, middle, left, right],
+    // vec![floor, middle, left, right],
     vec![light, light2],
   );
 
