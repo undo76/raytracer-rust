@@ -25,6 +25,7 @@ fn main() {
   s2.set_transform(na::convert(
     translation(-0.5, 0., 0.) * scaling(0.8, 0.8, 0.8),
   ));
+  let mut m = Material::default();
   m.color = BLUE;
   s2.set_material(m);
 
