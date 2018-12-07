@@ -2,9 +2,9 @@ use crate::*;
 
 use nalgebra as na;
 
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct Material {
-  pub color: ColorRgbFloat,
+  pub pattern: Pattern,
   pub ambient: f32,
   pub diffuse: f32,
   pub specular: f32,
@@ -20,7 +20,8 @@ impl Material {
     normalv: &na::Unit<Vector>,
     in_shadow: bool,
   ) -> ColorRgbFloat {
-    let effective_color = self.color * light.intensity;
+    let color = self.pattern.color_at(position);
+    let effective_color = color * light.intensity;
     let lightv = normalize(&(light.position - position));
     let light_dot_normal = normalv.dot(&lightv);
     let reflectv = reflect(&-lightv, normalv);
@@ -41,7 +42,7 @@ impl Material {
 impl Default for Material {
   fn default() -> Self {
     Material {
-      color: WHITE,
+      pattern: Pattern::Uniform(WHITE),
       ambient: 0.1,
       diffuse: 0.9,
       specular: 0.9,

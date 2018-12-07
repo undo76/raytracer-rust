@@ -12,7 +12,8 @@ const F_PI_2: f32 = std::f32::consts::FRAC_PI_2;
 
 fn main() {
   let mut floor_material = Material::default();
-  floor_material.color = color(1., 0.8, 0.8);
+  // floor_material.pattern = Pattern::Uniform(color(1., 0.8, 0.8));
+  floor_material.pattern = Pattern::Striped(RED, WHITE);
   floor_material.specular = 0.;
 
   let floor = Box::new(Plane::new(Transform::identity(), floor_material));
@@ -34,7 +35,7 @@ fn main() {
   ));
 
   let mut middle_material = Material::default();
-  middle_material.color = color(1., 0.2, 1.);
+  middle_material.pattern = Pattern::Uniform(color(1., 0.2, 1.));
   middle_material.specular = 1.;
   let middle = Box::new(Sphere::new(
     na::convert(translation(-0.5, 1., 0.5)),
@@ -42,7 +43,7 @@ fn main() {
   ));
 
   let mut right_material = Material::default();
-  right_material.color = color(0.5, 0.5, 1.);
+  right_material.pattern = Pattern::Uniform(color(0.5, 0.5, 1.));
   right_material.specular = 0.;
   let right = Box::new(Sphere::new(
     na::convert(translation(1.2, 0.5, -1.0) * scaling(0.5, 0.5, 0.5)),
@@ -50,7 +51,7 @@ fn main() {
   ));
 
   let mut left_material = Material::default();
-  left_material.color = color(1., 0.2, 0.2);
+  left_material.pattern = Pattern::Uniform(color(1., 0.2, 0.2));
   left_material.specular = 1.;
   let left = Box::new(Sphere::new(
     na::convert(translation(-1.5, 0.333, -0.75) * scaling(0.333, 0.333, 0.333)),

@@ -63,7 +63,7 @@ impl World {
 impl Default for World {
   fn default() -> World {
     let m1 = Material {
-      color: color(0.8, 1.0, 0.6),
+      pattern: Pattern::Uniform(color(0.8, 1.0, 0.6)),
       diffuse: 0.7,
       specular: 0.2,
       ..Material::default()
@@ -134,6 +134,6 @@ mod tests {
     world.shapes[1].set_material(material);
     let ray = Ray::new(point(0., 0., -0.75), vector(0., 0., 1.));
     let c = world.color_at(&ray);
-    assert_relative_eq!(c, world.shapes[1].get_material().color);
+    assert_relative_eq!(c, world.shapes[1].get_material().pattern.color_at(&point(0., 0., 0.)));
   }
 }
