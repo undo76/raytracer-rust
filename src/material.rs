@@ -2,9 +2,9 @@ use crate::*;
 
 use nalgebra as na;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub struct Material {
-  pub pattern: Pattern,
+  pub pattern: Pattern<ColorRgbFloat>,
   pub ambient: f32,
   pub diffuse: f32,
   pub specular: f32,
@@ -14,13 +14,14 @@ pub struct Material {
 impl Material {
   pub fn lighting(
     &self,
+    object: &dyn Shape,
     light: &PointLight,
     position: &Point,
     eyev: &na::Unit<Vector>,
     normalv: &na::Unit<Vector>,
     in_shadow: bool,
   ) -> ColorRgbFloat {
-    let color = self.pattern.color_at(position);
+    let color = self.pattern.map_at_object(object, position);
     let effective_color = color * light.intensity;
     let lightv = normalize(&(light.position - position));
     let light_dot_normal = normalv.dot(&lightv);
@@ -42,7 +43,7 @@ impl Material {
 impl Default for Material {
   fn default() -> Self {
     Material {
-      pattern: Pattern::Uniform(WHITE),
+      pattern: Pattern::Uniform(UniformPattern { value: WHITE }),
       ambient: 0.1,
       diffuse: 0.9,
       specular: 0.9,
@@ -62,7 +63,8 @@ mod tests {
     let normalv = na::Unit::new_normalize(vector(0., 0., -1.));
     let light = PointLight::new(point(0., 0., -10.), WHITE);
     let m = Material::default();
-    let result = m.lighting(&light, &position, &eyev, &normalv, false);
+    let sphere = Sphere::default();
+    let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, false);
     assert_relative_eq!(result, color(1.9, 1.9, 1.9));
   }
 
@@ -73,7 +75,8 @@ mod tests {
     let normalv = na::Unit::new_normalize(vector(0., 0., -1.));
     let light = PointLight::new(point(0., 10., -10.), WHITE);
     let m = Material::default();
-    let result = m.lighting(&light, &position, &eyev, &normalv, false);
+    let sphere = Sphere::default();
+    let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, false);
     assert_relative_eq!(result, color(0.7363961, 0.7363961, 0.7363961));
   }
 
@@ -84,7 +87,8 @@ mod tests {
     let normalv = na::Unit::new_normalize(vector(0., 0., -1.));
     let light = PointLight::new(point(0., 10., -10.), WHITE);
     let m = Material::default();
-    let result = m.lighting(&light, &position, &eyev, &normalv, false);
+    let sphere = Sphere::default();
+    let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, false);
     assert_relative_eq!(result, color(1.636396, 1.636396, 1.636396));
   }
 
@@ -95,7 +99,8 @@ mod tests {
     let normalv = na::Unit::new_normalize(vector(0., 0., -1.));
     let light = PointLight::new(point(0., 0., 10.), WHITE);
     let m = Material::default();
-    let result = m.lighting(&light, &position, &eyev, &normalv, false);
+    let sphere = Sphere::default();
+    let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, false);
     assert_relative_eq!(result, color(0.1, 0.1, 0.1));
   }
 
@@ -107,7 +112,8 @@ mod tests {
     let light = PointLight::new(point(0., 0., -10.), color(1., 1., 1.));
     let in_shadow = true;
     let m = Material::default();
-    let result = m.lighting(&light, &position, &eyev, &normalv, in_shadow);
+    let sphere = Sphere::default();
+    let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, in_shadow);
     assert_relative_eq!(result, color(0.1, 0.1, 0.1));
   }
 }

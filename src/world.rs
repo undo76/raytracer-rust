@@ -8,10 +8,7 @@ pub struct World {
 
 impl World {
   pub fn new(shapes: Vec<Box<dyn Shape>>, lights: Vec<PointLight>) -> World {
-    World {
-      shapes,
-      lights,
-    }
+    World { shapes, lights }
   }
 
   fn intersects(&self, ray: &Ray) -> Intersections {
@@ -31,7 +28,9 @@ impl World {
     let direction = normalize(&v);
     let r = Ray::new(*point, direction);
     let intersections = self.intersects(&r);
-    let hit = intersections.iter().find(|x| x.t > 1.0e-2 && x.t < distance);
+    let hit = intersections
+      .iter()
+      .find(|x| x.t > 1.0e-2 && x.t < distance);
     hit.is_some()
   }
 
@@ -41,11 +40,14 @@ impl World {
       .iter()
       .map(|light| {
         let in_shadow = self.is_shadowed(&light, &hit.point);
-        hit
-          .intersection
-          .object
-          .get_material()
-          .lighting(&light, &hit.point, &hit.eyev, &hit.normalv, in_shadow)
+        hit.intersection.object.get_material().lighting(
+          hit.intersection.object,
+          &light,
+          &hit.point,
+          &hit.eyev,
+          &hit.normalv,
+          in_shadow,
+        )
       })
       .sum()
   }
@@ -63,7 +65,9 @@ impl World {
 impl Default for World {
   fn default() -> World {
     let m1 = Material {
-      pattern: Pattern::Uniform(color(0.8, 1.0, 0.6)),
+      pattern: Pattern::Uniform(UniformPattern {
+        value: color(0.8, 1.0, 0.6),
+      }),
       diffuse: 0.7,
       specular: 0.2,
       ..Material::default()
@@ -134,6 +138,12 @@ mod tests {
     world.shapes[1].set_material(material);
     let ray = Ray::new(point(0., 0., -0.75), vector(0., 0., 1.));
     let c = world.color_at(&ray);
-    assert_relative_eq!(c, world.shapes[1].get_material().pattern.color_at(&point(0., 0., 0.)));
+    assert_relative_eq!(
+      c,
+      world.shapes[1]
+        .get_material()
+        .pattern
+        .map_at_object(&*world.shapes[1], &point(0., 0., 0.))
+    );
   }
 }
