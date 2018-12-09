@@ -67,10 +67,11 @@ impl World {
     if remaining == 0 {
       return BLACK;
     } else {
-      match hit.intersection.object.get_material().reflective {
+      let object = hit.intersection.object;
+      match &object.get_material().reflective {
         Some(reflective) => {
           let reflect_ray = Ray::new(hit.point, hit.reflectv.unwrap());
-          self.color_at(&reflect_ray, remaining - 1) * reflective
+          self.color_at(&reflect_ray, remaining - 1) * reflective.map_at_object(object, &hit.point)
         }
         None => BLACK,
       }
@@ -81,11 +82,9 @@ impl World {
 impl Default for World {
   fn default() -> World {
     let m1 = Material {
-      color: Pattern::Uniform(UniformPattern {
-        value: color(0.8, 1.0, 0.6),
-      }),
-      diffuse: 0.7,
-      specular: 0.2,
+      color: Pattern::uniform(color(0.8, 1.0, 0.6)),
+      diffuse: Pattern::uniform(0.7),
+      specular: Pattern::uniform(0.2),
       ..Material::default()
     };
 
@@ -148,9 +147,9 @@ mod tests {
   fn color_at_behind() {
     let mut world = World::default();
     let mut material = Material::default();
-    material.ambient = 1.;
-    material.diffuse = 0.;
-    material.specular = 0.;
+    material.ambient = Pattern::from(1.);
+    material.diffuse = Pattern::from(0.);
+    material.specular = Pattern::from(0.);
     world.shapes[1].set_material(material);
     let ray = Ray::new(point(0., 0., -0.75), vector(0., 0., 1.));
     let c = world.color_at(&ray, 0);

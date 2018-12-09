@@ -1,3 +1,4 @@
+use crate::pattern::Pattern::*;
 use crate::*;
 
 #[derive(Debug, Clone)]
@@ -124,6 +125,38 @@ where
     + core::ops::Add<Output = T>
     + core::ops::Mul<f32, Output = T>,
 {
+  pub fn uniform(value: T) -> Self {
+    Uniform(UniformPattern { value })
+  }
+
+  pub fn stripes(values: &[T], transform: Transform) -> Self {
+    Striped(StripePattern {
+      values: values.to_vec(),
+      transform_inverse: transform.inverse(),
+    })
+  }
+
+  pub fn rings(values: &[T], transform: Transform) -> Self {
+    Ring(RingPattern {
+      values: values.to_vec(),
+      transform_inverse: transform.inverse(),
+    })
+  }
+
+  pub fn checkers(values: &[T], transform: Transform) -> Self {
+    Checkered(CheckersPattern {
+      values: values.to_vec(),
+      transform_inverse: transform.inverse(),
+    })
+  }
+
+  pub fn gradient(values: (T, T), transform: Transform) -> Self {
+    Gradient(GradientPattern {
+      values,
+      transform_inverse: transform.inverse(),
+    })
+  }
+
   pub fn map_at_object(&self, object: &Shape, world_point: &Point) -> T {
     use self::Pattern::*;
     match self {
@@ -136,7 +169,16 @@ where
   }
 }
 
-
+impl<T> From<T> for Pattern<T> where
+  T: Copy
+    + core::ops::Sub<Output = T>
+    + core::ops::Add<Output = T>
+    + core::ops::Mul<f32, Output = T>
+{
+  fn from(value: T) -> Pattern<T> {
+    Pattern::uniform(value)
+  }
+}
 
 #[cfg(test)]
 mod tests {
@@ -144,12 +186,7 @@ mod tests {
 
   #[test]
   fn stripe_pattern_is_constant_in_z() {
-    let values = vec![WHITE, BLACK];
-    let transform_inverse = Transform::identity();
-    let pattern: Pattern<ColorRgbFloat> = Pattern::Striped(StripePattern {
-      values,
-      transform_inverse,
-    });
+    let pattern = Pattern::stripes(&vec![WHITE, BLACK], Transform::identity());
     let sphere = Sphere::default();
     assert_eq!(pattern.map_at_object(&sphere, &point(0., 0., 0.)), WHITE);
     assert_eq!(pattern.map_at_object(&sphere, &point(0., 0., 2.)), WHITE);
@@ -158,12 +195,7 @@ mod tests {
 
   #[test]
   fn stripe_pattern_alternates_in_z() {
-    let values = vec![WHITE, BLACK];
-    let transform_inverse = Transform::identity();
-    let pattern: Pattern<ColorRgbFloat> = Pattern::Striped(StripePattern {
-      values,
-      transform_inverse,
-    });
+    let pattern = Pattern::stripes(&vec![WHITE, BLACK], Transform::identity());
     let sphere = Sphere::default();
     assert_eq!(pattern.map_at_object(&sphere, &point(0., 0., 0.)), WHITE);
     assert_eq!(pattern.map_at_object(&sphere, &point(0.9, 0., 0.)), WHITE);
