@@ -1,36 +1,36 @@
-use crate::pattern::Pattern::*;
 use crate::*;
+use self::Mapping::*;
 
 #[derive(Debug, Clone)]
-pub struct UniformPattern<T> {
+pub struct UniformMapping<T> {
   pub value: T,
 }
 
 #[derive(Debug, Clone)]
-pub struct StripePattern<T> {
+pub struct StripeMapping<T> {
   pub values: Vec<T>,
   pub transform_inverse: Transform,
 }
 
 #[derive(Debug, Clone)]
-pub struct CheckersPattern<T> {
+pub struct CheckersMapping<T> {
   pub values: Vec<T>,
   pub transform_inverse: Transform,
 }
 
 #[derive(Debug, Clone)]
-pub struct GradientPattern<T> {
+pub struct GradientMapping<T> {
   pub values: (T, T),
   pub transform_inverse: Transform,
 }
 
 #[derive(Debug, Clone)]
-pub struct RingPattern<T> {
+pub struct RingMapping<T> {
   pub values: Vec<T>,
   pub transform_inverse: Transform,
 }
 
-pub trait PatternMapping<T>
+pub trait MappingMapping<T>
 where
   T: Copy,
 {
@@ -43,7 +43,7 @@ where
   }
 }
 
-impl<T> PatternMapping<T> for StripePattern<T>
+impl<T> MappingMapping<T> for StripeMapping<T>
 where
   T: Copy,
 {
@@ -57,7 +57,7 @@ where
   }
 }
 
-impl<T> PatternMapping<T> for CheckersPattern<T>
+impl<T> MappingMapping<T> for CheckersMapping<T>
 where
   T: Copy,
 {
@@ -74,7 +74,7 @@ where
   }
 }
 
-impl<T> PatternMapping<T> for GradientPattern<T>
+impl<T> MappingMapping<T> for GradientMapping<T>
 where
   T: Copy
     + core::ops::Sub<Output = T>
@@ -91,7 +91,7 @@ where
   }
 }
 
-impl<T> PatternMapping<T> for RingPattern<T>
+impl<T> MappingMapping<T> for RingMapping<T>
 where
   T: Copy
     + core::ops::Sub<Output = T>
@@ -111,14 +111,14 @@ where
 }
 
 #[derive(Debug, Clone)]
-pub enum Pattern<T: Copy> {
-  Uniform(UniformPattern<T>),
-  Striped(StripePattern<T>),
-  Gradient(GradientPattern<T>),
-  Ring(RingPattern<T>),
-  Checkered(CheckersPattern<T>),
+pub enum Mapping<T: Copy> {
+  Uniform(UniformMapping<T>),
+  Striped(StripeMapping<T>),
+  Gradient(GradientMapping<T>),
+  Ring(RingMapping<T>),
+  Checkered(CheckersMapping<T>),
 }
-impl<T> Pattern<T>
+impl<T> Mapping<T>
 where
   T: Copy
     + core::ops::Sub<Output = T>
@@ -126,39 +126,39 @@ where
     + core::ops::Mul<f32, Output = T>,
 {
   pub fn uniform(value: T) -> Self {
-    Uniform(UniformPattern { value })
+    Uniform(UniformMapping { value })
   }
 
   pub fn stripes(values: &[T], transform: Transform) -> Self {
-    Striped(StripePattern {
+    Striped(StripeMapping {
       values: values.to_vec(),
       transform_inverse: transform.inverse(),
     })
   }
 
   pub fn rings(values: &[T], transform: Transform) -> Self {
-    Ring(RingPattern {
+    Ring(RingMapping {
       values: values.to_vec(),
       transform_inverse: transform.inverse(),
     })
   }
 
   pub fn checkers(values: &[T], transform: Transform) -> Self {
-    Checkered(CheckersPattern {
+    Checkered(CheckersMapping {
       values: values.to_vec(),
       transform_inverse: transform.inverse(),
     })
   }
 
   pub fn gradient(values: (T, T), transform: Transform) -> Self {
-    Gradient(GradientPattern {
+    Gradient(GradientMapping {
       values,
       transform_inverse: transform.inverse(),
     })
   }
 
   pub fn map_at_object(&self, object: &Shape, world_point: &Point) -> T {
-    use self::Pattern::*;
+    use self::Mapping::*;
     match self {
       Uniform(u) => u.value,
       Striped(s) => s.map_at_object(object, &world_point),
@@ -169,14 +169,14 @@ where
   }
 }
 
-impl<T> From<T> for Pattern<T> where
+impl<T> From<T> for Mapping<T> where
   T: Copy
     + core::ops::Sub<Output = T>
     + core::ops::Add<Output = T>
     + core::ops::Mul<f32, Output = T>
 {
-  fn from(value: T) -> Pattern<T> {
-    Pattern::uniform(value)
+  fn from(value: T) -> Mapping<T> {
+    Mapping::uniform(value)
   }
 }
 
@@ -186,7 +186,7 @@ mod tests {
 
   #[test]
   fn stripe_pattern_is_constant_in_z() {
-    let pattern = Pattern::stripes(&vec![WHITE, BLACK], Transform::identity());
+    let pattern = Mapping::stripes(&vec![WHITE, BLACK], Transform::identity());
     let sphere = Sphere::default();
     assert_eq!(pattern.map_at_object(&sphere, &point(0., 0., 0.)), WHITE);
     assert_eq!(pattern.map_at_object(&sphere, &point(0., 0., 2.)), WHITE);
@@ -195,7 +195,7 @@ mod tests {
 
   #[test]
   fn stripe_pattern_alternates_in_z() {
-    let pattern = Pattern::stripes(&vec![WHITE, BLACK], Transform::identity());
+    let pattern = Mapping::stripes(&vec![WHITE, BLACK], Transform::identity());
     let sphere = Sphere::default();
     assert_eq!(pattern.map_at_object(&sphere, &point(0., 0., 0.)), WHITE);
     assert_eq!(pattern.map_at_object(&sphere, &point(0.9, 0., 0.)), WHITE);

@@ -82,9 +82,9 @@ impl World {
 impl Default for World {
   fn default() -> World {
     let m1 = Material {
-      color: Pattern::uniform(color(0.8, 1.0, 0.6)),
-      diffuse: Pattern::uniform(0.7),
-      specular: Pattern::uniform(0.2),
+      color: Mapping::from(color(0.8, 1.0, 0.6)),
+      diffuse: Mapping::from(0.7),
+      specular: Mapping::from(0.2),
       ..Material::default()
     };
 
@@ -147,9 +147,9 @@ mod tests {
   fn color_at_behind() {
     let mut world = World::default();
     let mut material = Material::default();
-    material.ambient = Pattern::from(1.);
-    material.diffuse = Pattern::from(0.);
-    material.specular = Pattern::from(0.);
+    material.ambient = Mapping::from(1.);
+    material.diffuse = Mapping::from(0.);
+    material.specular = Mapping::from(0.);
     world.shapes[1].set_material(material);
     let ray = Ray::new(point(0., 0., -0.75), vector(0., 0., 1.));
     let c = world.color_at(&ray, 0);

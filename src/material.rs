@@ -4,12 +4,12 @@ use nalgebra as na;
 
 #[derive(Debug, Clone)]
 pub struct Material {
-  pub color: Pattern<ColorRgbFloat>,
-  pub ambient: Pattern<f32>,
-  pub diffuse: Pattern<f32>,
-  pub specular: Pattern<f32>,
-  pub shininess: Pattern<f32>,
-  pub reflective: Option<Pattern<f32>>,
+  pub color: Mapping<ColorRgbFloat>,
+  pub ambient: Mapping<f32>,
+  pub diffuse: Mapping<f32>,
+  pub specular: Mapping<f32>,
+  pub shininess: Mapping<f32>,
+  pub reflective: Option<Mapping<f32>>,
 }
 
 impl Material {
@@ -49,11 +49,11 @@ impl Material {
 impl Default for Material {
   fn default() -> Self {
     Material {
-      color: Pattern::uniform(WHITE),
-      ambient: Pattern::uniform(0.1),
-      diffuse: Pattern::uniform(0.9),
-      specular: Pattern::uniform(0.9),
-      shininess: Pattern::uniform(200.),
+      color: Mapping::from(WHITE),
+      ambient: Mapping::from(0.1),
+      diffuse: Mapping::from(0.9),
+      specular: Mapping::from(0.9),
+      shininess: Mapping::from(200.),
       reflective: None,
     }
   }

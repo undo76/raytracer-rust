@@ -14,18 +14,18 @@ fn main() {
   let mut floor_material = Material::default();
   let mut wall_material = Material::default();
 
-  floor_material.color = Pattern::checkers(
+  floor_material.color = Mapping::checkers(
     &vec![BLACK, WHITE * 0.8],
     na::convert(rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5)),
   );
-  floor_material.specular = Pattern::uniform(0.7);
-  floor_material.reflective = Some(Pattern::uniform(0.2));
+  floor_material.specular = Mapping::from(0.7);
+  floor_material.reflective = Some(Mapping::from(0.2));
 
-  wall_material.color = Pattern::rings(
+  wall_material.color = Mapping::rings(
     &vec![RED * 0.7, BLUE * 0.5, WHITE * 0.5],
     na::convert(rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5)),
   );
-  wall_material.reflective = Some(Pattern::rings(
+  wall_material.reflective = Some(Mapping::rings(
     &vec![0.1, 0.1, 0.4],
     na::convert(rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5)),
   ));
@@ -49,12 +49,12 @@ fn main() {
   ));
 
   let mut middle_material = Material::default();
-  middle_material.color = Pattern::stripes(
+  middle_material.color = Mapping::stripes(
     &vec![PURPLE * 0.7, PURPLE * 0.5],
     na::convert(rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2)),
   );
-  middle_material.specular = Pattern::from(1.);
-  middle_material.reflective = Some(Pattern::stripes(
+  middle_material.specular = Mapping::from(1.);
+  middle_material.reflective = Some(Mapping::stripes(
     &vec![0.03, 0.1],
     na::convert(rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2)),
   ));
@@ -64,20 +64,20 @@ fn main() {
   ));
 
   let mut right_material = Material::default();
-  right_material.color = Pattern::gradient(
+  right_material.color = Mapping::gradient(
     (GREEN, BLUE),
     na::convert(translation(1., 0., 0.) * scaling(2., 2., 2.)),
   );
-  right_material.specular = Pattern::from(0.);
-  right_material.diffuse = Pattern::from(0.5);
+  right_material.specular = Mapping::from(0.);
+  right_material.diffuse = Mapping::from(0.5);
 
-  right_material.reflective = Some(Pattern::stripes(
+  right_material.reflective = Some(Mapping::stripes(
     &vec![0., 0.4],
     na::convert(scaling(0.2, 0.2, 0.2)),
   ));
-  right_material.diffuse = Pattern::stripes(&vec![0.4, 0.2], na::convert(scaling(0.2, 0.2, 0.2)));
-  // wall_material.diffuse = Pattern::stripes(&vec![0.7, 0.1], Transform::identity());
-  // wall_material.ambient = Pattern::from(0.);
+  right_material.diffuse = Mapping::stripes(&vec![0.4, 0.2], na::convert(scaling(0.2, 0.2, 0.2)));
+  // wall_material.diffuse = Mapping::stripes(&vec![0.7, 0.1], Transform::identity());
+  // wall_material.ambient = Mapping::from(0.);
 
   let right = Box::new(Sphere::new(
     na::convert(translation(1.2, 0.5, -1.0) * scaling(0.5, 0.5, 0.5)),
@@ -85,9 +85,9 @@ fn main() {
   ));
 
   let mut left_material = Material::default();
-  left_material.color = Pattern::from(color(1., 0.2, 0.2));
-  left_material.specular = Pattern::from(1.);
-  left_material.reflective = Some(Pattern::from(0.05));
+  left_material.color = Mapping::from(color(1., 0.2, 0.2));
+  left_material.specular = Mapping::from(1.);
+  left_material.reflective = Some(Mapping::from(0.05));
 
   let left = Box::new(Sphere::new(
     na::convert(translation(-1.5, 0.333, -0.75) * scaling(0.333, 0.333, 0.333)),
