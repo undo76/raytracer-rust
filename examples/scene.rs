@@ -12,12 +12,19 @@ const F_PI_2: f32 = std::f32::consts::FRAC_PI_2;
 
 fn main() {
   let mut floor_material = Material::default();
-  // floor_material.pattern = Pattern::Uniform(color(1., 0.8, 0.8));
-  floor_material.pattern = Pattern::Striped(StripePattern {
-    values: vec![RED, WHITE],
+  let mut wall_material = Material::default();
+
+  floor_material.color = Pattern::Checkered(CheckersPattern {
+    values: vec![BLACK, WHITE],
     transform_inverse: na::convert((rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5)).inverse()),
   });
-  floor_material.specular = 0.;
+  floor_material.specular = 0.7;
+
+  wall_material.color = Pattern::Ring(RingPattern {
+    values: vec![RED, BLUE, WHITE],
+    transform_inverse: na::convert((rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5)).inverse()),
+  });
+  wall_material.specular = 0.;
 
   let floor = Box::new(Plane::new(Transform::identity(), floor_material.clone()));
 
@@ -26,7 +33,7 @@ fn main() {
     na::convert(translation(0., 0., 5.)
       * rotation_y(-F_PI_4)
       * rotation_x(-F_PI_2)),
-    floor_material.clone(),
+    wall_material.clone(),
   ));
 
   #[rustfmt::skip]
@@ -34,11 +41,11 @@ fn main() {
     na::convert(translation(0., 0., 5.)
       * rotation_y(F_PI_4)
       * rotation_x(F_PI_2)),
-    floor_material.clone(),
+    wall_material.clone(),
   ));
 
   let mut middle_material = Material::default();
-  middle_material.pattern = Pattern::Uniform(UniformPattern {
+  middle_material.color = Pattern::Uniform(UniformPattern {
     value: color(1., 0.2, 1.),
   });
   middle_material.specular = 1.;
@@ -48,8 +55,9 @@ fn main() {
   ));
 
   let mut right_material = Material::default();
-  right_material.pattern = Pattern::Uniform(UniformPattern {
-    value: color(0.5, 0.5, 1.),
+  right_material.color = Pattern::Gradient(GradientPattern {
+    values: (GREEN, BLUE),
+    transform_inverse: na::convert((scaling(0.5, 0.5, 0.5)).inverse()),
   });
   right_material.specular = 0.;
   let right = Box::new(Sphere::new(
@@ -58,7 +66,7 @@ fn main() {
   ));
 
   let mut left_material = Material::default();
-  left_material.pattern = Pattern::Uniform(UniformPattern {
+  left_material.color = Pattern::Uniform(UniformPattern {
     value: color(1., 0.2, 0.2),
   });
   left_material.specular = 1.;

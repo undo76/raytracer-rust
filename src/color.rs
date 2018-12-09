@@ -21,6 +21,8 @@ pub struct ColorRgbByte {
 pub const RED: ColorRgbFloat = color(1., 0., 0.);
 pub const GREEN: ColorRgbFloat = color(0., 1., 0.);
 pub const BLUE: ColorRgbFloat = color(0., 0., 1.);
+pub const YELLOW: ColorRgbFloat = color(1., 1., 0.);
+pub const PURPLE: ColorRgbFloat = color(1., 0., 1.);
 pub const BLACK: ColorRgbFloat = color(0., 0., 0.);
 pub const WHITE: ColorRgbFloat = color(1., 1., 1.);
 

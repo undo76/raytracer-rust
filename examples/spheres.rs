@@ -18,7 +18,7 @@ fn main() {
   let mut s = Sphere::default();
   s.set_transform(na::convert(scaling(1., 0.5, 1.)));
   let mut m = Material::default();
-  m.pattern = Pattern::Uniform(UniformPattern { value: RED });
+  m.color = Pattern::Uniform(UniformPattern { value: RED });
   s.set_material(m);
 
   let mut s2 = Sphere::default();
@@ -26,7 +26,7 @@ fn main() {
     translation(-0.5, 0., 0.) * scaling(0.8, 0.8, 0.8),
   ));
   let mut m = Material::default();
-  m.pattern = Pattern::Uniform(UniformPattern { value: BLUE });
+  m.color = Pattern::Uniform(UniformPattern { value: BLUE });
   s2.set_material(m);
 
   for y in 0..pixels {

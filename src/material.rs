@@ -4,7 +4,7 @@ use nalgebra as na;
 
 #[derive(Debug, Clone)]
 pub struct Material {
-  pub pattern: Pattern<ColorRgbFloat>,
+  pub color: Pattern<ColorRgbFloat>,
   pub ambient: f32,
   pub diffuse: f32,
   pub specular: f32,
@@ -21,7 +21,7 @@ impl Material {
     normalv: &na::Unit<Vector>,
     in_shadow: bool,
   ) -> ColorRgbFloat {
-    let color = self.pattern.map_at_object(object, position);
+    let color = self.color.map_at_object(object, position);
     let effective_color = color * light.intensity;
     let lightv = normalize(&(light.position - position));
     let light_dot_normal = normalv.dot(&lightv);
@@ -43,7 +43,7 @@ impl Material {
 impl Default for Material {
   fn default() -> Self {
     Material {
-      pattern: Pattern::Uniform(UniformPattern { value: WHITE }),
+      color: Pattern::Uniform(UniformPattern { value: WHITE }),
       ambient: 0.1,
       diffuse: 0.9,
       specular: 0.9,

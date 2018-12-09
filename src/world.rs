@@ -65,7 +65,7 @@ impl World {
 impl Default for World {
   fn default() -> World {
     let m1 = Material {
-      pattern: Pattern::Uniform(UniformPattern {
+      color: Pattern::Uniform(UniformPattern {
         value: color(0.8, 1.0, 0.6),
       }),
       diffuse: 0.7,
@@ -142,7 +142,7 @@ mod tests {
       c,
       world.shapes[1]
         .get_material()
-        .pattern
+        .color
         .map_at_object(&*world.shapes[1], &point(0., 0., 0.))
     );
   }
