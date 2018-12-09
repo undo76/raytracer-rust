@@ -34,8 +34,8 @@ impl World {
     hit.is_some()
   }
 
-  fn shade_hit(&self, hit: &Hit) -> ColorRgbFloat {
-    self
+  fn shade_hit(&self, hit: &Hit, remaining: u8) -> ColorRgbFloat {
+    let surface: ColorRgbFloat = self
       .lights
       .iter()
       .map(|light| {
@@ -49,15 +49,31 @@ impl World {
           in_shadow,
         )
       })
-      .sum()
+      .sum();
+    let reflected = self.reflected_color(hit, remaining);
+    surface + reflected
   }
 
-  pub fn color_at(&self, ray: &Ray) -> ColorRgbFloat {
+  pub fn color_at(&self, ray: &Ray, remaining: u8) -> ColorRgbFloat {
     let intersections = self.intersects(ray);
-    let hit = intersections.iter().find(|x| x.t >= 0.);
+    let hit = intersections.iter().find(|x| x.t >= 1.0e-3);
     match hit {
-      Some(h) => self.shade_hit(&h.prepare_hit(ray)),
+      Some(h) => self.shade_hit(&h.prepare_hit(ray), remaining),
       None => BLACK,
+    }
+  }
+
+  fn reflected_color(&self, hit: &Hit, remaining: u8) -> ColorRgbFloat {
+    if remaining == 0 {
+      return BLACK;
+    } else {
+      match hit.intersection.object.get_material().reflective {
+        Some(reflective) => {
+          let reflect_ray = Ray::new(hit.point, hit.reflectv.unwrap());
+          self.color_at(&reflect_ray, remaining - 1) * reflective
+        }
+        None => BLACK,
+      }
     }
   }
 }
@@ -105,7 +121,7 @@ mod tests {
     let ray = Ray::new(point(0., 0., -5.), vector(0., 0., 1.));
     let xs = world.intersects(&ray);
     let hit = xs[0].prepare_hit(&ray);
-    let c = world.shade_hit(&hit);
+    let c = world.shade_hit(&hit, 0);
     assert_relative_eq!(c, color(0.38066125, 0.4758265, 0.28549594));
   }
 
@@ -116,7 +132,7 @@ mod tests {
     let ray = Ray::new(point(0., 0., 0.), vector(0., 0., 1.));
     let intersection = Intersection::new(0.5, &(*world.shapes[1]));
     let hit = intersection.prepare_hit(&ray);
-    let c = world.shade_hit(&hit);
+    let c = world.shade_hit(&hit, 0);
     assert_relative_eq!(c, color(0.9049845, 0.9049845, 0.9049845));
   }
 
@@ -124,7 +140,7 @@ mod tests {
   fn color_at_intersection() {
     let world = World::default();
     let ray = Ray::new(point(0., 0., -5.), vector(0., 0., 1.));
-    let c = world.color_at(&ray);
+    let c = world.color_at(&ray, 0);
     assert_relative_eq!(c, color(0.38066125, 0.4758265, 0.28549594));
   }
 
@@ -137,7 +153,7 @@ mod tests {
     material.specular = 0.;
     world.shapes[1].set_material(material);
     let ray = Ray::new(point(0., 0., -0.75), vector(0., 0., 1.));
-    let c = world.color_at(&ray);
+    let c = world.color_at(&ray, 0);
     assert_relative_eq!(
       c,
       world.shapes[1]

@@ -10,6 +10,7 @@ pub struct Camera {
   half_width: f32,
   half_height: f32,
   pixel_size: f32,
+  max_reflects: u8,
 }
 
 impl Camera {
@@ -36,6 +37,7 @@ impl Camera {
       half_width,
       half_height,
       pixel_size,
+      max_reflects: 5,
     }
   }
 
@@ -62,7 +64,7 @@ impl Camera {
     for y in 0..self.vsize {
       for x in 0..self.hsize {
         let ray = self.ray_for_pixel(x, y);
-        let color = world.color_at(&ray);
+        let color = world.color_at(&ray, self.max_reflects);
         canvas.set(x, y, color.into());
       }
     }

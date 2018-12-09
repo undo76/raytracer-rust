@@ -19,6 +19,7 @@ fn main() {
     transform_inverse: na::convert((rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5)).inverse()),
   });
   floor_material.specular = 0.7;
+  floor_material.reflective = Some(0.1);
 
   wall_material.color = Pattern::Ring(RingPattern {
     values: vec![RED, BLUE, WHITE],
@@ -49,6 +50,7 @@ fn main() {
     value: color(1., 0.2, 1.),
   });
   middle_material.specular = 1.;
+  middle_material.reflective = Some(0.1);
   let middle = Box::new(Sphere::new(
     na::convert(translation(-0.5, 1., 0.5)),
     middle_material,
@@ -57,9 +59,12 @@ fn main() {
   let mut right_material = Material::default();
   right_material.color = Pattern::Gradient(GradientPattern {
     values: (GREEN, BLUE),
-    transform_inverse: na::convert((scaling(0.5, 0.5, 0.5)).inverse()),
+    transform_inverse: na::convert((translation(1., 0., 0.) * scaling(2., 2., 2.)).inverse()),
   });
   right_material.specular = 0.;
+  right_material.reflective = Some(0.5);
+  right_material.diffuse = 0.5;
+
   let right = Box::new(Sphere::new(
     na::convert(translation(1.2, 0.5, -1.0) * scaling(0.5, 0.5, 0.5)),
     right_material,
@@ -70,6 +75,8 @@ fn main() {
     value: color(1., 0.2, 0.2),
   });
   left_material.specular = 1.;
+  left_material.reflective = Some(0.05);
+
   let left = Box::new(Sphere::new(
     na::convert(translation(-1.5, 0.333, -0.75) * scaling(0.333, 0.333, 0.333)),
     left_material,

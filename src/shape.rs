@@ -22,6 +22,7 @@ pub struct Hit<'a> {
   pub eyev: UnitVector,
   pub normalv: UnitVector,
   pub inside: bool,
+  pub reflectv: UnitVector,
 }
 
 #[derive(Debug)]
@@ -40,12 +41,15 @@ impl<'a> Intersection<'a> {
     let eyev = UnitVector::new_normalize(-ray.direction);
     let normalv = self.object.normal_at(&point);
     let inside = dot(&normalv, &eyev) < 0.;
+    let normalv = if inside { -normalv } else { normalv };
+    let reflectv = UnitVector::new_unchecked(reflect(&ray.direction, &normalv));
     Hit {
       intersection: &self,
       point,
       eyev,
       inside,
-      normalv: if inside { -normalv } else { normalv },
+      normalv,
+      reflectv,
     }
   }
 }
@@ -78,7 +82,7 @@ pub trait Shape: core::fmt::Debug {
     world_normal[3] = 0.;
     UnitVector::new_normalize(Vector::from_homogeneous(world_normal).unwrap())
   }
-  
+
   fn get_material(&self) -> &Material {
     &self.get_base().material
   }
@@ -99,4 +103,3 @@ pub trait Shape: core::fmt::Debug {
     &self.get_base().transform_inverse
   }
 }
-
