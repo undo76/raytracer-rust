@@ -15,16 +15,20 @@ fn main() {
   let mut wall_material = Material::default();
 
   floor_material.color = Pattern::checkers(
-    &vec![BLACK, WHITE * 0.5],
+    &vec![BLACK, WHITE * 0.8],
     na::convert(rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5)),
   );
   floor_material.specular = Pattern::uniform(0.7);
-  floor_material.reflective = Some(Pattern::uniform(0.1));
+  floor_material.reflective = Some(Pattern::uniform(0.2));
 
   wall_material.color = Pattern::rings(
-    &vec![RED * 0.7, BLUE * 0.5, WHITE * 0.9],
+    &vec![RED * 0.7, BLUE * 0.5, WHITE * 0.5],
     na::convert(rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5)),
   );
+  wall_material.reflective = Some(Pattern::rings(
+    &vec![0.1, 0.1, 0.4],
+    na::convert(rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5)),
+  ));
 
   let floor = Box::new(Plane::new(Transform::identity(), floor_material.clone()));
 
@@ -45,10 +49,13 @@ fn main() {
   ));
 
   let mut middle_material = Material::default();
-  middle_material.color = Pattern::from(color(1., 0.2, 1.));
+  middle_material.color = Pattern::stripes(
+    &vec![PURPLE * 0.7, PURPLE * 0.5],
+    na::convert(rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2)),
+  );
   middle_material.specular = Pattern::from(1.);
   middle_material.reflective = Some(Pattern::stripes(
-    &vec![0.01, 0.1],
+    &vec![0.03, 0.1],
     na::convert(rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2)),
   ));
   let middle = Box::new(Sphere::new(
