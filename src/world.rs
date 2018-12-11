@@ -1,6 +1,7 @@
 use crate::*;
 use nalgebra as na;
 
+#[derive(Debug)]
 pub struct World {
   pub shapes: Vec<Box<dyn Shape>>,
   pub lights: Vec<PointLight>,

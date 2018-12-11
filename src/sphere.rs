@@ -45,9 +45,7 @@ impl Shape for Sphere {
       let mut t1 = (-b - sqrt_disc) / (2. * a);
       let mut t2 = (-b + sqrt_disc) / (2. * a);
       if t1 > t2 {
-        let aux = t2;
-        t2 = t1;
-        t1 = aux;
+        std::mem::swap(&mut t1, &mut t2);
       }
       return Some(vec![
         Intersection::new(t1, self),

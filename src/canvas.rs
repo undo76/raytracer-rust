@@ -1,5 +1,6 @@
 use crate::*;
 
+#[derive(Debug)]
 pub struct Canvas {
   pub width: usize,
   pub height: usize,
@@ -32,6 +33,12 @@ impl Canvas {
     self.frame_buffer[start] = c.r;
     self.frame_buffer[start + 1] = c.g;
     self.frame_buffer[start + 2] = c.b;
+  }
+
+   pub fn set_idx(&mut self, idx: usize, c: ColorRgbByte) {
+    self.frame_buffer[idx] = c.r;
+    self.frame_buffer[idx + 1] = c.g;
+    self.frame_buffer[idx + 2] = c.b;
   }
 
   pub fn get(&self, x: usize, y: usize) -> ColorRgbByte {

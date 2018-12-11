@@ -1,5 +1,6 @@
 use crate::*;
 
+#[derive(Debug)]
 pub struct PointLight {
   pub position: Point,
   pub intensity: ColorRgbFloat,

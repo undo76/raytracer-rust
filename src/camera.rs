@@ -1,7 +1,11 @@
 use crate::*;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::thread;
+
 use nalgebra as na;
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Camera {
   hsize: usize,
   vsize: usize,
@@ -41,7 +45,7 @@ impl Camera {
     }
   }
 
-  pub fn set_transform(& mut self, transform: Transform) {
+  pub fn set_transform(&mut self, transform: Transform) {
     self.transform = transform;
   }
 
@@ -59,16 +63,37 @@ impl Camera {
     Ray::new(origin, direction)
   }
 
-  pub fn render(&self, world: &World) -> Canvas {
-    let mut canvas = Canvas::new(self.hsize, self.vsize);
-    for y in 0..self.vsize {
-      for x in 0..self.hsize {
-        let ray = self.ray_for_pixel(x, y);
-        let color = world.color_at(&ray, self.max_reflects);
-        canvas.set(x, y, color.into());
-      }
+  pub fn render(self, world: World) -> Canvas {
+    let canvas = Canvas::new(self.hsize, self.vsize);
+    let canvas = Arc::new(Mutex::new(canvas));
+    let world = Arc::new(world);
+    let camera = Arc::new(self);
+
+    let mut handles = vec![];
+
+    let n_threads = 4;
+    for i in 0..n_threads {
+      let shared_canvas = Arc::clone(&canvas);
+      let world = Arc::clone(&world);
+      let camera = Arc::clone(&camera);
+      let handle = thread::spawn(move || {
+        for y in 0..camera.vsize {
+          for x in (i..camera.hsize - n_threads + i + 1).step_by(n_threads) {
+            let ray = camera.ray_for_pixel(x, y);
+            let color = world.color_at(&ray, camera.max_reflects).into();
+            let mut shared_canvas = shared_canvas.lock().unwrap();
+            shared_canvas.set(x, y, color);
+          }
+        }
+      });
+      handles.push(handle);
     }
-    return canvas;
+
+    for handle in handles {
+      handle.join().unwrap();
+    }
+
+    return Arc::try_unwrap(canvas).unwrap().into_inner().unwrap();
   }
 }
 
@@ -174,7 +199,7 @@ mod tests {
     let to = point(0., 0., 0.);
     let up = vector(0., 1., 0.);
     camera.transform = view_transform(from, to, up);
-    let canvas = camera.render(&world);
-    assert_eq!(canvas.get(5, 5), color(0.38066, 0.47583, 0.2855).into())
+    let canvas = camera.render(world);
+    assert_eq!(canvas.get(5, 5), color(0.38066, 0.47583, 0.2855).into());
   }
 }

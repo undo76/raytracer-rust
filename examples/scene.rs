@@ -110,7 +110,7 @@ fn main() {
     vector(0., 1., 0.),
   ));
 
-  let canvas = camera.render(&world);
+  let canvas = camera.render(world);
 
   let mut file = File::create("scene.ppm").expect("Couldn't create file");
   file
