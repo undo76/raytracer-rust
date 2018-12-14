@@ -24,11 +24,12 @@ impl Material {
     normalv: &na::Unit<Vector>,
     in_shadow: bool,
   ) -> ColorRgbFloat {
-    let color = self.color.map_at_object(object, position);
-    let ambient = self.ambient.map_at_object(object, position);
-    let diffuse = self.diffuse.map_at_object(object, position);
-    let specular = self.specular.map_at_object(object, position);
-    let shininess = self.shininess.map_at_object(object, position);
+    let object_point = object.get_transform_inverse() * position;
+    let color = self.color.map_at_object(&object_point);
+    let ambient = self.ambient.map_at_object(&object_point);
+    let diffuse = self.diffuse.map_at_object(&object_point);
+    let specular = self.specular.map_at_object(&object_point);
+    let shininess = self.shininess.map_at_object(&object_point);
 
     let effective_color = color * light.intensity;
     let lightv = normalize(&(light.position - position));

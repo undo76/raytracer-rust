@@ -36,8 +36,7 @@ where
 {
   fn get_transform_inverse(&self) -> &Transform;
   fn map_at(&self, pattern_point: &Point) -> T;
-  fn map_at_object(&self, object: &Shape, world_point: &Point) -> T {
-    let object_point = object.get_transform_inverse() * world_point;
+  fn map_at_object(&self, object_point: &Point) -> T {    
     let pattern_point = self.get_transform_inverse() * object_point;
     self.map_at(&pattern_point)
   }
@@ -157,14 +156,14 @@ where
     })
   }
 
-  pub fn map_at_object(&self, object: &Shape, world_point: &Point) -> T {
+  pub fn map_at_object(&self, object_point: &Point) -> T {
     use self::Mapping::*;
     match self {
       Uniform(u) => u.value,
-      Striped(s) => s.map_at_object(object, &world_point),
-      Gradient(g) => g.map_at_object(object, &world_point),
-      Ring(r) => r.map_at_object(object, &world_point),
-      Checkered(c) => c.map_at_object(object, &world_point),
+      Striped(s) => s.map_at_object(&object_point),
+      Gradient(g) => g.map_at_object(&object_point),
+      Ring(r) => r.map_at_object(&object_point),
+      Checkered(c) => c.map_at_object(&object_point),
     }
   }
 }
@@ -188,20 +187,20 @@ mod tests {
   fn stripe_pattern_is_constant_in_z() {
     let pattern = Mapping::stripes(&vec![WHITE, BLACK], Transform::identity());
     let sphere = Sphere::default();
-    assert_eq!(pattern.map_at_object(&sphere, &point(0., 0., 0.)), WHITE);
-    assert_eq!(pattern.map_at_object(&sphere, &point(0., 0., 2.)), WHITE);
-    assert_eq!(pattern.map_at_object(&sphere, &point(0., 0., 3.)), WHITE);
+    assert_eq!(pattern.map_at_object(&point(0., 0., 0.)), WHITE);
+    assert_eq!(pattern.map_at_object(&point(0., 0., 2.)), WHITE);
+    assert_eq!(pattern.map_at_object(&point(0., 0., 3.)), WHITE);
   }
 
   #[test]
   fn stripe_pattern_alternates_in_z() {
     let pattern = Mapping::stripes(&vec![WHITE, BLACK], Transform::identity());
     let sphere = Sphere::default();
-    assert_eq!(pattern.map_at_object(&sphere, &point(0., 0., 0.)), WHITE);
-    assert_eq!(pattern.map_at_object(&sphere, &point(0.9, 0., 0.)), WHITE);
-    assert_eq!(pattern.map_at_object(&sphere, &point(1., 0., 0.)), BLACK);
-    assert_eq!(pattern.map_at_object(&sphere, &point(-0.1, 0., 0.)), BLACK);
-    assert_eq!(pattern.map_at_object(&sphere, &point(-1., 0., 0.)), BLACK);
-    assert_eq!(pattern.map_at_object(&sphere, &point(-1.1, 0., 0.)), WHITE);
+    assert_eq!(pattern.map_at_object(&point(0., 0., 0.)), WHITE);
+    assert_eq!(pattern.map_at_object(&point(0.9, 0., 0.)), WHITE);
+    assert_eq!(pattern.map_at_object(&point(1., 0., 0.)), BLACK);
+    assert_eq!(pattern.map_at_object(&point(-0.1, 0., 0.)), BLACK);
+    assert_eq!(pattern.map_at_object(&point(-1., 0., 0.)), BLACK);
+    assert_eq!(pattern.map_at_object(&point(-1.1, 0., 0.)), WHITE);
   }
 }

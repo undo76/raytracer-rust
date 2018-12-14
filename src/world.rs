@@ -72,7 +72,8 @@ impl World {
       match &object.get_material().reflective {
         Some(reflective) => {
           let reflect_ray = Ray::new(hit.point, hit.reflectv.unwrap());
-          self.color_at(&reflect_ray, remaining - 1) * reflective.map_at_object(object, &hit.point)
+          let object_point = object.get_transform_inverse() * hit.point;
+          self.color_at(&reflect_ray, remaining - 1) * reflective.map_at_object(&object_point)
         }
         None => BLACK,
       }
@@ -155,7 +156,7 @@ mod tests {
       world.shapes[1]
         .get_material()
         .color
-        .map_at_object(&*world.shapes[1], &point(0., 0., 0.))
+        .map_at_object(&point(0., 0., 0.))
     );
   }
 }
