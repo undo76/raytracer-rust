@@ -32,7 +32,7 @@ impl Shape for Sphere {
     local_point - point(0., 0., 0.)
   }
 
-  fn local_intersects(&self, ray: &Ray) -> Option<Intersections> {
+  fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {
     let sphere_to_ray = ray.origin - point(0., 0., 0.);
     let a = dot(&ray.direction, &ray.direction);
     let b = 2. * dot(&ray.direction, &sphere_to_ray);
@@ -47,10 +47,13 @@ impl Shape for Sphere {
       if t1 > t2 {
         std::mem::swap(&mut t1, &mut t2);
       }
-      return Some(vec![
-        Intersection::new(t1, self),
-        Intersection::new(t2, self),
-      ]);
+      if t1 > 1.0e-4 {
+        Some(Intersection::new(t1, self))
+      } else if t2 > 1.0e-4 {
+        Some(Intersection::new(t2, self))
+      } else {
+        None
+      }
     }
   }
 }
@@ -64,8 +67,7 @@ mod tests {
   fn ray_intersects_sphere_default() {
     let r = Ray::new(point(0., 0., -5.), vector(0., 0., 1.));
     let s = Sphere::default();
-    let xs = s.intersects(&r).unwrap();
-    assert_eq!(xs.len(), 2);
+    assert!(s.intersects(&r).is_some());
   }
 
   #[test]
@@ -73,9 +75,7 @@ mod tests {
     let r = Ray::new(point(0., 0., -5.), vector(0., 0., 1.));
     let s = Sphere::default();
     let xs = s.intersects(&r).unwrap();
-    assert_eq!(xs.len(), 2);
-    assert_relative_eq!(xs[0].t, 4.);
-    assert_relative_eq!(xs[1].t, 6.);
+    assert_relative_eq!(xs.t, 4.);
   }
 
   #[test]
@@ -83,9 +83,7 @@ mod tests {
     let r = Ray::new(point(0., 1., -5.), vector(0., 0., 1.));
     let s = Sphere::default();
     let xs = s.intersects(&r).unwrap();
-    assert_eq!(xs.len(), 2);
-    assert_relative_eq!(xs[0].t, 5.);
-    assert_relative_eq!(xs[1].t, 5.);
+    assert_relative_eq!(xs.t, 5.);
   }
 
   #[test]
@@ -101,9 +99,7 @@ mod tests {
     let r = Ray::new(point(0., 0., 0.), vector(0., 0., 1.));
     let s = Sphere::default();
     let xs = s.intersects(&r).unwrap();
-    assert_eq!(xs.len(), 2);
-    assert_relative_eq!(xs[0].t, -1.);
-    assert_relative_eq!(xs[1].t, 1.);
+    assert_relative_eq!(xs.t, 1.);
   }
 
   #[test]
@@ -151,9 +147,7 @@ mod tests {
     let mut s = Sphere::default();
     s.set_transform(na::convert(scaling(2., 2., 2.)));
     let xs = s.intersects(&r).unwrap();
-    assert_eq!(xs.len(), 2);
-    assert_relative_eq!(xs[0].t, 3.);
-    assert_relative_eq!(xs[1].t, 7.);
+    assert_relative_eq!(xs.t, 3.);
   }
 
   #[test]

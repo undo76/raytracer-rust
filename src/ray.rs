@@ -17,6 +17,7 @@ impl Ray {
     self.origin + self.direction * t
   }
 
+  #[inline(always)]
   pub fn transform<T>(&self, trans: &T) -> Ray
   where
     T: alga::linear::ProjectiveTransformation<Point>,

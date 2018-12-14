@@ -4,6 +4,7 @@ use std::sync::Mutex;
 use std::thread;
 
 use nalgebra as na;
+use num_cpus;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Camera {
@@ -41,7 +42,7 @@ impl Camera {
       half_width,
       half_height,
       pixel_size,
-      max_reflects: 5,
+      max_reflects: 4,
     }
   }
 
@@ -70,8 +71,7 @@ impl Camera {
     let camera = Arc::new(self);
 
     let mut handles = vec![];
-
-    let n_threads = 4;
+    let n_threads = num_cpus::get();
     for i in 0..n_threads {
       let shared_canvas = Arc::clone(&canvas);
       let world = Arc::clone(&world);

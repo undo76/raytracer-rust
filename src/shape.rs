@@ -54,9 +54,10 @@ impl<'a> Intersection<'a> {
   }
 }
 
+// TODO: Remove
 pub type Intersections<'a> = Vec<Intersection<'a>>;
 
-/// Returns the closest, not negative intersection
+// Returns the closest, not negative intersection
 pub fn hit<'a>(xs: &'a Intersections) -> Option<&'a Intersection<'a>> {
   xs.iter()
     .filter(|&x| x.t > 0.)
@@ -66,10 +67,10 @@ pub fn hit<'a>(xs: &'a Intersections) -> Option<&'a Intersection<'a>> {
 pub trait Shape: core::fmt::Debug + Sync + Send {
   fn get_base(&self) -> &BaseShape;
   fn get_base_mut(&mut self) -> &mut BaseShape;
-  fn local_intersects(&self, local_ray: &Ray) -> Option<Intersections>;
+  fn local_intersects(&self, local_ray: &Ray) -> Option<Intersection>;
   fn local_normal_at(&self, p: &Point) -> Vector;
 
-  fn intersects(&self, ray: &Ray) -> Option<Intersections> {
+  fn intersects(&self, ray: &Ray) -> Option<Intersection> {
     let local_ray = ray.transform(self.get_transform_inverse());
     self.local_intersects(&local_ray)
   }

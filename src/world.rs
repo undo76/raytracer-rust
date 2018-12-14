@@ -12,15 +12,20 @@ impl World {
     World { shapes, lights }
   }
 
-  fn intersects(&self, ray: &Ray) -> Intersections {
-    let mut v = (*self)
+  fn ray_in_shadow(&self, ray: &Ray, light_distance: f32) -> Option<Intersection> {
+    self
       .shapes
       .iter()
       .filter_map(|s| s.intersects(ray))
-      .flatten()
-      .collect::<Vec<_>>();
-    v.sort_unstable_by(|x, y| x.t.partial_cmp(&y.t).unwrap());
-    v
+      .find(|x| x.t < light_distance)
+  }
+
+  fn intersects(&self, ray: &Ray) -> Option<Intersection> {
+    self
+      .shapes
+      .iter()
+      .filter_map(|s| s.intersects(ray))
+      .min_by(|min, x| f32::partial_cmp(&min.t, &x.t).unwrap())
   }
 
   fn is_shadowed(&self, light: &PointLight, point: &Point) -> bool {
@@ -28,11 +33,7 @@ impl World {
     let distance = magnitude(&v);
     let direction = normalize(&v);
     let r = Ray::new(*point, direction);
-    let intersections = self.intersects(&r);
-    let hit = intersections
-      .iter()
-      .find(|x| x.t > 1.0e-2 && x.t < distance);
-    hit.is_some()
+    self.ray_in_shadow(&r, distance).is_some()
   }
 
   fn shade_hit(&self, hit: &Hit, remaining: u8) -> ColorRgbFloat {
@@ -56,8 +57,7 @@ impl World {
   }
 
   pub fn color_at(&self, ray: &Ray, remaining: u8) -> ColorRgbFloat {
-    let intersections = self.intersects(ray);
-    let hit = intersections.iter().find(|x| x.t >= 1.0e-3);
+    let hit = self.intersects(&ray);
     match hit {
       Some(h) => self.shade_hit(&h.prepare_hit(ray), remaining),
       None => BLACK,
@@ -107,20 +107,16 @@ mod tests {
   fn intersect_world_with_ray() {
     let world = World::default();
     let ray = Ray::new(point(0., 0., -5.), vector(0., 0., 1.));
-    let xs = world.intersects(&ray);
-    assert_eq!(xs.len(), 4);
-    assert_relative_eq!(xs[0].t, 4.);
-    assert_relative_eq!(xs[1].t, 4.5);
-    assert_relative_eq!(xs[2].t, 5.5);
-    assert_relative_eq!(xs[3].t, 6.);
+    let xs = world.intersects(&ray).unwrap();
+    assert_relative_eq!(xs.t, 4.);
   }
 
   #[test]
   fn shade_intersection() {
     let world = World::default();
     let ray = Ray::new(point(0., 0., -5.), vector(0., 0., 1.));
-    let xs = world.intersects(&ray);
-    let hit = xs[0].prepare_hit(&ray);
+    let xs = world.intersects(&ray).unwrap();
+    let hit = xs.prepare_hit(&ray);
     let c = world.shade_hit(&hit, 0);
     assert_relative_eq!(c, color(0.38066125, 0.4758265, 0.28549594));
   }

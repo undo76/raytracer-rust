@@ -10,6 +10,8 @@ pub struct Material {
   pub specular: Mapping<f32>,
   pub shininess: Mapping<f32>,
   pub reflective: Option<Mapping<f32>>,
+  pub transparency: Option<Mapping<f32>>,
+  pub refractive_index: f32,
 }
 
 impl Material {
@@ -55,6 +57,8 @@ impl Default for Material {
       specular: Mapping::from(0.9),
       shininess: Mapping::from(200.),
       reflective: None,
+      transparency: None,
+      refractive_index: 1.0,
     }
   }
 }

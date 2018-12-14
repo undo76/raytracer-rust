@@ -38,8 +38,10 @@ fn main() {
       );
       let direction = normalize(&(pos - origin));
       let r = Ray::new(origin, direction);
-      let mut intersections = s.intersects(&r).unwrap_or_default();
-      intersections.extend(s2.intersects(&r).unwrap_or_default());
+      let intersections = vec![s.intersects(&r), s2.intersects(&r)]
+        .into_iter()
+        .filter_map(|x| x)
+        .collect();
 
       if let Some(&Intersection { t, object, .. }) = hit(&intersections) {
         let material = object.get_material();

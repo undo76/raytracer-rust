@@ -32,12 +32,16 @@ impl Shape for Plane {
     vector(0., 1., 0.)
   }
 
-  fn local_intersects(&self, ray: &Ray) -> Option<Intersections> {
+  fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {
     if f32::abs(ray.direction.y) < core::f32::EPSILON {
       None
     } else {
       let t = -ray.origin.y / ray.direction.y;
-      Some(vec![Intersection::new(t, self)])
+      if t > 1.0e-4{
+        Some(Intersection::new(t, self))
+      } else {
+        None
+      }
     }
   }
 }
@@ -67,8 +71,7 @@ mod tests {
     let p = Plane::default();
     let r = Ray::new(point(0., 1., 0.), vector(0., -1., 0.));
     let xs = p.local_intersects(&r).unwrap();
-    assert_eq!(xs.len(), 1);
-    assert_relative_eq!(xs[0].t, 1.);
+    assert_relative_eq!(xs.t, 1.);
   }
 
   #[test]
@@ -76,7 +79,6 @@ mod tests {
     let p = Plane::default();
     let r = Ray::new(point(0., -1., 0.), vector(0., 1., 0.));
     let xs = p.local_intersects(&r).unwrap();
-    assert_eq!(xs.len(), 1);
-    assert_relative_eq!(xs[0].t, 1.);
+    assert_relative_eq!(xs.t, 1.);
   }
 }
