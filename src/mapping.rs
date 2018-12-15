@@ -186,7 +186,6 @@ mod tests {
   #[test]
   fn stripe_pattern_is_constant_in_z() {
     let pattern = Mapping::stripes(&vec![WHITE, BLACK], Transform::identity());
-    let sphere = Sphere::default();
     assert_eq!(pattern.map_at_object(&point(0., 0., 0.)), WHITE);
     assert_eq!(pattern.map_at_object(&point(0., 0., 2.)), WHITE);
     assert_eq!(pattern.map_at_object(&point(0., 0., 3.)), WHITE);
@@ -195,7 +194,6 @@ mod tests {
   #[test]
   fn stripe_pattern_alternates_in_z() {
     let pattern = Mapping::stripes(&vec![WHITE, BLACK], Transform::identity());
-    let sphere = Sphere::default();
     assert_eq!(pattern.map_at_object(&point(0., 0., 0.)), WHITE);
     assert_eq!(pattern.map_at_object(&point(0.9, 0., 0.)), WHITE);
     assert_eq!(pattern.map_at_object(&point(1., 0., 0.)), BLACK);
