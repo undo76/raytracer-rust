@@ -42,7 +42,7 @@ fn main() {
 
   #[rustfmt::skip]
   let right_wall = Box::new(Plane::new(
-    na::convert(translation(0., 0., 5.)
+    na::convert(translation(0., 0., -25.)
       * rotation_y(F_PI_4)
       * rotation_x(F_PI_2)),
     wall_material.clone(),
@@ -86,8 +86,12 @@ fn main() {
 
   let mut left_material = Material::default();
   left_material.color = Mapping::from(color(1., 0.2, 0.2));
+  left_material.ambient = Mapping::from(0.0);
+  left_material.diffuse = Mapping::from(0.0);
   left_material.specular = Mapping::from(1.);
-  left_material.reflective = Some(Mapping::from(0.05));
+  left_material.reflective = Some(Mapping::from(0.1));
+  left_material.transparency = Some(Mapping::from(0.9));
+  left_material.refractive_index = 1.5;
 
   let left = Box::new(Sphere::new(
     na::convert(translation(-1.5, 0.333, -0.75) * scaling(0.333, 0.333, 0.333)),

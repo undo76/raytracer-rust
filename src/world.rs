@@ -52,8 +52,17 @@ impl World {
         )
       })
       .sum();
+
     let reflected = self.reflected_color(hit, remaining);
-    surface + reflected
+    let refracted = self.refracted_color(hit, remaining);
+
+    let material = hit.intersection.object.get_material();
+    if material.transparency.is_some() && material.reflective.is_some() {
+      let reflectance = hit.schlick();
+      surface + reflected * reflectance + refracted * (1. - reflectance)
+    } else {
+      surface + reflected + refracted
+    }
   }
 
   pub fn color_at(&self, ray: &Ray, remaining: u8) -> ColorRgbFloat {
@@ -77,6 +86,37 @@ impl World {
         }
         None => BLACK,
       }
+    }
+  }
+
+  fn refracted_color(&self, hit: &Hit, remaining: u8) -> ColorRgbFloat {
+    if remaining == 0 {
+      return BLACK;
+    }
+
+    let object = hit.intersection.object;
+    let transparency = object.get_material().transparency.as_ref();
+
+    match transparency {
+      Some(transparency) => {
+        let n_ratio = hit.n1 / hit.n2;
+        let cos_i = dot(&hit.eyev, &hit.normalv);
+        let sin2_t = n_ratio * n_ratio * (1. - cos_i * cos_i);
+        if sin2_t > 1. {
+          // Internal reflection
+          BLACK
+        } else {
+          let cos_t = f32::sqrt(1. - sin2_t);
+          let normal = hit.normalv.unwrap();
+          let direction = normal * (n_ratio * cos_i - cos_t) - hit.eyev.unwrap() * n_ratio;
+          let origin = hit.point - (normal * 1.0e-4);
+          let refract_ray = Ray::new(origin, direction);
+
+          let object_point = object.get_transform_inverse() * hit.point;
+          self.color_at(&refract_ray, remaining - 1) * transparency.map_at_object(&object_point)
+        }
+      }
+      None => BLACK,
     }
   }
 }

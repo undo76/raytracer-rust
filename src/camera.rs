@@ -42,7 +42,7 @@ impl Camera {
       half_width,
       half_height,
       pixel_size,
-      max_reflects: 4,
+      max_reflects: 10,
     }
   }
 
