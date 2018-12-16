@@ -1,5 +1,5 @@
-use crate::*;
 use self::Mapping::*;
+use crate::*;
 
 #[derive(Debug, Clone)]
 pub struct UniformMapping<T> {
@@ -36,7 +36,7 @@ where
 {
   fn get_transform_inverse(&self) -> &Transform;
   fn map_at(&self, pattern_point: &Point) -> T;
-  fn map_at_object(&self, object_point: &Point) -> T {    
+  fn map_at_object(&self, object_point: &Point) -> T {
     let pattern_point = self.get_transform_inverse() * object_point;
     self.map_at(&pattern_point)
   }
@@ -51,7 +51,7 @@ where
   }
   fn map_at(&self, pattern_point: &Point) -> T {
     let n = self.values.len() as isize;
-    let idx = (pattern_point.x.floor() as isize % n + n) % n;
+    let idx = ((pattern_point.x + 1.0e-4).floor() as isize % n + n) % n;
     self.values[idx as usize]
   }
 }
@@ -85,7 +85,7 @@ where
   }
   fn map_at(&self, pattern_point: &Point) -> T {
     let distance = self.values.1 - self.values.0;
-    let fraction = pattern_point.x - pattern_point.x.floor();
+    let fraction = pattern_point.x - (pattern_point.x - 1.0e-4).floor();
     self.values.0 + distance * fraction
   }
 }
@@ -168,11 +168,12 @@ where
   }
 }
 
-impl<T> From<T> for Mapping<T> where
+impl<T> From<T> for Mapping<T>
+where
   T: Copy
     + core::ops::Sub<Output = T>
     + core::ops::Add<Output = T>
-    + core::ops::Mul<f32, Output = T>
+    + core::ops::Mul<f32, Output = T>,
 {
   fn from(value: T) -> Mapping<T> {
     Mapping::uniform(value)
