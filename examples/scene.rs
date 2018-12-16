@@ -26,7 +26,7 @@ fn main() {
     na::convert(rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5)),
   );
   wall_material.reflective = Some(Mapping::rings(
-    &vec![0.1, 0.1, 0.4],
+    &vec![0.1, 0.01, 0.4],
     na::convert(rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5)),
   ));
 
@@ -42,7 +42,7 @@ fn main() {
 
   #[rustfmt::skip]
   let right_wall = Box::new(Plane::new(
-    na::convert(translation(0., 0., -25.)
+    na::convert(translation(0., 0., 4.)
       * rotation_y(F_PI_4)
       * rotation_x(F_PI_2)),
     wall_material.clone(),
@@ -72,7 +72,7 @@ fn main() {
   right_material.diffuse = Mapping::from(0.5);
 
   right_material.reflective = Some(Mapping::stripes(
-    &vec![0., 0.4],
+    &vec![0.1, 0.5],
     na::convert(scaling(0.2, 0.2, 0.2)),
   ));
   right_material.diffuse = Mapping::stripes(&vec![0.4, 0.2], na::convert(scaling(0.2, 0.2, 0.2)));
@@ -81,7 +81,7 @@ fn main() {
 
   let right = Box::new(Sphere::new(
     na::convert(translation(1.2, 0.5, -1.0) * scaling(0.5, 0.5, 0.5)),
-    right_material,
+    right_material.clone(),
   ));
 
   let mut left_material = Material::default();
@@ -95,14 +95,19 @@ fn main() {
 
   let left = Box::new(Sphere::new(
     na::convert(translation(-1.5, 0.333, -0.75) * scaling(0.333, 0.333, 0.333)),
-    left_material,
+    left_material.clone(),
+  ));
+
+  let cube = Box::new(Cube::new(
+    na::convert(translation(-0.2, 0.5, -1.) * scaling(0.3, 0.5, 0.3) * rotation_y(-0.5)),
+    right_material.clone(),
   ));
 
   let light = PointLight::new(point(-10., 10., -10.), color(0.7, 0.7, 0.7));
   let light2 = PointLight::new(point(10., 5., -10.), color(0.3, 0.3, 0.3));
 
   let world = World::new(
-    vec![floor, right_wall, left_wall, middle, left, right],
+    vec![floor, right_wall, left_wall, middle, left, right, cube],
     // vec![floor, middle, left, right],
     vec![light, light2],
   );
