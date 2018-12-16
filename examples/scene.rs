@@ -98,13 +98,24 @@ fn main() {
     left_material.clone(),
   ));
 
-  let cube = Box::new(Cube::new(
-    na::convert(translation(-0.2, 0.5, -1.) * scaling(0.3, 0.5, 0.3) * rotation_y(-0.5)),
-    right_material.clone(),
+  let mut cube_material = Material::default();
+  cube_material.color = Mapping::checkers(
+    &vec![BLUE * 0.7, RED * 0.6],
+    na::convert(scaling(0.5, 0.5, 0.5)),
+  );
+  cube_material.transparency = Some(Mapping::checkers(
+    &vec![0.01, 0.5],
+    na::convert(scaling(0.5, 0.5, 0.5)),
   ));
+  cube_material.reflective = Some((0.5).into());
+  let cube = Box::new(Cube::new(
+    na::convert(translation(-0.2, 0.3001, -1.) * scaling(0.3, 0.3, 0.3) * rotation_y(-0.5)),
+    cube_material.clone(),
+  ));
+  cube_material.refractive_index = 1.5;
 
-  let light = PointLight::new(point(-10., 10., -10.), color(0.7, 0.7, 0.7));
-  let light2 = PointLight::new(point(10., 5., -10.), color(0.3, 0.3, 0.3));
+  let light = PointLight::new(point(-10., 10., -10.), color(0.9, 0.8, 0.7));
+  let light2 = PointLight::new(point(10., 5., -10.), color(0.3, 0.5, 0.5));
 
   let world = World::new(
     vec![floor, right_wall, left_wall, middle, left, right, cube],

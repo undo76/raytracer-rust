@@ -65,9 +65,9 @@ where
   }
   fn map_at(&self, pattern_point: &Point) -> T {
     let n = self.values.len() as isize;
-    let idx_x = pattern_point.x.floor() as isize % n + n;
-    let idx_y = (pattern_point.y.floor() + 1.0e-4) as isize % n + n;
-    let idx_z = pattern_point.z.floor() as isize % n + n;
+    let idx_x = (pattern_point.x + 1.0e-4).floor() as isize % n + n;
+    let idx_y = (pattern_point.y + 1.0e-4).floor() as isize % n + n;
+    let idx_z = (pattern_point.z + 1.0e-4).floor() as isize % n + n;
     let idx = (idx_x + idx_y + idx_z) % n;
     self.values[idx as usize]
   }
