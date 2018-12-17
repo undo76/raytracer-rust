@@ -64,24 +64,17 @@ fn main() {
   ));
 
   let mut right_material = Material::default();
-  right_material.color = Mapping::gradient(
-    (GREEN, BLUE),
-    na::convert(translation(1., 0., 0.) * scaling(2., 2., 2.)),
-  );
-  right_material.specular = Mapping::from(0.);
+  right_material.color = Mapping::from(RED * 0.5);
+  right_material.specular = Mapping::from(1.);
   right_material.diffuse = Mapping::from(0.5);
 
-  right_material.reflective = Some(Mapping::stripes(
-    &vec![0.1, 0.5],
-    na::convert(scaling(0.2, 0.2, 0.2)),
-  ));
-  right_material.diffuse = Mapping::stripes(&vec![0.4, 0.2], na::convert(scaling(0.2, 0.2, 0.2)));
-  // wall_material.diffuse = Mapping::stripes(&vec![0.7, 0.1], Transform::identity());
-  // wall_material.ambient = Mapping::from(0.);
+  right_material.reflective = Some(Mapping::from(0.3));
+  right_material.diffuse = (0.8).into();
 
-  let right = Box::new(Sphere::new(
-    na::convert(translation(1.2, 0.5, -1.0) * scaling(0.5, 0.5, 0.5)),
+  let right = Box::new(Cylinder::new(
+    na::convert(translation(1.2, 0.2, -1.0) * scaling(0.2, 0.2, 0.2)),
     right_material.clone(),
+    true
   ));
 
   let mut left_material = Material::default();
@@ -89,7 +82,7 @@ fn main() {
   left_material.ambient = Mapping::from(0.0);
   left_material.diffuse = Mapping::from(0.0);
   left_material.specular = Mapping::from(1.);
-  left_material.reflective = Some(Mapping::from(0.1));
+  left_material.reflective = Some(Mapping::from(0.7));
   left_material.transparency = Some(Mapping::from(0.9));
   left_material.refractive_index = 1.5;
 
@@ -103,6 +96,7 @@ fn main() {
     &vec![BLUE * 0.7, RED * 0.6],
     na::convert(scaling(0.5, 0.5, 0.5)),
   );
+  cube_material.diffuse = 0.8.into();
   cube_material.transparency = Some(Mapping::checkers(
     &vec![0.01, 0.5],
     na::convert(scaling(0.5, 0.5, 0.5)),
@@ -112,7 +106,7 @@ fn main() {
     na::convert(translation(-0.2, 0.3001, -1.) * scaling(0.3, 0.3, 0.3) * rotation_y(-0.5)),
     cube_material.clone(),
   ));
-  cube_material.refractive_index = 1.5;
+  cube_material.refractive_index = 1.;
 
   let light = PointLight::new(point(-10., 10., -10.), color(0.9, 0.8, 0.7));
   let light2 = PointLight::new(point(10., 5., -10.), color(0.3, 0.5, 0.5));

@@ -37,7 +37,7 @@ impl Shape for Plane {
       None
     } else {
       let t = -ray.origin.y / ray.direction.y;
-      if t > 1.0e-4{
+      if t > EPS {
         Some(Intersection::new(t, self))
       } else {
         None

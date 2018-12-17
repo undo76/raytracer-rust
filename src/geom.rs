@@ -1,5 +1,8 @@
 use nalgebra as na;
 
+
+pub const EPS: f32 = 1.0e-4;
+
 pub type Point = na::Point3<f32>;
 pub type Vector = na::Vector3<f32>;
 pub type UnitVector = na::Unit<Vector>;

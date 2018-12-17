@@ -109,7 +109,7 @@ impl World {
           let cos_t = f32::sqrt(1. - sin2_t);
           let normal = hit.normalv.unwrap();
           let direction = normal * (n_ratio * cos_i - cos_t) - hit.eyev.unwrap() * n_ratio;
-          let origin = hit.point - (normal * 1.0e-4);
+          let origin = hit.point - (normal * EPS);
           let refract_ray = Ray::new(origin, direction);
 
           let object_point = object.get_transform_inverse() * hit.point;

@@ -47,9 +47,9 @@ impl Shape for Sphere {
       if t1 > t2 {
         std::mem::swap(&mut t1, &mut t2);
       }
-      if t1 > 1.0e-4 {
+      if t1 > EPS {
         Some(Intersection::new(t1, self))
-      } else if t2 > 1.0e-4 {
+      } else if t2 > EPS {
         Some(Intersection::new(t2, self))
       } else {
         None
