@@ -47,7 +47,7 @@ fn main() {
         wind: vector(-0.01, 0., 0.),
     };
 
-    let mut c = canvas(900, 550);
+    let c = canvas(900, 550);
     while p.position.y >= 0. {
         c.set(
             p.position.x as usize,

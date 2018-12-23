@@ -20,7 +20,7 @@ fn clock() -> Vec<Point> {
 fn main() {
     let points = clock();
 
-    let mut c = canvas(500, 500);
+    let c = canvas(500, 500);
     for p in points {
         c.set(
             (250. + p.x) as usize,
