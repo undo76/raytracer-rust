@@ -4,13 +4,13 @@ use raytracer_rust::*;
 
 use nalgebra as na;
 use std::fs::File;
-use std::io::prelude::*;
+use std::io::prelude::Write;
 
 fn main() {
     let origin = point(0., 0., -5.);
     let wall_size = 7.;
     let pixels = 200;
-    let mut c = canvas(pixels, pixels);
+    let c = canvas(pixels, pixels);
     let pixel_size = wall_size / (pixels as f32);
 
     let light = PointLight::new(point(-10., 10., -10.), WHITE);

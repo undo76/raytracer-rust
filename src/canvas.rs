@@ -1,10 +1,13 @@
 use crate::*;
+use std::sync::{Mutex, MutexGuard};
+
+const N_CHANNELS: usize = 3;
 
 #[derive(Debug)]
 pub struct Canvas {
     pub width: usize,
     pub height: usize,
-    pub frame_buffer: Vec<u8>,
+    pub frame_buffer: Mutex<Vec<u8>>,
 }
 
 pub fn canvas(width: usize, height: usize) -> Canvas {
@@ -13,46 +16,46 @@ pub fn canvas(width: usize, height: usize) -> Canvas {
 
 impl Canvas {
     pub fn new(width: usize, height: usize) -> Canvas {
-        let mut frame_buffer = Vec::with_capacity(width * height * 3);
-        frame_buffer.resize(width * height * 3, u8::default());
+        let mut frame_buffer = Vec::with_capacity(width * height * N_CHANNELS);
+        frame_buffer.resize(width * height * N_CHANNELS, u8::default());
         Canvas {
             width,
             height,
-            frame_buffer,
+            frame_buffer: Mutex::new(frame_buffer),
         }
     }
 
     fn idx(&self, x: usize, y: usize) -> usize {
         debug_assert!(x < self.width);
         debug_assert!(y < self.height);
-        3 * (x + y * self.width)
+        N_CHANNELS * (x + y * self.width)
     }
 
-    pub fn set(&mut self, x: usize, y: usize, c: ColorRgbByte) {
+    pub fn set(&self, x: usize, y: usize, c: ColorRgbByte) {
         let start = self.idx(x, y);
-        self.frame_buffer[start] = c.r;
-        self.frame_buffer[start + 1] = c.g;
-        self.frame_buffer[start + 2] = c.b;
+        self.set_idx(start, c);
     }
 
-    pub fn set_idx(&mut self, idx: usize, c: ColorRgbByte) {
-        self.frame_buffer[idx] = c.r;
-        self.frame_buffer[idx + 1] = c.g;
-        self.frame_buffer[idx + 2] = c.b;
+    pub fn set_idx(&self, idx: usize, c: ColorRgbByte) {
+        let mut fb = self.get_frame_buffer();
+        fb[idx] = c.r;
+        fb[idx + 1] = c.g;
+        fb[idx + 2] = c.b;
     }
 
     pub fn get(&self, x: usize, y: usize) -> ColorRgbByte {
+        let fb = self.get_frame_buffer();
         let start = self.idx(x, y);
         ColorRgbByte {
-            r: self.frame_buffer[start],
-            g: self.frame_buffer[start + 1],
-            b: self.frame_buffer[start + 2],
+            r: fb[start],
+            g: fb[start + 1],
+            b: fb[start + 2],
         }
     }
 
     pub fn to_string(&self) -> String {
-        self.frame_buffer
-            .chunks(10)
+        let fb = self.get_frame_buffer();
+        fb.chunks(10)
             .map(|chunk| {
                 chunk
                     .iter()
@@ -68,6 +71,10 @@ impl Canvas {
         let header = format!("P3\n{} {}\n255\n", self.width, self.height);
         header + &self.to_string() + "\n"
     }
+
+    fn get_frame_buffer(&self) -> MutexGuard<Vec<u8>> {
+        self.frame_buffer.lock().unwrap()
+    }
 }
 
 #[cfg(test)]
@@ -76,8 +83,8 @@ mod tests {
 
     #[test]
     fn create_canvas() {
-        let mut can = Canvas::new(5, 3);
-        assert!(can.frame_buffer.iter().all(|&c| c == u8::default()));
+        let can = Canvas::new(5, 3);
+        assert!(can.get_frame_buffer().iter().all(|&c| c == u8::default()));
         can.set(0, 0, color(0.5, 0., 1.).into());
         let buffer = can.to_ppm_string();
         println!("{}", buffer);

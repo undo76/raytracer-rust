@@ -1,6 +1,5 @@
 use crate::*;
 use std::sync::Arc;
-use std::sync::Mutex;
 use std::thread;
 
 use nalgebra as na;
@@ -66,7 +65,7 @@ impl Camera {
 
     pub fn render(self, world: World) -> Canvas {
         let canvas = Canvas::new(self.hsize, self.vsize);
-        let canvas = Arc::new(Mutex::new(canvas));
+        let canvas = Arc::new(canvas);
         let world = Arc::new(world);
         let camera = Arc::new(self);
 
@@ -81,7 +80,6 @@ impl Camera {
                     for x in (i..camera.hsize - n_threads + i + 1).step_by(n_threads) {
                         let ray = camera.ray_for_pixel(x, y);
                         let color = world.color_at(&ray, camera.max_reflects).into();
-                        let mut shared_canvas = shared_canvas.lock().unwrap();
                         shared_canvas.set(x, y, color);
                     }
                 }
@@ -93,7 +91,7 @@ impl Camera {
             handle.join().unwrap();
         }
 
-        return Arc::try_unwrap(canvas).unwrap().into_inner().unwrap();
+        return Arc::try_unwrap(canvas).unwrap();
     }
 }
 
