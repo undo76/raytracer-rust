@@ -8,9 +8,10 @@ pub use crate::color::*;
 pub use crate::cube::*;
 pub use crate::cylinder::*;
 pub use crate::geom::*;
+pub use crate::group::*;
 pub use crate::light::*;
-pub use crate::material::*;
 pub use crate::mapping::*;
+pub use crate::material::*;
 pub use crate::plane::*;
 pub use crate::ray::*;
 pub use crate::shape::*;
@@ -24,9 +25,10 @@ mod color;
 mod cube;
 mod cylinder;
 mod geom;
+mod group;
 mod light;
-mod material;
 mod mapping;
+mod material;
 mod plane;
 mod ray;
 mod shape;
@@ -36,8 +38,8 @@ mod world;
 
 #[cfg(test)]
 mod tests {
-  #[test]
-  fn it_works() {
-    assert_relative_eq!(2. + 2., 4.);
-  }
+    #[test]
+    fn it_works() {
+        assert_relative_eq!(2. + 2., 4.);
+    }
 }

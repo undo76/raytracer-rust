@@ -1,6 +1,5 @@
 use nalgebra as na;
 
-
 pub const EPS: f32 = 1.0e-4;
 
 pub type Point = na::Point3<f32>;
