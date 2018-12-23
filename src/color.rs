@@ -1,6 +1,8 @@
 use approx::{AbsDiffEq, RelativeEq};
 use std::ops::{Add, Mul, Sub};
 
+const DEFAULT_GAMMA: f32 = 2.2;
+
 type Byte = u8;
 
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
@@ -28,7 +30,8 @@ pub const WHITE: ColorRgbFloat = color(1., 1., 1.);
 
 #[inline]
 fn clamp(x: f32) -> f32 {
-    1.0_f32.min(0.0_f32.max(x))
+    let x_gamma = x.powf(1. / DEFAULT_GAMMA);
+    1.0_f32.min(0.0_f32.max(x_gamma))
 }
 
 #[inline]
