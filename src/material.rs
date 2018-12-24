@@ -83,7 +83,7 @@ impl Default for Material {
             reflective: None,
             transparency: None,
             refractive_index: 1.0,
-            attenuation: Attenuation::Squared,
+            attenuation: Attenuation::None,
         }
     }
 }
