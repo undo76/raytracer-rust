@@ -37,7 +37,7 @@ impl Shape for Group {
     }
 
     fn local_normal_at(&self, _local_point: &Point) -> Vector {
-        unimplemented!()
+        panic!("Local normal called for group.")
     }
 
     fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {
