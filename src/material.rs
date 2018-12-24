@@ -3,6 +3,13 @@ use crate::*;
 use nalgebra as na;
 
 #[derive(Debug, Clone)]
+pub enum Attenuation {
+    None,
+    Linear,
+    Squared,
+}
+
+#[derive(Debug, Clone)]
 pub struct Material {
     pub color: Mapping<ColorRgbFloat>,
     pub ambient: Mapping<f32>,
@@ -12,6 +19,7 @@ pub struct Material {
     pub reflective: Option<Mapping<f32>>,
     pub transparency: Option<Mapping<f32>>,
     pub refractive_index: f32,
+    pub attenuation: Attenuation,
 }
 
 impl Material {
@@ -31,12 +39,13 @@ impl Material {
         let specular = self.specular.map_at_object(&object_point);
         let shininess = self.shininess.map_at_object(&object_point);
 
-        let effective_color = color * light.intensity;
-        let lightv = normalize(&(light.position - position));
+        let light_vector = light.position - position;
+        let attenuation = self.calculate_attenuation(&light_vector);
+        let lightv = normalize(&light_vector);
         let light_dot_normal = normalv.dot(&lightv);
         let reflectv = reflect(&-lightv, normalv);
         let reflect_dot_eye = f32::powf(dot(&reflectv, eyev), shininess);
-
+        let effective_color = color * light.intensity * attenuation;
         let mut total = effective_color * ambient;
 
         if !in_shadow && light_dot_normal > 0. {
@@ -45,7 +54,21 @@ impl Material {
                 total = total + light.intensity * specular * reflect_dot_eye;
             }
         }
-        return total;
+        return total * attenuation;
+    }
+
+    fn calculate_attenuation(&self, light_vector: &Vector) -> f32 {
+        match self.attenuation {
+            Attenuation::None => 1.,
+            Attenuation::Linear => {
+                let light_distance = magnitude(light_vector);
+                10. / light_distance
+            }
+            Attenuation::Squared => {
+                let light_distance = magnitude(light_vector);
+                100. / (light_distance * light_distance)
+            }
+        }
     }
 }
 
@@ -60,6 +83,7 @@ impl Default for Material {
             reflective: None,
             transparency: None,
             refractive_index: 1.0,
+            attenuation: Attenuation::Squared,
         }
     }
 }

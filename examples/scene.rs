@@ -60,7 +60,7 @@ fn main() {
         na::convert(rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2)),
     ));
     let middle = Arc::new(Sphere::new(
-        na::convert(translation(-0.5, 1., 0.5)),
+        na::convert(translation(-0.5, 1., 0.5) * rotation_z(0.2) * rotation_x(0.2)),
         middle_material,
     ));
 
@@ -110,7 +110,7 @@ fn main() {
     cube_material.refractive_index = 1.;
 
     let light = PointLight::new(point(-10., 10., -10.), color(0.9, 0.8, 0.7));
-    let light2 = PointLight::new(point(10., 5., -10.), color(0.3, 0.5, 0.5));
+    let light2 = PointLight::new(point(5., 5., -10.), color(0.3, 0.5, 0.5));
 
     let world = World::new(
         vec![floor, right_wall, left_wall, middle, left, right, cube],
@@ -118,7 +118,7 @@ fn main() {
         vec![light, light2],
     );
 
-    let mut camera = Camera::new(1000, 800, F_PI_3);
+    let mut camera = Camera::new(2000, 1600, F_PI_3);
     camera.set_transform(view_transform(
         point(0., 1.5, -5.),
         point(0., 1., 0.),

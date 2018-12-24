@@ -44,11 +44,7 @@ fn main() {
         Material::default(),
     ));
 
-    let mut group = Group::new(
-        na::convert(translation(-0.5, 1., 0.5)),
-        // Transform::identity(),
-        Material::default(),
-    );
+    let mut group = Group::new(na::convert(translation(-0.5, 1., 0.5)), Material::default());
     group.add_shape(sphere);
     group.add_shape(sphere2);
 
