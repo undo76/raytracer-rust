@@ -37,7 +37,7 @@ fn main() {
                 10.,
             );
             let direction = normalize(&(pos - origin));
-            let r = Ray::new(origin, direction);
+            let r = Ray::new(origin, direction.unwrap());
             let intersections = vec![s.intersects(&r), s2.intersects(&r)]
                 .into_iter()
                 .filter_map(|x| x)
@@ -54,7 +54,7 @@ fn main() {
                             object,
                             &light,
                             &p,
-                            &na::Unit::new_unchecked(-direction),
+                            &-direction,
                             &object.normal_at(&p),
                             false,
                         )

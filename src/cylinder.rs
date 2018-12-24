@@ -91,17 +91,17 @@ impl Shape for Cylinder {
         &mut self.base
     }
 
-    fn local_normal_at(&self, local_point: &Point) -> Vector {
+    fn local_normal_at(&self, local_point: &Point) -> UnitVector {
         let dist = local_point.x * local_point.x + local_point.z * local_point.z;
 
         if dist < 1. {
             if local_point.y >= 1. - EPS {
-                return vector(0., 1., 0.);
+                return unit_vector(0., 1., 0.);
             } else if local_point.y <= -1. + EPS {
-                return vector(0., -1., 0.);
+                return unit_vector(0., -1., 0.);
             }
         }
-        vector(local_point.x, 0., local_point.z)
+        unit_vector(local_point.x, 0., local_point.z)
     }
 
     fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {

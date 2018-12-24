@@ -28,8 +28,8 @@ impl Shape for Plane {
         &mut self.base
     }
 
-    fn local_normal_at(&self, _local_point: &Point) -> Vector {
-        vector(0., 1., 0.)
+    fn local_normal_at(&self, _local_point: &Point) -> UnitVector {
+        unit_vector(0., 1., 0.)
     }
 
     fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {

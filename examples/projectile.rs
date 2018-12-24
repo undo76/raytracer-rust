@@ -40,7 +40,7 @@ fn one_tick() {
 fn main() {
     let mut p = Projectile {
         position: point(0., 1., 0.),
-        velocity: normalize(&vector(1., 1.8, 0.)) * 11.25,
+        velocity: normalize(&vector(1., 1.8, 0.)).unwrap() * 11.25,
     };
     let w = World {
         gravity: vector(0., -0.1, 0.),

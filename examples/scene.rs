@@ -16,11 +16,11 @@ fn main() {
     let mut wall_material = Material::default();
 
     floor_material.color = Mapping::checkers(
-        &vec![BLACK, WHITE * 0.8],
-        na::convert(rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5)),
+        &vec![WHITE * 0.6, WHITE * 0.8],
+        na::convert(rotation_y(F_PI_4) * scaling(0.2, 0.2, 0.2)),
     );
-    floor_material.specular = Mapping::from(0.7);
-    floor_material.reflective = Some(Mapping::from(0.2));
+    floor_material.specular = Mapping::from(0.6);
+    floor_material.reflective = Some(Mapping::from(0.1));
 
     wall_material.color = Mapping::rings(
         &vec![RED * 0.7, BLUE * 0.5, WHITE * 0.5],
@@ -34,27 +34,30 @@ fn main() {
     let floor = Arc::new(Plane::new(Transform::identity(), floor_material.clone()));
 
     #[rustfmt::skip]
-  let left_wall = Arc::new(Plane::new(
-    na::convert(translation(0., 0., 5.)
-      * rotation_y(-F_PI_4)
-      * rotation_x(-F_PI_2)),
-    wall_material.clone(),
-  ));
+    let left_wall = Arc::new(Plane::new(
+        na::convert(translation(0., 0., 5.)
+        * rotation_y(-F_PI_4)
+        * rotation_x(-F_PI_2)),
+        wall_material.clone(),
+    ));
 
     #[rustfmt::skip]
-  let right_wall = Arc::new(Plane::new(
-    na::convert(translation(0., 0., 4.)
-      * rotation_y(F_PI_4)
-      * rotation_x(F_PI_2)),
-    wall_material.clone(),
-  ));
+    let right_wall = Arc::new(Plane::new(
+        na::convert(translation(0., 0., 4.)
+        * rotation_y(F_PI_4)
+        * rotation_x(F_PI_2)),
+        wall_material.clone(),
+    ));
 
     let mut middle_material = Material::default();
     middle_material.color = Mapping::stripes(
         &vec![PURPLE * 0.7, PURPLE * 0.5],
         na::convert(rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2)),
     );
-    middle_material.specular = Mapping::from(1.);
+    middle_material.specular = Mapping::stripes(
+        &vec![0.1, 1.],
+        na::convert(rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2)),
+    );
     middle_material.reflective = Some(Mapping::stripes(
         &vec![0.03, 0.1],
         na::convert(rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2)),

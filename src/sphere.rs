@@ -1,4 +1,5 @@
 use crate::*;
+use nalgebra as na;
 
 #[derive(Debug)]
 pub struct Sphere {
@@ -28,8 +29,8 @@ impl Shape for Sphere {
         &mut self.base
     }
 
-    fn local_normal_at(&self, local_point: &Point) -> Vector {
-        local_point - point(0., 0., 0.)
+    fn local_normal_at(&self, local_point: &Point) -> UnitVector {
+        na::Unit::new_unchecked(local_point - point(0., 0., 0.))
     }
 
     fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {

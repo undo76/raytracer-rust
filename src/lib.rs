@@ -17,6 +17,7 @@ pub use crate::ray::*;
 pub use crate::shape::*;
 pub use crate::sphere::*;
 pub use crate::transform::*;
+pub use crate::triangle::*;
 pub use crate::world::*;
 
 mod camera;
@@ -34,6 +35,7 @@ mod ray;
 mod shape;
 mod sphere;
 mod transform;
+mod triangle;
 mod world;
 
 #[cfg(test)]

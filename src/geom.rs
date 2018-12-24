@@ -17,13 +17,18 @@ pub fn vector(x: f32, y: f32, z: f32) -> Vector {
 }
 
 #[inline]
+pub fn unit_vector(x: f32, y: f32, z: f32) -> UnitVector {
+    na::Unit::new_unchecked(vector(x, y, z))
+}
+
+#[inline]
 pub fn magnitude(v: &Vector) -> f32 {
     na::norm(v)
 }
 
 #[inline]
-pub fn normalize(v: &Vector) -> Vector {
-    na::normalize(v)
+pub fn normalize(v: &Vector) -> UnitVector {
+    na::Unit::new_normalize(*v)
 }
 
 #[inline]
@@ -78,7 +83,7 @@ mod tests {
 
     #[test]
     fn normalizing_vector() {
-        assert_relative_eq!(normalize(&vector(4., 0., 0.)), vector(1., 0., 0.));
+        assert_relative_eq!(normalize(&vector(4., 0., 0.)).unwrap(), vector(1., 0., 0.));
     }
 
     #[test]

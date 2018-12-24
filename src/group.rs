@@ -36,7 +36,7 @@ impl Shape for Group {
         &mut self.base
     }
 
-    fn local_normal_at(&self, _local_point: &Point) -> Vector {
+    fn local_normal_at(&self, _local_point: &Point) -> UnitVector {
         panic!("Local normal called for group.")
     }
 

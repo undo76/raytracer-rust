@@ -28,17 +28,17 @@ impl Shape for Cube {
         &mut self.base
     }
 
-    fn local_normal_at(&self, local_point: &Point) -> Vector {
+    fn local_normal_at(&self, local_point: &Point) -> UnitVector {
         if local_point.x.abs() >= local_point.y.abs() {
             if local_point.x.abs() >= local_point.z.abs() {
-                vector(local_point.x, 0., 0.)
+                unit_vector(local_point.x, 0., 0.)
             } else {
-                vector(0., 0., local_point.z)
+                unit_vector(0., 0., local_point.z)
             }
         } else if local_point.y.abs() >= local_point.z.abs() {
-            vector(0., local_point.y, 0.)
+            unit_vector(0., local_point.y, 0.)
         } else {
-            vector(0., 0., local_point.z)
+            unit_vector(0., 0., local_point.z)
         }
     }
 
@@ -123,34 +123,34 @@ mod tests {
 
         let p = point(1., 0.5, -0.8);
         let n = c.local_normal_at(&p);
-        assert_relative_eq!(n, vector(1., 0., 0.));
+        assert_relative_eq!(n, unit_vector(1., 0., 0.));
 
         let p = point(-1., -0.2, 0.9);
         let n = c.local_normal_at(&p);
-        assert_relative_eq!(n, vector(-1., 0., 0.));
+        assert_relative_eq!(n, unit_vector(-1., 0., 0.));
 
         let p = point(-0.4, 1., -0.1);
         let n = c.local_normal_at(&p);
-        assert_relative_eq!(n, vector(0., 1., 0.));
+        assert_relative_eq!(n, unit_vector(0., 1., 0.));
 
         let p = point(0.3, -1., 0.);
         let n = c.local_normal_at(&p);
-        assert_relative_eq!(n, vector(0., -1., 0.));
+        assert_relative_eq!(n, unit_vector(0., -1., 0.));
 
         let p = point(0.6, 0.3, 1.);
         let n = c.local_normal_at(&p);
-        assert_relative_eq!(n, vector(0., 0., 1.));
+        assert_relative_eq!(n, unit_vector(0., 0., 1.));
 
         let p = point(0.4, 0.4, -1.);
         let n = c.local_normal_at(&p);
-        assert_relative_eq!(n, vector(0., 0., -1.));
+        assert_relative_eq!(n, unit_vector(0., 0., -1.));
 
         let p = point(1., 1., 1.);
         let n = c.local_normal_at(&p);
-        assert_relative_eq!(n, vector(1., 0., 0.));
+        assert_relative_eq!(n, unit_vector(1., 0., 0.));
 
         let p = point(-1., -1., -1.);
         let n = c.local_normal_at(&p);
-        assert_relative_eq!(n, vector(-1., 0., 0.));
+        assert_relative_eq!(n, unit_vector(-1., 0., 0.));
     }
 }

@@ -31,7 +31,7 @@ impl World {
         let v = light.position - point;
         let distance = magnitude(&v);
         let direction = normalize(&v);
-        let r = Ray::new(*point, direction);
+        let r = Ray::new(*point, direction.unwrap());
         self.ray_in_shadow(&r, distance).is_some()
     }
 
