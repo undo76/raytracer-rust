@@ -52,9 +52,9 @@ impl Shape for Cube {
 
         if tmin > tmax {
             None
-        } else if tmin > 0.1 {
+        } else if tmin > EPS {
             Some(Intersection::new(tmin, self))
-        } else if tmax > 0.1 {
+        } else if tmax > EPS {
             Some(Intersection::new(tmax, self))
         } else {
             None
