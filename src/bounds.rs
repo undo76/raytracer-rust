@@ -65,8 +65,8 @@ pub fn bounds_intersects<'a>(shape: &'a Shape, ray: &Ray) -> Option<Intersection
 }
 
 fn check_axis(limits: (f32, f32), origin: f32, direction: f32) -> (f32, f32) {
-    let mut tmin;
-    let mut tmax;
+    let tmin;
+    let tmax;
     let tmin_numerator = limits.0 - origin;
     let tmax_numerator = limits.1 - origin;
 
@@ -78,7 +78,7 @@ fn check_axis(limits: (f32, f32), origin: f32, direction: f32) -> (f32, f32) {
         tmax = tmax_numerator * std::f32::INFINITY;
     }
     if tmin > tmax {
-        std::mem::swap(&mut tmin, &mut tmax);
+        return (tmax, tmin);
     }
     (tmin, tmax)
 }

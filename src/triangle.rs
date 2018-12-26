@@ -4,12 +4,18 @@ use core::sync::atomic::Ordering;
 use std::sync::Arc;
 
 #[derive(Debug)]
+pub enum NormalType {
+    Uniform(UnitVector),
+    Smooth(UnitVector, UnitVector, UnitVector),
+}
+
+#[derive(Debug)]
 pub struct Triangle {
     parent: AtomicPtr<Group>,
     p1: Point,
     e1: Vector,
     e2: Vector,
-    normal: UnitVector,
+    normal: NormalType,
 }
 
 impl Triangle {
@@ -19,7 +25,7 @@ impl Triangle {
         for index in 1..(points.len() - 1) {
             let e1 = points[index] - p1;
             let e2 = points[index + 1] - p1;
-            let normal = normalize(&cross(&e1, &e2));
+            let normal = NormalType::Uniform(normalize(&cross(&e1, &e2)));
             let t = Triangle {
                 parent: AtomicPtr::new(&mut *group),
                 p1,
@@ -56,10 +62,17 @@ impl Shape for Triangle {
     }
 
     fn local_normal_at(&self, _local_point: &Point) -> UnitVector {
-        self.normal
+        match self.normal {
+            NormalType::Uniform(n) => n,
+            NormalType::Smooth(n1, n2, n3) => n1, //TODO
+        }
     }
 
-    fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {
+    fn local_intersects(&self, _ray: &Ray) -> Option<Intersection> {
+        unimplemented!("Triangles don't need local_intersects")
+    }
+
+    fn intersects(&self, ray: &Ray) -> Option<Intersection> {
         let dir_cross_e2 = cross(&ray.direction, &self.e2);
         let det = dot(&self.e1, &dir_cross_e2);
         if f32::abs(det) < core::f32::EPSILON {
@@ -78,7 +91,7 @@ impl Shape for Triangle {
         }
         let t = f * dot(&self.e2, &origin_cross_e1);
         if t > EPS {
-            return Some(Intersection::new(t, self));
+            return Some(Intersection::new_with_uv(t, self, (u, v)));
         } else {
             return None;
         }

@@ -7,6 +7,9 @@ use std::str::FromStr;
 struct VertexCommand(Point);
 
 #[derive(Debug, PartialEq)]
+struct VertexNormalCommand(UnitVector);
+
+#[derive(Debug, PartialEq)]
 struct FaceCommand(Face);
 
 #[derive(Debug, PartialEq)]
@@ -15,6 +18,8 @@ struct GroupCommand(GroupName);
 #[derive(Debug, PartialEq)]
 pub struct FaceVertex {
     pub idx: usize,
+    pub texture_idx: Option<usize>,
+    pub normal_idx: Option<usize>,
 }
 
 type GroupName = String;
@@ -23,6 +28,7 @@ pub type Face = Vec<FaceVertex>;
 #[derive(Debug, PartialEq)]
 enum Command {
     Vertex(VertexCommand),
+    VertexNormal(VertexNormalCommand),
     Face(FaceCommand),
     Group(GroupName),
     Other(String),
@@ -30,6 +36,7 @@ enum Command {
 
 pub struct Object {
     pub vertices: Vec<Point>,
+    pub normals: Vec<UnitVector>,
     pub faces: Vec<Face>,
 }
 
@@ -46,6 +53,19 @@ named!(vertex<CompleteStr, Command>,
     )
 );
 
+named!(vertex_normal<CompleteStr, Command>, 
+    do_parse!(
+        tag!("vn") >> 
+        space >>
+        x: float >>
+        space >>
+        y: float >>
+        space >>
+        z: float >>
+        (Command::VertexNormal(VertexNormalCommand(normalize(&vector(x, y, z)))))
+    )
+);
+
 named!(other<CompleteStr, Command>, 
     map!(rest, |s| Command::Other(s.to_string()))
 );
@@ -59,41 +79,73 @@ named!(group<CompleteStr, Command>,
     )
 );
 
-named!(parse_u32<CompleteStr, usize>,
-    map_res!(recognize!(nom::digit), from_u32)
+named!(parse_usize<CompleteStr, usize>,
+    map_res!(recognize!(nom::digit), from_usize)
 );
 
-fn from_u32(input: CompleteStr) -> Result<usize, std::num::ParseIntError> {
+fn from_usize(input: CompleteStr) -> Result<usize, std::num::ParseIntError> {
   usize::from_str(&input)
 }
+
+named!(parse_face_vertex_1<CompleteStr, FaceVertex>,
+    do_parse!(
+        idx: parse_usize >>
+        (FaceVertex { 
+            idx,
+            texture_idx: None,
+            normal_idx: None
+        })
+    )
+);
+
+named!(parse_face_vertex_2<CompleteStr, FaceVertex>,
+    do_parse!(
+        idx: parse_usize >>
+        tag!("/") >>
+        texture_idx: opt!(parse_usize) >>
+        tag!("/") >>
+        normal_idx: opt!(parse_usize) >>
+        (FaceVertex { 
+            idx,
+            texture_idx: texture_idx,
+            normal_idx: normal_idx
+        })
+    )
+);
+
+named!(parse_face_vertex<CompleteStr, FaceVertex>,
+    alt!( parse_face_vertex_2 | parse_face_vertex_1 )
+);
 
 named!(face<CompleteStr, Command>, 
     do_parse!(
         tag!("f") >> 
         space >>
-        vertex_idxs: separated_nonempty_list!(space, parse_u32) >>
-        (Command::Face(FaceCommand(vertex_idxs.iter().map(|&idx| FaceVertex { idx }).collect())))
+        face_vertices: separated_nonempty_list!(space, parse_face_vertex) >>
+        (Command::Face(FaceCommand(face_vertices)))
     )
 );
 
 named!(parse_line<CompleteStr, Command>,
     alt!(
-        vertex | group | face | other
+        vertex | vertex_normal | group | face | other
     )
 );
 
 
 pub fn parse(input: &str) -> Object {
     let mut obj = Object {
-            vertices: vec![],
-            faces: vec![]
-        };
+        vertices: vec![],
+        normals: vec![],
+        faces: vec![]
+    };
     input
         .lines()
         .filter_map(|line| parse_line(CompleteStr(line)).ok())
         .for_each(|(_i, c)| {
             match c {
                 Command::Vertex(VertexCommand(p)) => obj.vertices.push(p),
+                Command::VertexNormal(VertexNormalCommand(n)) => obj.normals.push(n),
                 Command::Face(FaceCommand(f)) => obj.faces.push(f),
                 _ => ()
                 // Command::Group(name) => obj.vertices.push(p)
@@ -114,6 +166,12 @@ mod tests {
     }
 
     #[test]
+    fn parse_vertex_normal() {
+        let v = vertex_normal(CompleteStr("vn 1.0 2.0 3.0"));
+        assert_eq!(v, Ok((CompleteStr(""), Command::VertexNormal(VertexNormalCommand(normalize(&vector(1.0, 2.0, 3.0)))))))
+    }
+
+    #[test]
     fn parse_group() {
         let v = group(CompleteStr("g GroupName"));
         assert_eq!(v, Ok((CompleteStr(""), Command::Group("GroupName".to_string()))))
@@ -129,11 +187,11 @@ mod tests {
     fn parse_face() {
         let v = face(CompleteStr("f 1 2 3 4 55"));
         assert_eq!(v, Ok((CompleteStr(""), Command::Face(FaceCommand(vec![
-            FaceVertex{ idx: 1 },
-            FaceVertex{ idx: 2 },
-            FaceVertex{ idx: 3 },
-            FaceVertex{ idx: 4 },
-            FaceVertex{ idx: 55 }])))))
+            FaceVertex{ idx: 1, texture_idx: None, normal_idx: None },
+            FaceVertex{ idx: 2, texture_idx: None, normal_idx: None },
+            FaceVertex{ idx: 3, texture_idx: None, normal_idx: None },
+            FaceVertex{ idx: 4, texture_idx: None, normal_idx: None },
+            FaceVertex{ idx: 55, texture_idx: None, normal_idx: None }])))))
     }
 
 //     #[test]

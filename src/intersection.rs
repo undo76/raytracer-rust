@@ -36,11 +36,24 @@ impl Hit<'_> {
 pub struct Intersection<'a> {
     pub t: f32,
     pub object: &'a dyn Shape,
+    pub uv: Option<(f32, f32)>,
 }
 
 impl<'a> Intersection<'a> {
     pub fn new(t: f32, object: &'a dyn Shape) -> Intersection<'a> {
-        Intersection { t, object }
+        Intersection {
+            t,
+            object,
+            uv: None,
+        }
+    }
+
+    pub fn new_with_uv(t: f32, object: &'a dyn Shape, uv: (f32, f32)) -> Intersection<'a> {
+        Intersection {
+            t,
+            object,
+            uv: Some(uv),
+        }
     }
 
     pub fn prepare_hit(&self, ray: &Ray) -> Hit {
