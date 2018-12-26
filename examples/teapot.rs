@@ -49,12 +49,12 @@ fn main() {
 
     let group = Arc::new(group);
 
-    let light = PointLight::new(point(-8., 8., -8.), color(0.9, 0.8, 0.7));
+    let light = PointLight::new(point(-8., 8., -5.), color(0.9, 0.8, 0.7));
     let world = World::new(vec![floor, walls, group], vec![light]);
 
-    let mut camera = Camera::new(600, 300, F_PI_2);
+    let mut camera = Camera::new(800, 600, F_PI_2);
     camera.set_transform(view_transform(
-        point(1., 2.5, -5.),
+        point(1., 5., -5.),
         point(0., 1., 0.),
         vector(0., 1., 0.),
     ));

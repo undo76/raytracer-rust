@@ -20,6 +20,10 @@ impl Default for Cube {
 }
 
 impl Shape for Cube {
+    fn get_bounds(&self) -> Bounds {
+        (point(-1., -1., -1.), point(1., 1., 1.))
+    }
+
     fn get_base(&self) -> &BaseShape {
         &self.base
     }

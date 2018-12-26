@@ -21,6 +21,10 @@ impl Default for Sphere {
 }
 
 impl Shape for Sphere {
+    fn get_bounds(&self) -> Bounds {
+        (point(-1., -1., -1.), point(1., 1., 1.))
+    }
+    
     fn get_base(&self) -> &BaseShape {
         &self.base
     }

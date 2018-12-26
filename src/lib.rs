@@ -2,6 +2,7 @@
 #[macro_use]
 extern crate approx;
 
+pub use crate::bounds::*;
 pub use crate::camera::*;
 pub use crate::canvas::*;
 pub use crate::color::*;
@@ -22,6 +23,7 @@ pub use crate::transform::*;
 pub use crate::triangle::*;
 pub use crate::world::*;
 
+mod bounds;
 mod camera;
 mod canvas;
 mod color;

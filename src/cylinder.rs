@@ -83,6 +83,10 @@ impl Default for Cylinder {
 }
 
 impl Shape for Cylinder {
+    fn get_bounds(&self) -> Bounds {
+        (point(-1., -1., -1.), point(1., 1., 1.))
+    }
+
     fn get_base(&self) -> &BaseShape {
         &self.base
     }

@@ -33,6 +33,20 @@ impl Triangle {
 }
 
 impl Shape for Triangle {
+    fn get_bounds(&self) -> Bounds {
+        let p1 = self.p1;
+        let p2 = p1 + self.e1;
+        let p3 = p1 + self.e2;
+
+        let min_x = p1.x.min(p2.x).min(p3.x);
+        let min_y = p1.y.min(p2.y).min(p3.y);
+        let min_z = p1.z.min(p2.z).min(p3.z);
+        let max_x = p1.x.max(p2.x).max(p3.x);
+        let max_y = p1.y.max(p2.y).max(p3.y);
+        let max_z = p1.z.max(p2.z).max(p3.z);
+        (point(min_x, min_y, min_z), point(max_x, max_y, max_z))
+    }
+
     fn get_base(&self) -> &BaseShape {
         unimplemented!()
     }

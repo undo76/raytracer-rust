@@ -5,6 +5,7 @@ use std::sync::Arc;
 pub struct Group {
     base: BaseShape,
     shapes: Vec<Arc<dyn Shape>>,
+    bounds: Bounds,
 }
 
 impl Group {
@@ -12,11 +13,17 @@ impl Group {
         Group {
             base: BaseShape::new(transform, material),
             shapes: vec![],
+            bounds: no_bounds(),
         }
     }
 
     pub fn add_shape(&mut self, mut shape: Arc<dyn Shape>) {
         Arc::get_mut(&mut shape).unwrap().set_parent(self);
+        let transform = &shape.get_transform();
+        self.bounds = bounds_reducer(
+            self.bounds,
+            transform_bounds(&shape.get_bounds(), transform),
+        );
         self.shapes.push(shape);
     }
 }
@@ -28,6 +35,10 @@ impl Default for Group {
 }
 
 impl Shape for Group {
+    fn get_bounds(&self) -> Bounds {
+        self.bounds
+    }
+
     fn get_base(&self) -> &BaseShape {
         &self.base
     }
@@ -37,10 +48,16 @@ impl Shape for Group {
     }
 
     fn local_normal_at(&self, _local_point: &Point) -> UnitVector {
+        // unit_vector(0., 1., 0.)
         panic!("Local normal called for group.")
     }
 
     fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {
+        //return bounds_intersects(self, &ray);
+        if bounds_intersects(self, &ray).is_none() {
+            return None;
+        }
+
         self.shapes
             .iter()
             .filter_map(|s| s.intersects(ray))

@@ -20,6 +20,13 @@ impl Default for Plane {
 }
 
 impl Shape for Plane {
+    fn get_bounds(&self) -> Bounds {
+        (
+            point(core::f32::NEG_INFINITY, -EPS, core::f32::NEG_INFINITY),
+            point(core::f32::INFINITY, EPS, core::f32::INFINITY),
+        )
+    }
+
     fn get_base(&self) -> &BaseShape {
         &self.base
     }

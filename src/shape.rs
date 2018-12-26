@@ -20,6 +20,7 @@ impl BaseShape {
 }
 
 pub trait Shape: core::fmt::Debug + Sync + Send {
+    fn get_bounds(&self) -> Bounds;
     fn get_base(&self) -> &BaseShape;
     fn get_base_mut(&mut self) -> &mut BaseShape;
     fn local_intersects(&self, local_ray: &Ray) -> Option<Intersection>;
