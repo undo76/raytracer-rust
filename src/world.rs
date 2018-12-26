@@ -30,8 +30,8 @@ impl World {
     fn is_shadowed(&self, light: &PointLight, point: &Point) -> bool {
         let v = light.position - point;
         let distance = magnitude(&v);
-        let direction = normalize(&v);
-        let r = Ray::new(*point, direction.unwrap());
+        let direction = normalize(&v).unwrap();
+        let r = Ray::new(*point, direction);
         self.ray_in_shadow(&r, distance).is_some()
     }
 

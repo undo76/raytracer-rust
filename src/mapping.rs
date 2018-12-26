@@ -34,7 +34,7 @@ pub trait MappingMapping<T>
 where
     T: Copy,
 {
-    fn get_transform_inverse(&self) -> &Transform;
+    fn get_transform_inverse(&self) -> Transform;
     fn map_at(&self, pattern_point: &Point) -> T;
     fn map_at_object(&self, object_point: &Point) -> T {
         let pattern_point = self.get_transform_inverse() * object_point;
@@ -46,8 +46,8 @@ impl<T> MappingMapping<T> for StripeMapping<T>
 where
     T: Copy,
 {
-    fn get_transform_inverse(&self) -> &Transform {
-        &self.transform_inverse
+    fn get_transform_inverse(&self) -> Transform {
+        self.transform_inverse
     }
     fn map_at(&self, pattern_point: &Point) -> T {
         let n = self.values.len() as isize;
@@ -60,8 +60,8 @@ impl<T> MappingMapping<T> for CheckersMapping<T>
 where
     T: Copy,
 {
-    fn get_transform_inverse(&self) -> &Transform {
-        &self.transform_inverse
+    fn get_transform_inverse(&self) -> Transform {
+        self.transform_inverse
     }
     fn map_at(&self, pattern_point: &Point) -> T {
         let n = self.values.len() as isize;
@@ -80,8 +80,8 @@ where
         + core::ops::Add<Output = T>
         + core::ops::Mul<f32, Output = T>,
 {
-    fn get_transform_inverse(&self) -> &Transform {
-        &self.transform_inverse
+    fn get_transform_inverse(&self) -> Transform {
+        self.transform_inverse
     }
     fn map_at(&self, pattern_point: &Point) -> T {
         let distance = self.values.1 - self.values.0;
@@ -97,8 +97,8 @@ where
         + core::ops::Add<Output = T>
         + core::ops::Mul<f32, Output = T>,
 {
-    fn get_transform_inverse(&self) -> &Transform {
-        &self.transform_inverse
+    fn get_transform_inverse(&self) -> Transform {
+        self.transform_inverse
     }
     fn map_at(&self, pattern_point: &Point) -> T {
         let (x, z) = (pattern_point.x, pattern_point.z);

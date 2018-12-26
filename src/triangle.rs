@@ -1,36 +1,44 @@
 use crate::*;
+use core::sync::atomic::AtomicPtr;
+use core::sync::atomic::Ordering;
+use std::sync::Arc;
 
 #[derive(Debug)]
 pub struct Triangle {
-    base: BaseShape,
-    points: [Point; 3],
+    parent: AtomicPtr<Group>,
+    p1: Point,
     e1: Vector,
     e2: Vector,
     normal: UnitVector,
 }
 
 impl Triangle {
-    pub fn new(material: Material, points: [Point; 3]) -> Triangle {
-        let e1 = points[1] - points[0];
-        let e2 = points[2] - points[0];
-        let normal = normalize(&cross(&(e1), &(e2)));
-        Triangle {
-            base: BaseShape::new(Transform::identity(), material),
-            points,
-            e1,
-            e2,
-            normal,
+    pub fn add_to_group(group: &mut Group, points: &[Point]) {
+        debug_assert!(points.len() >= 3);
+        let p1 = points[0];
+        for index in 1..(points.len() - 1) {
+            let e1 = points[index] - p1;
+            let e2 = points[index + 1] - p1;
+            let normal = normalize(&cross(&e1, &e2));
+            let t = Triangle {
+                parent: AtomicPtr::new(&mut *group),
+                p1,
+                e1,
+                e2,
+                normal,
+            };
+            group.add_shape(Arc::new(t));
         }
     }
 }
 
 impl Shape for Triangle {
     fn get_base(&self) -> &BaseShape {
-        &self.base
+        unimplemented!()
     }
 
     fn get_base_mut(&mut self) -> &mut BaseShape {
-        &mut self.base
+        unimplemented!()
     }
 
     fn local_normal_at(&self, _local_point: &Point) -> UnitVector {
@@ -44,7 +52,7 @@ impl Shape for Triangle {
             return None;
         }
         let f = 1.0 / det;
-        let p1_to_origin = ray.origin - self.points[0];
+        let p1_to_origin = ray.origin - self.p1;
         let u = f * dot(&p1_to_origin, &dir_cross_e2);
         if u < 0. || u > 1. {
             return None;
@@ -55,25 +63,38 @@ impl Shape for Triangle {
             return None;
         }
         let t = f * dot(&self.e2, &origin_cross_e1);
-        return Some(Intersection::new(t, self));
+        if t > EPS {
+            return Some(Intersection::new(t, self));
+        } else {
+            return None;
+        }
     }
-}
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+    fn get_material(&self) -> &Material {
+        self.get_parent().unwrap().get_material()
+    }
 
-    #[test]
-    fn normal_on_a_triangle() {
-        let t = Triangle::new(
-            Material::default(),
-            [point(0., 1., 0.), point(-1., 0., 0.), point(1., 0., 0.)],
-        );
-        let n1 = t.local_normal_at(&point(0., 0.5, 0.));
-        let n2 = t.local_normal_at(&point(-0.5, 0.75, 0.));
-        let n3 = t.local_normal_at(&point(0.5, 0.25, 0.));
-        assert_relative_eq!(n1, t.normal);
-        assert_relative_eq!(n2, t.normal);
-        assert_relative_eq!(n3, t.normal);
+    fn set_material(&mut self, _material: Material) {
+        unimplemented!()
+    }
+
+    fn set_transform(&mut self, _trans: Transform) {
+        unimplemented!()
+    }
+
+    fn get_transform(&self) -> Transform {
+        Transform::identity()
+    }
+
+    fn get_transform_inverse(&self) -> Transform {
+        Transform::identity()
+    }
+
+    fn get_parent(&self) -> Option<&Group> {
+        unsafe { self.parent.load(Ordering::Relaxed).as_ref() }
+    }
+
+    fn set_parent(&mut self, group: &mut Group) {
+        self.parent = AtomicPtr::new(group);
     }
 }

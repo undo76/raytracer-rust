@@ -116,7 +116,7 @@ pub trait Shape: core::fmt::Debug + Sync + Send {
     fn local_normal_at(&self, p: &Point) -> UnitVector;
 
     fn intersects(&self, ray: &Ray) -> Option<Intersection> {
-        let local_ray = ray.transform(self.get_transform_inverse());
+        let local_ray = ray.transform(&self.get_transform_inverse());
         self.local_intersects(&local_ray)
     }
 
@@ -127,7 +127,7 @@ pub trait Shape: core::fmt::Debug + Sync + Send {
     }
 
     fn world_to_object(&self, point: &Point) -> Point {
-        let parent = unsafe { self.get_parent() };
+        let parent = self.get_parent();
         let point = match parent {
             Some(parent) => parent.world_to_object(point),
             None => *point,
@@ -138,12 +138,12 @@ pub trait Shape: core::fmt::Debug + Sync + Send {
     }
 
     fn normal_to_world(&self, local_normal: &Vector) -> UnitVector {
-        let t_inv = &self.get_transform_inverse();
-        let mut world_normal = (*t_inv).matrix().transpose() * local_normal.to_homogeneous();
+        let t_inv = self.get_transform_inverse();
+        let mut world_normal = t_inv.matrix().transpose() * local_normal.to_homogeneous();
         world_normal[3] = 0.;
         let normal = UnitVector::new_normalize(Vector::from_homogeneous(world_normal).unwrap());
 
-        let parent = unsafe { self.get_parent() };
+        let parent = self.get_parent();
         match parent {
             Some(parent) => parent.normal_to_world(&normal.unwrap()),
             None => normal,
@@ -166,12 +166,12 @@ pub trait Shape: core::fmt::Debug + Sync + Send {
         self.get_base().transform_inverse.inverse()
     }
 
-    fn get_transform_inverse(&self) -> &Transform {
-        &self.get_base().transform_inverse
+    fn get_transform_inverse(&self) -> Transform {
+        self.get_base().transform_inverse
     }
 
-    unsafe fn get_parent(&self) -> Option<&Group> {
-        self.get_base().parent.load(Ordering::Relaxed).as_ref()
+    fn get_parent(&self) -> Option<&Group> {
+        unsafe { self.get_base().parent.load(Ordering::Relaxed).as_ref() }
     }
 
     fn set_parent(&mut self, group: &mut Group) {

@@ -5,10 +5,11 @@ authors = ["Manolo Santos <manolo.santos@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-nalgebra = "0.16.10"
+nalgebra = "0.16.12"
 alga = "0.7.2"
-approx = "0.3.0"
+approx = "0.3.1"
 num_cpus = "1.9.0"
+nom = "4.1.1"
 
 [[example]]
 name = "scene"
@@ -18,3 +19,6 @@ name = "group"
 
 [[example]]
 name = "triangle"
+
+[[example]]
+name = "teapot"

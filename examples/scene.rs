@@ -112,11 +112,29 @@ fn main() {
     ));
     cube_material.refractive_index = 1.;
 
+    let mut triangles = Group::new(
+        na::convert(translation(2., 0., 0.) * rotation_y(F_PI_2) * scaling(0.5, 0.5, 0.5)),
+        Material::default(),
+    );
+    Triangle::add_to_group(
+        &mut triangles,
+        &[
+            point(0., 0., 0.),
+            point(1., 0., 0.),
+            point(1., 1., 0.),
+            point(0., 1., 0.),
+            point(0., 0., -2.),
+        ],
+    );
+    let triangles = Arc::new(triangles);
+
     let light = PointLight::new(point(-10., 10., -10.), color(0.9, 0.8, 0.7));
     let light2 = PointLight::new(point(5., 5., -10.), color(0.3, 0.5, 0.5));
 
     let world = World::new(
-        vec![floor, right_wall, left_wall, middle, left, right, cube],
+        vec![
+            floor, right_wall, left_wall, middle, left, right, cube, triangles,
+        ],
         // vec![floor, middle, left, right],
         vec![light, light2],
     );

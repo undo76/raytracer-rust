@@ -41,9 +41,7 @@ impl Shape for Group {
     }
 
     fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {
-        let shapes = &self.shapes;
-
-        shapes
+        self.shapes
             .iter()
             .filter_map(|s| s.intersects(ray))
             .min_by(|min, x| f32::partial_cmp(&min.t, &x.t).unwrap())
@@ -58,7 +56,7 @@ mod tests {
     fn creating_group() {
         let g = Group::default();
         let t = g.get_transform_inverse();
-        assert_eq!(t, &Transform::identity());
+        assert_eq!(t, Transform::identity());
         let s = g.shapes;
         assert_eq!(s.len(), 0);
     }
