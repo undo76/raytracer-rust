@@ -1,7 +1,6 @@
 extern crate raytracer_rust;
 
 use raytracer_rust::*;
-use std::sync::Arc;
 
 use nalgebra as na;
 use std::fs::File;
@@ -31,10 +30,10 @@ fn main() {
         na::convert(rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5)),
     ));
 
-    let floor = Arc::new(Plane::new(Transform::identity(), floor_material.clone()));
+    let floor = Box::new(Plane::new(Transform::identity(), floor_material.clone()));
 
     #[rustfmt::skip]
-    let left_wall = Arc::new(Plane::new(
+    let left_wall = Box::new(Plane::new(
         na::convert(translation(0., 0., 5.)
         * rotation_y(-F_PI_4)
         * rotation_x(-F_PI_2)),
@@ -42,7 +41,7 @@ fn main() {
     ));
 
     #[rustfmt::skip]
-    let right_wall = Arc::new(Plane::new(
+    let right_wall = Box::new(Plane::new(
         na::convert(translation(0., 0., 4.)
         * rotation_y(F_PI_4)
         * rotation_x(F_PI_2)),
@@ -62,7 +61,7 @@ fn main() {
         &vec![0.03, 0.1],
         na::convert(rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2)),
     ));
-    let middle = Arc::new(Sphere::new(
+    let middle = Box::new(Sphere::new(
         na::convert(translation(-0.5, 1., 0.5) * rotation_z(0.2) * rotation_x(0.2)),
         middle_material,
     ));
@@ -75,7 +74,7 @@ fn main() {
     right_material.reflective = Some(Mapping::from(0.3));
     right_material.diffuse = (0.8).into();
 
-    let right = Arc::new(Cylinder::new(
+    let right = Box::new(Cylinder::new(
         na::convert(translation(1.2, 0.2, -1.0) * scaling(0.2, 0.2, 0.2)),
         right_material.clone(),
         true,
@@ -90,7 +89,7 @@ fn main() {
     left_material.transparency = Some(Mapping::from(0.9));
     left_material.refractive_index = 1.5;
 
-    let left = Arc::new(Sphere::new(
+    let left = Box::new(Sphere::new(
         na::convert(translation(-1.5, 0.333, -0.75) * scaling(0.333, 0.333, 0.333)),
         left_material.clone(),
     ));
@@ -106,7 +105,7 @@ fn main() {
         na::convert(scaling(0.5, 0.5, 0.5)),
     ));
     cube_material.reflective = Some((0.5).into());
-    let cube = Arc::new(Cube::new(
+    let cube = Box::new(Cube::new(
         na::convert(translation(-0.2, 0.3001, -1.) * scaling(0.3, 0.3, 0.3) * rotation_y(-0.5)),
         cube_material.clone(),
     ));
@@ -126,7 +125,7 @@ fn main() {
             point(0., 0., -2.),
         ],
     );
-    let triangles = Arc::new(triangles);
+    let triangles = Box::new(triangles);
 
     let light = PointLight::new(point(-10., 10., -10.), color(0.9, 0.8, 0.7));
     let light2 = PointLight::new(point(5., 5., -10.), color(0.3, 0.5, 0.5));

@@ -1,11 +1,14 @@
 use crate::*;
 use std::sync::Arc;
+use bvh::bvh::BVH;
 
-#[derive(Debug)]
+
+
 pub struct Group {
     base: BaseShape,
-    shapes: Vec<Arc<dyn Shape>>,
+    shapes: Vec<Box<dyn Shape + Send>>,
     bounds: Bounds,
+    bvh: Option<BVH>
 }
 
 impl Group {
@@ -14,11 +17,12 @@ impl Group {
             base: BaseShape::new(transform, material),
             shapes: vec![],
             bounds: no_bounds(),
+            bvh: None
         }
     }
 
-    pub fn add_shape(&mut self, mut shape: Arc<dyn Shape>) {
-        Arc::get_mut(&mut shape).unwrap().set_parent(self);
+    pub fn add_shape(&mut self, mut shape: Box<dyn Shape + Send>) {
+        shape.set_parent(self);
         let transform = &shape.get_transform();
         self.bounds = bounds_reducer(
             self.bounds,
@@ -26,6 +30,10 @@ impl Group {
         );
         self.shapes.push(shape);
     }
+
+    // pub fn build_bvh(&mut self) {
+    //     self.bvh = Some(BVH::build(&mut self.shapes))
+    // }
 }
 
 impl Default for Group {
@@ -82,7 +90,7 @@ mod tests {
     fn add_shape_to_group() {
         let mut g = Group::default();
         let s = Sphere::default();
-        let a_s = Arc::new(s);
+        let a_s = Box::new(s);
         g.add_shape(a_s);
     }
 }

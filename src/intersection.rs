@@ -1,6 +1,5 @@
 use crate::*;
 
-#[derive(Debug)]
 pub struct Hit<'a> {
     pub intersection: &'a Intersection<'a>,
     pub point: Point,
@@ -32,7 +31,6 @@ impl Hit<'_> {
     }
 }
 
-#[derive(Debug)]
 pub struct Intersection<'a> {
     pub t: f32,
     pub object: &'a dyn Shape,

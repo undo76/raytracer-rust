@@ -16,6 +16,7 @@ pub struct Triangle {
     e1: Vector,
     e2: Vector,
     normal: NormalType,
+    pub node_index: usize,
 }
 
 impl Triangle {
@@ -32,8 +33,9 @@ impl Triangle {
                 e1,
                 e2,
                 normal,
+                node_index: 0,
             };
-            group.add_shape(Arc::new(t));
+            group.add_shape(Box::new(t));
         }
     }
 }

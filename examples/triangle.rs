@@ -1,7 +1,6 @@
 extern crate raytracer_rust;
 
 use raytracer_rust::*;
-use std::sync::Arc;
 
 use nalgebra as na;
 use std::fs::File;
@@ -20,15 +19,12 @@ fn main() {
     floor_material.reflective = Some(Mapping::from(0.05));
     floor_material.attenuation = Attenuation::Squared;
 
-    let walls = Arc::new(Cube::new(
-        na::convert( scaling(10., 10., 10.)),
+    let walls = Box::new(Cube::new(
+        na::convert(scaling(10., 10., 10.)),
         Material::default(),
     ));
 
-     let floor = Arc::new(Plane::new(
-        Transform::identity(),
-        floor_material.clone(),
-    ));
+    let floor = Box::new(Plane::new(Transform::identity(), floor_material.clone()));
 
     let mut group = Group::new(Transform::identity(), Material::default());
     Triangle::add_to_group(
@@ -47,7 +43,7 @@ fn main() {
         &[point(1., 1., 1.), point(1., 2., 1.), point(2., 1., 1.)],
     );
 
-    let group = Arc::new(group);
+    let group = Box::new(group);
 
     let light = PointLight::new(point(-8., 8., -8.), color(0.9, 0.8, 0.7));
     let world = World::new(vec![floor, walls, group], vec![light]);

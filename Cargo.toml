@@ -10,6 +10,7 @@ alga = "0.7.2"
 approx = "0.3.1"
 num_cpus = "1.9.0"
 nom = "4.1.1"
+bvh = "0.2.4"
 
 [[example]]
 name = "scene"

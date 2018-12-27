@@ -2,14 +2,13 @@ use crate::*;
 use nalgebra as na;
 use std::sync::Arc;
 
-#[derive(Debug)]
 pub struct World {
-    pub shapes: Vec<Arc<dyn Shape>>,
+    pub shapes: Vec<Box<dyn Shape + Send>>,
     pub lights: Vec<PointLight>,
 }
 
 impl World {
-    pub fn new(shapes: Vec<Arc<dyn Shape>>, lights: Vec<PointLight>) -> World {
+    pub fn new(shapes: Vec<Box<dyn Shape + Send>>, lights: Vec<PointLight>) -> World {
         World { shapes, lights }
     }
 
@@ -136,7 +135,7 @@ impl Default for World {
         let s2 = Sphere::new(na::convert(scaling(0.5, 0.5, 0.5)), Material::default());
 
         World {
-            shapes: vec![Arc::new(s1), Arc::new(s2)],
+            shapes: vec![Box::new(s1), Box::new(s2)],
             lights: vec![PointLight::new(point(-10., 10., -10.), WHITE)],
         }
     }
@@ -190,9 +189,7 @@ mod tests {
         material.ambient = Mapping::from(1.);
         material.diffuse = Mapping::from(0.);
         material.specular = Mapping::from(0.);
-        Arc::get_mut(&mut world.shapes[1])
-            .unwrap()
-            .set_material(material);
+        world.shapes[1].set_material(material);
         let ray = Ray::new(point(0., 0., -0.75), vector(0., 0., 1.));
         let c = world.color_at(&ray, 0);
         assert_relative_eq!(

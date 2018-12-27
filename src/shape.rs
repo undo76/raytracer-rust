@@ -7,6 +7,7 @@ pub struct BaseShape {
     transform_inverse: Transform,
     material: Material,
     parent: AtomicPtr<Group>,
+    pub node_index: usize, // For BVH
 }
 
 impl BaseShape {
@@ -15,11 +16,12 @@ impl BaseShape {
             transform_inverse: transform.inverse(),
             material,
             parent: AtomicPtr::new(core::ptr::null_mut()),
+            node_index: 0,
         }
     }
 }
 
-pub trait Shape: core::fmt::Debug + Sync + Send {
+pub trait Shape: Sync + Send {
     fn get_bounds(&self) -> Bounds;
     fn get_base(&self) -> &BaseShape;
     fn get_base_mut(&mut self) -> &mut BaseShape;

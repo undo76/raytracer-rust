@@ -1,7 +1,6 @@
 extern crate raytracer_rust;
 
 use raytracer_rust::*;
-use std::sync::Arc;
 
 use nalgebra as na;
 use std::fs::File;
@@ -21,7 +20,7 @@ fn main() {
     floor_material.specular = Mapping::from(0.7);
     floor_material.reflective = Some(Mapping::from(0.2));
 
-    let floor = Arc::new(Plane::new(Transform::identity(), floor_material.clone()));
+    let floor = Box::new(Plane::new(Transform::identity(), floor_material.clone()));
 
     let mut middle_material = Material::default();
     middle_material.color = Mapping::stripes(
@@ -34,12 +33,12 @@ fn main() {
         na::convert(rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2)),
     ));
 
-    let sphere = Arc::new(Sphere::new(
+    let sphere = Box::new(Sphere::new(
         na::convert(translation(-0.5, 1., 0.5)),
         middle_material.clone(),
     ));
 
-    let sphere2 = Arc::new(Sphere::new(
+    let sphere2 = Box::new(Sphere::new(
         na::convert(translation(0.5, 2., 2.5)),
         Material::default(),
     ));
@@ -48,7 +47,7 @@ fn main() {
     group.add_shape(sphere);
     group.add_shape(sphere2);
 
-    let group = Arc::new(group);
+    let group = Box::new(group);
 
     let light = PointLight::new(point(-10., 10., -10.), color(0.9, 0.8, 0.7));
 

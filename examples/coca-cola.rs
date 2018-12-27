@@ -6,7 +6,7 @@ use nalgebra as na;
 use std::fs::File;
 use std::io::prelude::*;
 
-const F_PI_2: f32 = std::f32::consts::FRAC_PI_2;
+const F_PI_4: f32 = std::f32::consts::FRAC_PI_4;
 
 fn main() {
     let mut floor_material = Material::default();
@@ -19,14 +19,9 @@ fn main() {
     floor_material.reflective = Some(Mapping::from(0.05));
     floor_material.attenuation = Attenuation::Squared;
 
-    let walls = Box::new(Cube::new(
-        na::convert(scaling(10., 10., 10.)),
-        Material::default(),
-    ));
-
     let floor = Box::new(Plane::new(Transform::identity(), floor_material.clone()));
 
-    let mut obj_file = File::open("./examples/models/teapot.obj").expect("teapot.obj no file");
+    let mut obj_file = File::open("./examples/models/coca-cola.obj").expect("file not found");
     let mut obj_str = String::new();
     let _res = obj_file.read_to_string(&mut obj_str).unwrap();
     let obj = parse(&obj_str);
@@ -46,21 +41,22 @@ fn main() {
         &[point(1., 1., 1.), point(1., 2., 1.), point(2., 1., 1.)],
     );
 
+    group.set_transform(na::convert(scaling(0.01, 0.01, 0.01)));
     let group = Box::new(group);
 
     let light = PointLight::new(point(-8., 8., -5.), color(0.9, 0.8, 0.7));
-    let world = World::new(vec![floor, walls, group], vec![light]);
+    let world = World::new(vec![floor, group], vec![light]);
 
-    let mut camera = Camera::new(800, 600, F_PI_2);
+    let mut camera = Camera::new(800, 600, F_PI_4);
     camera.set_transform(view_transform(
-        point(1., 5., -5.),
-        point(0., 1., 0.),
+        point(1., 2., -5.),
+        point(0., 0., 0.),
         vector(0., 1., 0.),
     ));
 
     let canvas = camera.render(world);
 
-    let mut file = File::create("teapot.ppm").expect("Couldn't create file");
+    let mut file = File::create("coca-cola.ppm").expect("Couldn't create file");
     file.write_all(canvas.to_ppm_string().as_bytes())
         .expect("Couldn't write canvas");
 }

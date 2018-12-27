@@ -1,4 +1,7 @@
 use crate::*;
+use bvh::aabb::Bounded;
+use bvh::aabb::AABB;
+use bvh::bounding_hierarchy::BHShape;
 
 pub fn no_bounds() -> Bounds {
     (
@@ -82,3 +85,30 @@ fn check_axis(limits: (f32, f32), origin: f32, direction: f32) -> (f32, f32) {
     }
     (tmin, tmax)
 }
+
+impl Bounded for Shape {
+    fn aabb(&self) -> AABB {
+        let (min, max) = self.get_bounds();
+        AABB::with_bounds(min, max)
+    }
+}
+
+impl BHShape for Shape {
+    fn set_bh_node_index(&mut self, index: usize) {
+        self.get_base_mut().node_index = index;
+    }
+
+    fn bh_node_index(&self) -> usize {
+        self.get_base().node_index
+    }
+}
+
+// impl BHShape for Triangle {
+//     fn set_bh_node_index(&mut self, index: usize) {
+//         self.node_index = index;
+//     }
+
+//     fn bh_node_index(&self) -> usize {
+//         self.node_index
+//     }
+// }
