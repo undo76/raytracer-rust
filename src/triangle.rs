@@ -1,7 +1,6 @@
 use crate::*;
 use core::sync::atomic::AtomicPtr;
 use core::sync::atomic::Ordering;
-use std::sync::Arc;
 
 #[derive(Debug)]
 pub enum NormalType {
@@ -16,24 +15,28 @@ pub struct Triangle {
     e1: Vector,
     e2: Vector,
     normal: NormalType,
-    pub node_index: usize,
 }
 
 impl Triangle {
-    pub fn add_to_group(group: &mut Group, points: &[Point]) {
+    pub fn add_to_group(group: &mut Group, points: &[(Point, Option<UnitVector>)]) {
         debug_assert!(points.len() >= 3);
-        let p1 = points[0];
+        let p1 = points[0].0;
+        let n1 = points[0].1;
         for index in 1..(points.len() - 1) {
-            let e1 = points[index] - p1;
-            let e2 = points[index + 1] - p1;
-            let normal = NormalType::Uniform(normalize(&cross(&e1, &e2)));
+            let e1 = points[index].0 - p1;
+            let e2 = points[index + 1].0 - p1;
+            let n2 = points[index].1;
+            let n3 = points[index + 1].1;
+            let normal = match (n1, n2, n3) {
+                (Some(n1), Some(n2), Some(n3)) => NormalType::Smooth(n1, n2, n3),
+                _ => NormalType::Uniform(normalize(&cross(&e1, &e2))),
+            };
             let t = Triangle {
                 parent: AtomicPtr::new(&mut *group),
                 p1,
                 e1,
                 e2,
                 normal,
-                node_index: 0,
             };
             group.add_shape(Box::new(t));
         }
@@ -63,10 +66,13 @@ impl Shape for Triangle {
         unimplemented!()
     }
 
-    fn local_normal_at(&self, _local_point: &Point) -> UnitVector {
+    fn local_normal_at(&self, _local_point: &Point, hit: &Intersection) -> UnitVector {
         match self.normal {
             NormalType::Uniform(n) => n,
-            NormalType::Smooth(n1, n2, n3) => n1, //TODO
+            NormalType::Smooth(n1, n2, n3) => {
+                let (u, v) = hit.uv.unwrap();
+                normalize(&(n2.unwrap() * u + n3.unwrap() * v + n1.unwrap() * (1. - u - v)))
+            }
         }
     }
 

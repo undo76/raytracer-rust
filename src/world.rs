@@ -1,28 +1,48 @@
 use crate::*;
+use bvh::bvh::BVH;
 use nalgebra as na;
-use std::sync::Arc;
 
 pub struct World {
-    pub shapes: Vec<Box<dyn Shape + Send>>,
+    pub bounded_shapes: Vec<BoundedShape>,
     pub lights: Vec<PointLight>,
+    bvh: BVH,
 }
 
 impl World {
     pub fn new(shapes: Vec<Box<dyn Shape + Send>>, lights: Vec<PointLight>) -> World {
-        World { shapes, lights }
+        let mut bounded_shapes = shapes
+            .into_iter()
+            .map(|mut s| {
+                s.shape_added();
+                BoundedShape::new(s)
+            })
+            .collect::<Vec<_>>();
+
+        let bvh = BVH::build(&mut bounded_shapes);
+        let world = World {
+            bounded_shapes,
+            lights,
+            bvh,
+        };
+        world
+    }
+
+    fn intersects_bvh(&self, ray: &Ray) -> Vec<&BoundedShape> {
+        let bvh_ray = bvh::ray::Ray::new(ray.origin, ray.direction);
+        self.bvh.traverse(&bvh_ray, &self.bounded_shapes)
     }
 
     fn ray_in_shadow(&self, ray: &Ray, light_distance: f32) -> Option<Intersection> {
-        self.shapes
+        self.intersects_bvh(&ray)
             .iter()
-            .filter_map(|s| s.intersects(ray))
+            .filter_map(|s| s.get_shape().intersects(ray))
             .find(|x| x.t < light_distance)
     }
 
     fn intersects(&self, ray: &Ray) -> Option<Intersection> {
-        self.shapes
+        self.intersects_bvh(&ray)
             .iter()
-            .filter_map(|s| s.intersects(ray))
+            .filter_map(|s| s.get_shape().intersects(ray))
             .min_by(|min, x| f32::partial_cmp(&min.t, &x.t).unwrap())
     }
 
@@ -134,10 +154,10 @@ impl Default for World {
         let s1 = Sphere::new(Transform::identity(), m1);
         let s2 = Sphere::new(na::convert(scaling(0.5, 0.5, 0.5)), Material::default());
 
-        World {
-            shapes: vec![Box::new(s1), Box::new(s2)],
-            lights: vec![PointLight::new(point(-10., 10., -10.), WHITE)],
-        }
+        World::new(
+            vec![Box::new(s1), Box::new(s2)],
+            vec![PointLight::new(point(-10., 10., -10.), WHITE)],
+        )
     }
 }
 
@@ -168,7 +188,7 @@ mod tests {
         let mut world = World::default();
         world.lights = vec![PointLight::new(point(0., 0.25, 0.), color(1., 1., 1.))];
         let ray = Ray::new(point(0., 0., 0.), vector(0., 0., 1.));
-        let intersection = Intersection::new(0.5, &(*world.shapes[1]));
+        let intersection = Intersection::new(0.5, &(*world.bounded_shapes[1].shape));
         let hit = intersection.prepare_hit(&ray);
         let c = world.shade_hit(&hit, 0);
         assert_relative_eq!(c, color(0.9049845, 0.9049845, 0.9049845));
@@ -189,12 +209,13 @@ mod tests {
         material.ambient = Mapping::from(1.);
         material.diffuse = Mapping::from(0.);
         material.specular = Mapping::from(0.);
-        world.shapes[1].set_material(material);
+        world.bounded_shapes[1].shape.set_material(material);
         let ray = Ray::new(point(0., 0., -0.75), vector(0., 0., 1.));
         let c = world.color_at(&ray, 0);
         assert_relative_eq!(
             c,
-            world.shapes[1]
+            world.bounded_shapes[1]
+                .shape
                 .get_material()
                 .color
                 .map_at_object(&point(0., 0., 0.))

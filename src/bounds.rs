@@ -86,29 +86,46 @@ fn check_axis(limits: (f32, f32), origin: f32, direction: f32) -> (f32, f32) {
     (tmin, tmax)
 }
 
-impl Bounded for Shape {
+#[derive(Debug)]
+pub struct BoundedShape {
+    pub shape: Box<dyn Shape + Send>,
+    bounds: (Point, Point),
+    node_index: usize,
+}
+
+impl BoundedShape {
+    pub fn new(shape: Box<dyn Shape + Send>) -> BoundedShape {
+        let bounds = transform_bounds(&shape.get_bounds(), &shape.get_transform());
+
+        BoundedShape {
+            shape,
+            bounds,
+            node_index: 0,
+        }
+    }
+
+    pub fn get_shape(&self) -> &Box<dyn Shape + Send> {
+        &self.shape
+    }
+
+    pub fn get_shape_mut(&mut self) -> &mut Box<dyn Shape + Send> {
+        &mut self.shape
+    }
+}
+
+impl Bounded for BoundedShape {
     fn aabb(&self) -> AABB {
-        let (min, max) = self.get_bounds();
+        let (min, max) = self.bounds;
         AABB::with_bounds(min, max)
     }
 }
 
-impl BHShape for Shape {
+impl BHShape for BoundedShape {
     fn set_bh_node_index(&mut self, index: usize) {
-        self.get_base_mut().node_index = index;
+        self.node_index = index;
     }
 
     fn bh_node_index(&self) -> usize {
-        self.get_base().node_index
+        self.node_index
     }
 }
-
-// impl BHShape for Triangle {
-//     fn set_bh_node_index(&mut self, index: usize) {
-//         self.node_index = index;
-//     }
-
-//     fn bh_node_index(&self) -> usize {
-//         self.node_index
-//     }
-// }

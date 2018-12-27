@@ -1,4 +1,5 @@
 use crate::*;
+use core::fmt::Debug;
 use core::sync::atomic::AtomicPtr;
 use std::sync::atomic::Ordering;
 
@@ -7,7 +8,6 @@ pub struct BaseShape {
     transform_inverse: Transform,
     material: Material,
     parent: AtomicPtr<Group>,
-    pub node_index: usize, // For BVH
 }
 
 impl BaseShape {
@@ -16,26 +16,28 @@ impl BaseShape {
             transform_inverse: transform.inverse(),
             material,
             parent: AtomicPtr::new(core::ptr::null_mut()),
-            node_index: 0,
         }
     }
 }
 
-pub trait Shape: Sync + Send {
+pub trait Shape: Debug + Sync + Send {
+    fn shape_added(&mut self) {
+        ()
+    }
     fn get_bounds(&self) -> Bounds;
     fn get_base(&self) -> &BaseShape;
     fn get_base_mut(&mut self) -> &mut BaseShape;
     fn local_intersects(&self, local_ray: &Ray) -> Option<Intersection>;
-    fn local_normal_at(&self, p: &Point) -> UnitVector;
+    fn local_normal_at(&self, point: &Point, intersection: &Intersection) -> UnitVector;
 
     fn intersects(&self, ray: &Ray) -> Option<Intersection> {
         let local_ray = ray.transform(&self.get_transform_inverse());
         self.local_intersects(&local_ray)
     }
 
-    fn normal_at(&self, point: &Point) -> UnitVector {
+    fn normal_at(&self, point: &Point, intersection: &Intersection) -> UnitVector {
         let local_point = self.world_to_object(point);
-        let local_normal = self.local_normal_at(&local_point);
+        let local_normal = self.local_normal_at(&local_point, intersection);
         self.normal_to_world(&local_normal)
     }
 

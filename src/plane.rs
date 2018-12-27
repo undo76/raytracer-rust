@@ -21,10 +21,8 @@ impl Default for Plane {
 
 impl Shape for Plane {
     fn get_bounds(&self) -> Bounds {
-        (
-            point(core::f32::NEG_INFINITY, -EPS, core::f32::NEG_INFINITY),
-            point(core::f32::INFINITY, EPS, core::f32::INFINITY),
-        )
+        // BVH has problems with INF and MAX
+        (point(-1.0e10, -EPS, -1.0e10), point(1.0e10, EPS, 1.0e10))
     }
 
     fn get_base(&self) -> &BaseShape {
@@ -35,7 +33,7 @@ impl Shape for Plane {
         &mut self.base
     }
 
-    fn local_normal_at(&self, _local_point: &Point) -> UnitVector {
+    fn local_normal_at(&self, _local_point: &Point, _intersection: &Intersection) -> UnitVector {
         unit_vector(0., 1., 0.)
     }
 

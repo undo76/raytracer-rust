@@ -95,7 +95,7 @@ impl Shape for Cylinder {
         &mut self.base
     }
 
-    fn local_normal_at(&self, local_point: &Point) -> UnitVector {
+    fn local_normal_at(&self, local_point: &Point, _intersection: &Intersection) -> UnitVector {
         let dist = local_point.x * local_point.x + local_point.z * local_point.z;
 
         if dist < 1. {
@@ -220,9 +220,9 @@ mod tests {
     #[test]
     fn normal_cylinder_axis() {
         let s = Cylinder::default();
-        let n = s.normal_at(&point(1., 0., 0.));
+        let n = s.normal_at(&point(1., 0., 0.), &Intersection::new(1., &s));
         assert_relative_eq!(n.unwrap(), vector(1., 0., 0.));
-        let n = s.normal_at(&point(0., 0., 1.));
+        let n = s.normal_at(&point(0., 0., 1.), &Intersection::new(1., &s));
         assert_relative_eq!(n.unwrap(), vector(0., 0., 1.));
     }
 }

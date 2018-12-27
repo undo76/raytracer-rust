@@ -36,15 +36,15 @@ fn main() {
         Triangle::add_to_group(
             &mut group,
             &f.iter()
-                .map(|v| obj.vertices[v.idx - 1])
+                .map(|v| {
+                    (
+                        obj.vertices[v.idx - 1],
+                        v.normal_idx.map(|n_idx| obj.normals[n_idx - 1]),
+                    )
+                })
                 .collect::<Vec<_>>(),
         );
     }
-
-    Triangle::add_to_group(
-        &mut group,
-        &[point(1., 1., 1.), point(1., 2., 1.), point(2., 1., 1.)],
-    );
 
     let group = Box::new(group);
 

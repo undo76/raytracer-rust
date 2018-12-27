@@ -1,23 +1,31 @@
 use crate::*;
-use std::sync::Arc;
 use bvh::bvh::BVH;
-
-
+use core::fmt::Debug;
 
 pub struct Group {
     base: BaseShape,
-    shapes: Vec<Box<dyn Shape + Send>>,
+    bounded_shapes: Vec<BoundedShape>,
     bounds: Bounds,
-    bvh: Option<BVH>
+    bvh: Option<BVH>,
+}
+
+impl Debug for Group {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        write!(
+            f,
+            "Group {{ base: {:?}, bounded_shapes: {:?}, bounds: {:?} }}",
+            self.base, self.bounded_shapes, self.bounds
+        )
+    }
 }
 
 impl Group {
     pub fn new(transform: Transform, material: Material) -> Group {
         Group {
             base: BaseShape::new(transform, material),
-            shapes: vec![],
+            bounded_shapes: vec![],
             bounds: no_bounds(),
-            bvh: None
+            bvh: None,
         }
     }
 
@@ -28,12 +36,10 @@ impl Group {
             self.bounds,
             transform_bounds(&shape.get_bounds(), transform),
         );
-        self.shapes.push(shape);
-    }
 
-    // pub fn build_bvh(&mut self) {
-    //     self.bvh = Some(BVH::build(&mut self.shapes))
-    // }
+        let bounded_shape = BoundedShape::new(shape);
+        self.bounded_shapes.push(bounded_shape);
+    }
 }
 
 impl Default for Group {
@@ -43,6 +49,14 @@ impl Default for Group {
 }
 
 impl Shape for Group {
+    fn shape_added(&mut self) {
+        for bs in &mut self.bounded_shapes {
+            bs.get_shape_mut().shape_added();
+        }
+        self.bvh = Some(BVH::build(&mut self.bounded_shapes));
+    
+    }
+
     fn get_bounds(&self) -> Bounds {
         self.bounds
     }
@@ -55,20 +69,27 @@ impl Shape for Group {
         &mut self.base
     }
 
-    fn local_normal_at(&self, _local_point: &Point) -> UnitVector {
-        // unit_vector(0., 1., 0.)
+    fn local_normal_at(&self, _local_point: &Point, _intersection: &Intersection) -> UnitVector {
         panic!("Local normal called for group.")
     }
 
     fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {
-        //return bounds_intersects(self, &ray);
         if bounds_intersects(self, &ray).is_none() {
             return None;
         }
 
-        self.shapes
+        let bvh_ray = bvh::ray::Ray::new(ray.origin, ray.direction);
+
+        let bounded_shapes = self
+            .bvh
+            .as_ref()
+            .unwrap()
+            .traverse(&bvh_ray, &self.bounded_shapes);
+        // let bounded_shapes = &self.bounded_shapes;
+
+        bounded_shapes
             .iter()
-            .filter_map(|s| s.intersects(ray))
+            .filter_map(|s| s.get_shape().intersects(ray))
             .min_by(|min, x| f32::partial_cmp(&min.t, &x.t).unwrap())
     }
 }
@@ -82,7 +103,7 @@ mod tests {
         let g = Group::default();
         let t = g.get_transform_inverse();
         assert_eq!(t, Transform::identity());
-        let s = g.shapes;
+        let s = g.bounded_shapes;
         assert_eq!(s.len(), 0);
     }
 

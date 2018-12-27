@@ -32,7 +32,7 @@ impl Shape for Cube {
         &mut self.base
     }
 
-    fn local_normal_at(&self, local_point: &Point) -> UnitVector {
+    fn local_normal_at(&self, local_point: &Point, _intersection: &Intersection) -> UnitVector {
         if local_point.x.abs() >= local_point.y.abs() {
             if local_point.x.abs() >= local_point.z.abs() {
                 unit_vector(local_point.x, 0., 0.)
@@ -126,35 +126,35 @@ mod tests {
         let c = Cube::default();
 
         let p = point(1., 0.5, -0.8);
-        let n = c.local_normal_at(&p);
+        let n = c.local_normal_at(&p, &Intersection::new(1., &c));
         assert_relative_eq!(n, unit_vector(1., 0., 0.));
 
         let p = point(-1., -0.2, 0.9);
-        let n = c.local_normal_at(&p);
+        let n = c.local_normal_at(&p, &Intersection::new(1., &c));
         assert_relative_eq!(n, unit_vector(-1., 0., 0.));
 
         let p = point(-0.4, 1., -0.1);
-        let n = c.local_normal_at(&p);
+        let n = c.local_normal_at(&p, &Intersection::new(1., &c));
         assert_relative_eq!(n, unit_vector(0., 1., 0.));
 
         let p = point(0.3, -1., 0.);
-        let n = c.local_normal_at(&p);
+        let n = c.local_normal_at(&p, &Intersection::new(1., &c));
         assert_relative_eq!(n, unit_vector(0., -1., 0.));
 
         let p = point(0.6, 0.3, 1.);
-        let n = c.local_normal_at(&p);
+        let n = c.local_normal_at(&p, &Intersection::new(1., &c));
         assert_relative_eq!(n, unit_vector(0., 0., 1.));
 
         let p = point(0.4, 0.4, -1.);
-        let n = c.local_normal_at(&p);
+        let n = c.local_normal_at(&p, &Intersection::new(1., &c));
         assert_relative_eq!(n, unit_vector(0., 0., -1.));
 
         let p = point(1., 1., 1.);
-        let n = c.local_normal_at(&p);
+        let n = c.local_normal_at(&p, &Intersection::new(1., &c));
         assert_relative_eq!(n, unit_vector(1., 0., 0.));
 
         let p = point(-1., -1., -1.);
-        let n = c.local_normal_at(&p);
+        let n = c.local_normal_at(&p, &Intersection::new(1., &c));
         assert_relative_eq!(n, unit_vector(-1., 0., 0.));
     }
 }

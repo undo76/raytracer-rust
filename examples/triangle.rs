@@ -30,17 +30,12 @@ fn main() {
     Triangle::add_to_group(
         &mut group,
         &[
-            point(0., 0., 0.),
-            point(1., 0., 0.),
-            point(1., 1., 0.),
-            point(0., 1., 0.),
-            point(0., 0., -2.),
+            (point(1., 1., 0.), None),
+            (point(1., 0., 0.), None),
+            (point(0., 0., 0.), None),
+            (point(0., 1., 0.), None),
+            (point(0., 0., -2.), None),
         ],
-    );
-
-    Triangle::add_to_group(
-        &mut group,
-        &[point(1., 1., 1.), point(1., 2., 1.), point(2., 1., 1.)],
     );
 
     let group = Box::new(group);

@@ -31,26 +31,27 @@ fn main() {
         Triangle::add_to_group(
             &mut group,
             &f.iter()
-                .map(|v| obj.vertices[v.idx - 1])
+                .map(|v| {
+                    (
+                        obj.vertices[v.idx - 1],
+                        v.normal_idx.map(|n_idx| obj.normals[n_idx - 1]),
+                    )
+                })
                 .collect::<Vec<_>>(),
         );
     }
 
-    Triangle::add_to_group(
-        &mut group,
-        &[point(1., 1., 1.), point(1., 2., 1.), point(2., 1., 1.)],
-    );
-
     group.set_transform(na::convert(scaling(0.01, 0.01, 0.01)));
+
     let group = Box::new(group);
 
     let light = PointLight::new(point(-8., 8., -5.), color(0.9, 0.8, 0.7));
     let world = World::new(vec![floor, group], vec![light]);
 
-    let mut camera = Camera::new(800, 600, F_PI_4);
+    let mut camera = Camera::new(1000, 800, F_PI_4);
     camera.set_transform(view_transform(
-        point(1., 2., -5.),
-        point(0., 0., 0.),
+        point(1., 3., -5.),
+        point(0.5, 2., -2.),
         vector(0., 1., 0.),
     ));
 

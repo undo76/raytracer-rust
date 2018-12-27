@@ -118,11 +118,11 @@ fn main() {
     Triangle::add_to_group(
         &mut triangles,
         &[
-            point(0., 0., 0.),
-            point(1., 0., 0.),
-            point(1., 1., 0.),
-            point(0., 1., 0.),
-            point(0., 0., -2.),
+            (point(0., 0., 0.), None),
+            (point(1., 0., 0.), None),
+            (point(1., 1., 0.), None),
+            (point(0., 1., 0.), None),
+            (point(0., 0., -2.), None),
         ],
     );
     let triangles = Box::new(triangles);
@@ -138,7 +138,7 @@ fn main() {
         vec![light, light2],
     );
 
-    let mut camera = Camera::new(2000, 1600, F_PI_3);
+    let mut camera = Camera::new(1000, 800, F_PI_3);
     camera.set_transform(view_transform(
         point(0., 1.5, -5.),
         point(0., 1., 0.),

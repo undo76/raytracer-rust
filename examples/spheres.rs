@@ -55,7 +55,7 @@ fn main() {
                             &light,
                             &p,
                             &-direction,
-                            &object.normal_at(&p),
+                            &object.normal_at(&p, &Intersection::new(1., object)),
                             false,
                         )
                         .into(),

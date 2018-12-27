@@ -24,7 +24,7 @@ impl Shape for Sphere {
     fn get_bounds(&self) -> Bounds {
         (point(-1., -1., -1.), point(1., 1., 1.))
     }
-    
+
     fn get_base(&self) -> &BaseShape {
         &self.base
     }
@@ -33,7 +33,7 @@ impl Shape for Sphere {
         &mut self.base
     }
 
-    fn local_normal_at(&self, local_point: &Point) -> UnitVector {
+    fn local_normal_at(&self, local_point: &Point, _intersection: &Intersection) -> UnitVector {
         na::Unit::new_unchecked(local_point - point(0., 0., 0.))
     }
 
@@ -167,11 +167,11 @@ mod tests {
     #[test]
     fn normal_sphere_axis() {
         let s = Sphere::default();
-        let n = s.normal_at(&point(1., 0., 0.));
+        let n = s.normal_at(&point(1., 0., 0.), &Intersection::new(1., &s));
         assert_relative_eq!(n.unwrap(), vector(1., 0., 0.));
-        let n = s.normal_at(&point(0., 1., 0.));
+        let n = s.normal_at(&point(0., 1., 0.), &Intersection::new(1., &s));
         assert_relative_eq!(n.unwrap(), vector(0., 1., 0.));
-        let n = s.normal_at(&point(0., 0., 1.));
+        let n = s.normal_at(&point(0., 0., 1.), &Intersection::new(1., &s));
         assert_relative_eq!(n.unwrap(), vector(0., 0., 1.));
     }
 
@@ -179,7 +179,10 @@ mod tests {
     fn normal_sphere_translated() {
         let mut s = Sphere::default();
         s.set_transform(na::convert(translation(0., 1., 0.)));
-        let n = s.normal_at(&point(0., 1.70710677, -0.70710677));
+        let n = s.normal_at(
+            &point(0., 1.70710677, -0.70710677),
+            &Intersection::new(1., &s),
+        );
         assert_relative_eq!(n.unwrap(), vector(0., 0.70710677, -0.70710677));
     }
 
@@ -187,7 +190,10 @@ mod tests {
     fn normal_sphere_scaled() {
         let mut s = Sphere::default();
         s.set_transform(na::convert(scaling(1., 0.5, 1.)));
-        let n = s.normal_at(&point(0., 0.70710677, -0.70710677));
+        let n = s.normal_at(
+            &point(0., 0.70710677, -0.70710677),
+            &Intersection::new(1., &s),
+        );
         assert_relative_eq!(n.unwrap(), vector(0., 0.97014254, -0.24253564));
     }
 

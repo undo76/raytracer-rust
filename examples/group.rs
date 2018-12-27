@@ -52,6 +52,7 @@ fn main() {
     let light = PointLight::new(point(-10., 10., -10.), color(0.9, 0.8, 0.7));
 
     let world = World::new(vec![floor, group], vec![light]);
+    // let world = World::new(vec![group], vec![light]);
 
     let mut camera = Camera::new(1000, 800, F_PI_3);
     camera.set_transform(view_transform(

@@ -57,7 +57,7 @@ impl<'a> Intersection<'a> {
     pub fn prepare_hit(&self, ray: &Ray) -> Hit {
         let point = ray.position(self.t);
         let eyev = UnitVector::new_normalize(-ray.direction);
-        let normalv = self.object.normal_at(&point);
+        let normalv = self.object.normal_at(&point, &self);
         let inside = dot(&normalv, &eyev) < 0.;
         let normalv = if inside { -normalv } else { normalv };
         let reflectv = UnitVector::new_unchecked(reflect(&ray.direction, &normalv));
