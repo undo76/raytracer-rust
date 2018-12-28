@@ -8,7 +8,7 @@ use std::f32::consts::*;
 use std::fs::File;
 use std::io::prelude::Write;
 
-const MAX_SPHERES: usize = 2000;
+const MAX_SPHERES: usize = 5_000;
 const RADIUS: f32 = 12.0;
 
 #[derive(Debug)]
@@ -45,7 +45,7 @@ fn metal(color: ColorRgbFloat) -> Material {
 
 fn random_color() -> ColorRgbFloat {
     let mut rng = thread_rng();
-    let c: Vec<f32> = rng.sample_iter(&Uniform::from(0.5..1.0)).take(3).collect();
+    let c: Vec<f32> = rng.sample_iter(&Uniform::from(0.0..0.8)).take(3).collect();
     color(c[0], c[1], c[2])
 }
 
@@ -101,9 +101,8 @@ fn spheres() -> Vec<Box<dyn Shape + Send>> {
         }
 
         if ok {
-            println!("{:?}", &sphere);
+            // println!("{:?}", &sphere);
             spheres.push(sphere);
-            println!("{} {}", spheres.len(), attempts);
             attempts = 0;
         } else {
             attempts += 1;
@@ -130,9 +129,9 @@ fn spheres() -> Vec<Box<dyn Shape + Send>> {
 
 fn lights() -> Vec<PointLight> {
     vec![
-        PointLight::new(point(-100., 100., -100.), color(1.0, 1.0, 1.0)),
-        PointLight::new(point(150., 30., -50.), color(0.2, 0.2, 0.2)),
-        PointLight::new(point(0.0, 0.0, 0.0), color(0.5, 0.5, 0.5)),
+        PointLight::new(point(-100., 100., -100.), color(0.6, 0.6, 0.6)),
+        PointLight::new(point(150., 30., -50.), color(0.1, 0.1, 0.1)),
+        PointLight::new(point(0.0, 0.0, 0.0), color(0.1, 0.1, 0.1)),
     ]
 }
 

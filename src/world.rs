@@ -98,7 +98,8 @@ impl World {
             let object = hit.intersection.object;
             match &object.get_material().reflective {
                 Some(reflective) => {
-                    let reflect_ray = Ray::new(hit.point, hit.reflectv.unwrap());
+                    let reflectv = hit.reflectv.unwrap();
+                    let reflect_ray = Ray::new(hit.point + reflectv * EPS * 100., reflectv);
                     let object_point = object.get_transform_inverse() * hit.point;
                     self.color_at(&reflect_ray, remaining - 1)
                         * reflective.map_at_object(&object_point)
@@ -130,7 +131,7 @@ impl World {
                     let direction =
                         normal * (n_ratio * cos_i - cos_t) - hit.eyev.unwrap() * n_ratio;
                     let origin = hit.point - (normal * EPS);
-                    let refract_ray = Ray::new(origin, direction);
+                    let refract_ray = Ray::new(origin + direction * EPS * 100., direction);
 
                     let object_point = object.get_transform_inverse() * hit.point;
                     self.color_at(&refract_ray, remaining - 1)

@@ -1,7 +1,7 @@
 use approx::{AbsDiffEq, RelativeEq};
 use std::ops::{Add, Mul, Sub};
 
-const DEFAULT_GAMMA: f32 = 1.0;
+const DEFAULT_GAMMA: f32 = 2.2;
 
 type Byte = u8;
 
