@@ -6,39 +6,45 @@ pub use nalgebra::inverse;
 pub type Transform = na::Projective3<f32>;
 
 #[inline]
-pub fn rotation_x(angle: f32) -> na::Rotation3<f32> {
-    na::Rotation3::from_axis_angle(&na::Vector3::x_axis(), angle)
+pub fn rotation_x(angle: f32) -> Transform {
+    na::convert(na::Rotation3::from_axis_angle(
+        &na::Vector3::x_axis(),
+        angle,
+    ))
 }
 
 #[inline]
-pub fn rotation_y(angle: f32) -> na::Rotation3<f32> {
-    na::Rotation3::from_axis_angle(&na::Vector3::y_axis(), angle)
+pub fn rotation_y(angle: f32) -> Transform {
+    na::convert(na::Rotation3::from_axis_angle(
+        &na::Vector3::y_axis(),
+        angle,
+    ))
 }
 
 #[inline]
-pub fn rotation_z(angle: f32) -> na::Rotation3<f32> {
-    na::Rotation3::from_axis_angle(&na::Vector3::z_axis(), angle)
+pub fn rotation_z(angle: f32) -> Transform {
+    na::convert(na::Rotation3::from_axis_angle(
+        &na::Vector3::z_axis(),
+        angle,
+    ))
 }
 
 #[inline]
-pub fn translation(x: f32, y: f32, z: f32) -> na::Translation3<f32> {
-    na::Translation3::new(x, y, z)
+pub fn translation(x: f32, y: f32, z: f32) -> Transform {
+    na::convert(na::Translation3::new(x, y, z))
 }
 
 #[inline]
-pub fn scaling(x: f32, y: f32, z: f32) -> na::Affine3<f32> {
+pub fn scaling(x: f32, y: f32, z: f32) -> Transform {
     let m = na::Matrix4::new_nonuniform_scaling(&vector(x, y, z));
-    na::Affine3::from_matrix_unchecked(m)
+    na::convert(na::Affine3::from_matrix_unchecked(m))
 }
 
 #[inline]
-pub fn shearing(xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) -> na::Affine3<f32> {
-    na::Affine3::from_matrix_unchecked(na::Matrix4::new(
-    1., xy, xz, 0., 
-    yx, 1., yz, 0., 
-    zx, zy, 1., 0., 
-    0., 0., 0., 1.,
-  ))
+pub fn shearing(xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) -> Transform {
+    na::convert(na::Affine3::from_matrix_unchecked(na::Matrix4::new(
+        1., xy, xz, 0., yx, 1., yz, 0., zx, zy, 1., 0., 0., 0., 0., 1.,
+    )))
 }
 
 #[cfg(test)]

@@ -23,3 +23,6 @@ name = "triangle"
 
 [[example]]
 name = "teapot"
+
+[[example]]
+name = "icosahedron"

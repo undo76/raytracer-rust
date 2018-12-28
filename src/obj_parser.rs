@@ -1,3 +1,7 @@
+/// Parser for a small subset of the Wavefront .OBJ format
+/// 
+/// http://www.martinreddy.net/gfx/3d/OBJ.spec 
+
 use crate::*;
 use nom::*;
 use nom::types::CompleteStr;

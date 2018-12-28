@@ -50,7 +50,7 @@ impl World {
         let v = light.position - point;
         let distance = magnitude(&v);
         let direction = normalize(&v).unwrap();
-        let r = Ray::new(*point, direction);
+        let r = Ray::new(*point + direction * 10. * EPS, direction);
         self.ray_in_shadow(&r, distance).is_some()
     }
 
