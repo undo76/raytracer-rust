@@ -11,6 +11,7 @@ approx = "0.3.1"
 num_cpus = "1.9.0"
 nom = "4.1.1"
 bvh = "0.2.4"
+rand = "0.6.1"
 
 [[example]]
 name = "scene"
@@ -26,3 +27,6 @@ name = "teapot"
 
 [[example]]
 name = "icosahedron"
+
+[[example]]
+name = "spheres"

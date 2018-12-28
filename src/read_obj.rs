@@ -15,7 +15,7 @@ pub fn read_obj_file(group: &mut Group, file: &str) {
                 .map(|v| {
                     (
                         obj.vertices[v.idx - 1],
-                        v.normal_idx.map(|n_idx| obj.normals[v.idx - 1]),
+                        v.normal_idx.map(|n_idx| obj.normals[n_idx - 1]),
                     )
                 })
                 .collect::<Vec<_>>(),
