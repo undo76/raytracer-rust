@@ -2,6 +2,7 @@
 **/*.rs.bk
 
 /target
+**/target
 *.ppm
 **/*.rs.bk
 Cargo.lock
