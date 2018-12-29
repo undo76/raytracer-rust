@@ -1,6 +1,6 @@
-extern crate raytracer_rust;
+extern crate rustracer_core;
 
-use raytracer_rust::*;
+use rustracer_core::*;
 
 use std::fs::File;
 use std::io::prelude::*;

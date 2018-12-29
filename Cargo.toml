@@ -1,2 +1,2 @@
 [workspace]
-members = ["./raytracer"]
+members = ["./core"]

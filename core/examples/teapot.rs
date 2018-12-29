@@ -1,6 +1,6 @@
-extern crate raytracer_rust;
+extern crate rustracer_core;
 
-use raytracer_rust::*;
+use rustracer_core::*;
 
 use nalgebra as na;
 use std::f32::consts::*;
@@ -28,9 +28,9 @@ fn main() {
     ));
 
     let mut group = Group::new(Transform::identity(), Material::default());
-    read_obj_file(&mut group, "./examples/models/icosahedron.obj");
+    read_obj_file(&mut group, "./examples/models/teapot.obj");
 
-    group.set_transform(translation(0., 1., 0.));
+    group.set_transform(translation(0., 1., 0.) * scaling(0.01, 0.01, 0.01));
 
     group.set_material(Material {
         color: Mapping::from(color(1.0, 1.0, 0.5)),
@@ -60,7 +60,7 @@ fn main() {
 
     let canvas = camera.render(world);
 
-    let mut file = File::create("icosahedron.ppm").expect("Couldn't create file");
+    let mut file = File::create("teapot.ppm").expect("Couldn't create file");
     file.write_all(canvas.to_ppm_string().as_bytes())
         .expect("Couldn't write canvas");
 }

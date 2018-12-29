@@ -1,6 +1,6 @@
-extern crate raytracer_rust;
+extern crate rustracer_core;
 
-use raytracer_rust::*;
+use rustracer_core::*;
 
 use rand::distributions::Uniform;
 use rand::*;
