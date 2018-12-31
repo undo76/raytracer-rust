@@ -1,0 +1,16 @@
+[package]
+name = "rustracer-parser"
+version = "0.1.0"
+authors = ["Manolo Santos <manolo.santos@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+serde = "1.0.83"
+serde_derive = "1.0.83"
+serde_json = "1.0.33"
+serde_yaml = "0.8.8"
+yaml-merge-keys = { version = "0.3.0", features = [ "serde_yaml" ] }
+rustracer-core = { path = "../core", version = "0.1.0" }
+
+[[example]]
+name = "parse_yaml"

@@ -95,7 +95,6 @@ impl Camera {
     }
 }
 
-#[inline]
 pub fn view_transform(from: Point, to: Point, up: Vector) -> Transform {
     let forward = normalize(&(to - from));
     let upn = normalize(&up);

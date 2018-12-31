@@ -30,7 +30,7 @@ pub struct RingMapping<T> {
     pub transform_inverse: Transform,
 }
 
-pub trait MappingMapping<T>
+pub trait PatternMapping<T>
 where
     T: Copy,
 {
@@ -42,7 +42,7 @@ where
     }
 }
 
-impl<T> MappingMapping<T> for StripeMapping<T>
+impl<T> PatternMapping<T> for StripeMapping<T>
 where
     T: Copy,
 {
@@ -56,7 +56,7 @@ where
     }
 }
 
-impl<T> MappingMapping<T> for CheckersMapping<T>
+impl<T> PatternMapping<T> for CheckersMapping<T>
 where
     T: Copy,
 {
@@ -73,7 +73,7 @@ where
     }
 }
 
-impl<T> MappingMapping<T> for GradientMapping<T>
+impl<T> PatternMapping<T> for GradientMapping<T>
 where
     T: Copy
         + core::ops::Sub<Output = T>
@@ -90,7 +90,7 @@ where
     }
 }
 
-impl<T> MappingMapping<T> for RingMapping<T>
+impl<T> PatternMapping<T> for RingMapping<T>
 where
     T: Copy
         + core::ops::Sub<Output = T>
