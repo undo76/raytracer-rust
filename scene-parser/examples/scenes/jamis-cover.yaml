@@ -170,7 +170,7 @@ lights:
       position: [-400, 50, -10]
       intensity: [0.2, 0.2, 0.2]
 camera:
-  size: [1600, 1200]
+  size: [1600, 1600]
   from: [-6, 6, -10]
   to: [6, 0, 6]
   up: [-0.45, 1, 0]
