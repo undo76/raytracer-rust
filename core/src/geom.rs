@@ -23,7 +23,7 @@ pub fn unit_vector(x: f32, y: f32, z: f32) -> UnitVector {
 
 #[inline]
 pub fn magnitude(v: &Vector) -> f32 {
-    na::norm(v)
+    na::Matrix::norm(v)
 }
 
 #[inline]
@@ -33,7 +33,7 @@ pub fn normalize(v: &Vector) -> UnitVector {
 
 #[inline]
 pub fn dot(v1: &Vector, v2: &Vector) -> f32 {
-    na::dot(v1, v2)
+    na::Matrix::dot(v1, v2)
 }
 
 #[inline]
@@ -43,7 +43,7 @@ pub fn cross(v1: &Vector, v2: &Vector) -> Vector {
 
 #[inline]
 pub fn reflect(v: &Vector, n: &na::Unit<Vector>) -> Vector {
-    v - n.unwrap() * 2. * dot(v, n)
+    v - n.into_inner() * 2. * dot(v, n)
 }
 
 #[cfg(test)]
@@ -83,7 +83,10 @@ mod tests {
 
     #[test]
     fn normalizing_vector() {
-        assert_relative_eq!(normalize(&vector(4., 0., 0.)).unwrap(), vector(1., 0., 0.));
+        assert_relative_eq!(
+            normalize(&vector(4., 0., 0.)).into_inner(),
+            vector(1., 0., 0.)
+        );
     }
 
     #[test]

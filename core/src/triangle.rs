@@ -71,7 +71,9 @@ impl Shape for Triangle {
             NormalType::Uniform(n) => n,
             NormalType::Smooth(n1, n2, n3) => {
                 let (u, v) = hit.uv.unwrap();
-                normalize(&(n2.unwrap() * u + n3.unwrap() * v + n1.unwrap() * (1. - u - v)))
+                normalize(
+                    &(n2.into_inner() * u + n3.into_inner() * v + n1.into_inner() * (1. - u - v)),
+                )
             }
         }
     }

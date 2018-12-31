@@ -49,7 +49,7 @@ impl World {
     fn is_shadowed(&self, light: &PointLight, point: &Point) -> bool {
         let v = light.position - point;
         let distance = magnitude(&v);
-        let direction = normalize(&v).unwrap();
+        let direction = normalize(&v).into_inner();
         let r = Ray::new(*point + direction * 100. * EPS, direction);
         self.ray_in_shadow(&r, distance).is_some()
     }
@@ -98,7 +98,7 @@ impl World {
             let object = hit.intersection.object;
             match &object.get_material().reflective {
                 Some(reflective) => {
-                    let reflectv = hit.reflectv.unwrap();
+                    let reflectv = hit.reflectv.into_inner();
                     let reflect_ray = Ray::new(hit.point + reflectv * EPS * 100., reflectv);
                     let object_point = object.get_transform_inverse() * hit.point;
                     self.color_at(&reflect_ray, remaining - 1)
@@ -127,9 +127,9 @@ impl World {
                     BLACK
                 } else {
                     let cos_t = f32::sqrt(1. - sin2_t);
-                    let normal = hit.normalv.unwrap();
+                    let normal = hit.normalv.into_inner();
                     let direction =
-                        normal * (n_ratio * cos_i - cos_t) - hit.eyev.unwrap() * n_ratio;
+                        normal * (n_ratio * cos_i - cos_t) - hit.eyev.into_inner() * n_ratio;
                     let origin = hit.point - (normal * EPS);
                     let refract_ray = Ray::new(origin + direction * EPS * 100., direction);
 

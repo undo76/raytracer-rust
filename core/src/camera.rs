@@ -60,7 +60,7 @@ impl Camera {
         let pixel = transform_inv * point(world_x, world_y, -1.);
         let origin = transform_inv * point(0., 0., 0.);
         let direction = normalize(&(pixel - origin));
-        Ray::new(origin, direction.unwrap())
+        Ray::new(origin, direction.into_inner())
     }
 
     pub fn render(self, world: World) -> Canvas {

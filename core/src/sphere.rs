@@ -168,11 +168,11 @@ mod tests {
     fn normal_sphere_axis() {
         let s = Sphere::default();
         let n = s.normal_at(&point(1., 0., 0.), &Intersection::new(1., &s));
-        assert_relative_eq!(n.unwrap(), vector(1., 0., 0.));
+        assert_relative_eq!(n.into_inner(), vector(1., 0., 0.));
         let n = s.normal_at(&point(0., 1., 0.), &Intersection::new(1., &s));
-        assert_relative_eq!(n.unwrap(), vector(0., 1., 0.));
+        assert_relative_eq!(n.into_inner(), vector(0., 1., 0.));
         let n = s.normal_at(&point(0., 0., 1.), &Intersection::new(1., &s));
-        assert_relative_eq!(n.unwrap(), vector(0., 0., 1.));
+        assert_relative_eq!(n.into_inner(), vector(0., 0., 1.));
     }
 
     #[test]
@@ -183,7 +183,7 @@ mod tests {
             &point(0., 1.70710677, -0.70710677),
             &Intersection::new(1., &s),
         );
-        assert_relative_eq!(n.unwrap(), vector(0., 0.70710677, -0.70710677));
+        assert_relative_eq!(n.into_inner(), vector(0., 0.70710677, -0.70710677));
     }
 
     #[test]
@@ -194,7 +194,7 @@ mod tests {
             &point(0., 0.70710677, -0.70710677),
             &Intersection::new(1., &s),
         );
-        assert_relative_eq!(n.unwrap(), vector(0., 0.97014254, -0.24253564));
+        assert_relative_eq!(n.into_inner(), vector(0., 0.97014254, -0.24253564));
     }
 
     #[test]
@@ -213,8 +213,8 @@ mod tests {
         let intersection = Intersection::new(4., &shape);
         let hit = intersection.prepare_hit(&ray);
         assert_relative_eq!(hit.point, point(0., 0., -1.));
-        assert_relative_eq!(hit.eyev.unwrap(), vector(0., 0., -1.));
-        assert_relative_eq!(hit.normalv.unwrap(), vector(0., 0., -1.));
+        assert_relative_eq!(hit.eyev.into_inner(), vector(0., 0., -1.));
+        assert_relative_eq!(hit.normalv.into_inner(), vector(0., 0., -1.));
     }
 
     #[test]
@@ -224,8 +224,8 @@ mod tests {
         let intersection = Intersection::new(1., &shape);
         let hit = intersection.prepare_hit(&ray);
         assert_relative_eq!(hit.point, point(0., 0., 1.));
-        assert_relative_eq!(hit.eyev.unwrap(), vector(0., 0., -1.));
-        assert_relative_eq!(hit.normalv.unwrap(), vector(0., 0., -1.));
+        assert_relative_eq!(hit.eyev.into_inner(), vector(0., 0., -1.));
+        assert_relative_eq!(hit.normalv.into_inner(), vector(0., 0., -1.));
         assert_eq!(hit.inside, true);
     }
 }

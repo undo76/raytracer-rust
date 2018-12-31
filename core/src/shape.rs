@@ -60,7 +60,7 @@ pub trait Shape: Debug + Sync + Send {
 
         let parent = self.get_parent();
         match parent {
-            Some(parent) => parent.normal_to_world(&normal.unwrap()),
+            Some(parent) => parent.normal_to_world(&normal.into_inner()),
             None => normal,
         }
     }

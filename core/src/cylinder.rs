@@ -221,8 +221,8 @@ mod tests {
     fn normal_cylinder_axis() {
         let s = Cylinder::default();
         let n = s.normal_at(&point(1., 0., 0.), &Intersection::new(1., &s));
-        assert_relative_eq!(n.unwrap(), vector(1., 0., 0.));
+        assert_relative_eq!(n.into_inner(), vector(1., 0., 0.));
         let n = s.normal_at(&point(0., 0., 1.), &Intersection::new(1., &s));
-        assert_relative_eq!(n.unwrap(), vector(0., 0., 1.));
+        assert_relative_eq!(n.into_inner(), vector(0., 0., 1.));
     }
 }
