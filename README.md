@@ -7,6 +7,7 @@ Raytracer written in Rust based on [Jamis Buck](https://twitter.com/jamis)’s b
 ## To do
 - [ ] CSG 
 - [ ] Antialiasing
+- [ ] Area lights and soft shadows
 - [ ] Texture mapping
 - [ ] Depth of field
 - [ ] Particle emission
