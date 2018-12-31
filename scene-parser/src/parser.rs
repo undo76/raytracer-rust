@@ -12,10 +12,10 @@ where
 
 pub fn build_scene(scene: &Scene) -> (rc::World, rc::Camera) {
     let Scene {
-        fragments: _,
         shapes,
         lights,
         camera,
+        ..
     } = scene;
 
     let rc_shapes: Vec<Box<dyn rc::Shape + Send>> =
@@ -150,7 +150,7 @@ where
     }
 }
 
-fn map_vector<F: Copy, T: From<F>>(f: &Vec<F>) -> Vec<T> {
+fn map_vector<F: Copy, T: From<F>>(f: &[F]) -> Vec<T> {
     f.iter().map(|&f| f.into()).collect()
 }
 
@@ -189,7 +189,7 @@ fn build_vector(v: &Vector) -> rc::Vector {
     rc::vector(x, y, z)
 }
 
-fn build_lights(lights: &Vec<Light>) -> Vec<rc::PointLight> {
+fn build_lights(lights: &[Light]) -> Vec<rc::PointLight> {
     lights.iter().map(|l| build_light(l)).collect()
 }
 

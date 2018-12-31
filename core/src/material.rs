@@ -54,7 +54,7 @@ impl Material {
                 total = total + light.intensity * specular * reflect_dot_eye;
             }
         }
-        return total * attenuation;
+        total * attenuation
     }
 
     fn calculate_attenuation(&self, light_vector: &Vector) -> f32 {

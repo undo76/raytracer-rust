@@ -21,9 +21,7 @@ impl BaseShape {
 }
 
 pub trait Shape: Debug + Sync + Send {
-    fn shape_added(&mut self) {
-        ()
-    }
+    fn shape_added(&mut self) {}
     fn get_bounds(&self) -> Bounds;
     fn get_base(&self) -> &BaseShape;
     fn get_base_mut(&mut self) -> &mut BaseShape;

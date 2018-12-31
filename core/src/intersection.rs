@@ -27,7 +27,7 @@ impl Hit<'_> {
 
         let r0 = (self.n1 - self.n2) / (self.n1 + self.n2);
         let r0 = r0 * r0;
-        return r0 + (1. - r0) * f32::powi(1. - cos, 5);
+        r0 + (1. - r0) * f32::powi(1. - cos, 5)
     }
 }
 
@@ -92,10 +92,10 @@ impl<'a> Intersection<'a> {
 }
 
 // TODO: Remove
-pub type Intersections<'a> = Vec<Intersection<'a>>;
+pub type Intersections<'a> = &'a [Intersection<'a>];
 
 // Returns the closest, not negative intersection
-pub fn hit<'a>(xs: &'a Intersections) -> Option<&'a Intersection<'a>> {
+pub fn hit<'a>(xs: &'a [Intersection]) -> Option<&'a Intersection<'a>> {
     xs.iter()
         .filter(|&x| x.t > 0.)
         .min_by(|&x, &y| x.t.partial_cmp(&y.t).unwrap())

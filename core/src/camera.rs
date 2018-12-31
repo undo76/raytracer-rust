@@ -77,7 +77,7 @@ impl Camera {
             let camera = Arc::clone(&camera);
             let handle = thread::spawn(move || {
                 for y in 0..camera.vsize {
-                    for x in (i..camera.hsize - n_threads + i + 1).step_by(n_threads) {
+                    for x in (i..=camera.hsize - n_threads + i).step_by(n_threads) {
                         let ray = camera.ray_for_pixel(x, y);
                         let color = world.color_at(&ray, camera.max_reflects).into();
                         shared_canvas.set(x, y, color);
@@ -91,7 +91,7 @@ impl Camera {
             handle.join().unwrap();
         }
 
-        return Arc::try_unwrap(canvas).unwrap();
+        Arc::try_unwrap(canvas).unwrap()
     }
 }
 

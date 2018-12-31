@@ -104,12 +104,12 @@ impl BoundedShape {
         }
     }
 
-    pub fn get_shape(&self) -> &Box<dyn Shape + Send> {
-        &self.shape
+    pub fn get_shape(&self) -> &(dyn Shape + Send) {
+        self.shape.as_ref()
     }
 
-    pub fn get_shape_mut(&mut self) -> &mut Box<dyn Shape + Send> {
-        &mut self.shape
+    pub fn get_shape_mut(&mut self) -> &mut (dyn Shape + Send) {
+        self.shape.as_mut()
     }
 }
 

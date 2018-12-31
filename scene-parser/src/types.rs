@@ -152,8 +152,8 @@ pub struct Scene {
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 #[serde(untagged)]
 pub enum Fragment {
-    MaterialFragment { material: Material },
-    TransformFragment { transform: Transforms },
+    MaterialFragment { material: Box<Material> },
+    TransformFragment { transform: Box<Transforms> },
     ColorFragment { color: Rgb },
 }
 

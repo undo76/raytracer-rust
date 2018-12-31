@@ -44,7 +44,7 @@ impl Shape for Sphere {
         let c = dot(&sphere_to_ray, &sphere_to_ray) - 1.;
         let discriminant = b * b - 4. * a * c;
         if discriminant < 0. {
-            return None;
+            None
         } else {
             let sqrt_disc = f32::sqrt(discriminant);
             let mut t1 = (-b - sqrt_disc) / (2. * a);

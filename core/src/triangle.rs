@@ -101,9 +101,9 @@ impl Shape for Triangle {
         }
         let t = f * dot(&self.e2, &origin_cross_e1);
         if t > EPS {
-            return Some(Intersection::new_with_uv(t, self, (u, v)));
+            Some(Intersection::new_with_uv(t, self, (u, v)))
         } else {
-            return None;
+            None
         }
     }
 

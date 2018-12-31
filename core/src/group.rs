@@ -54,7 +54,6 @@ impl Shape for Group {
             bs.get_shape_mut().shape_added();
         }
         self.bvh = Some(BVH::build(&mut self.bounded_shapes));
-    
     }
 
     fn get_bounds(&self) -> Bounds {
@@ -74,9 +73,7 @@ impl Shape for Group {
     }
 
     fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {
-        if bounds_intersects(self, &ray).is_none() {
-            return None;
-        }
+        bounds_intersects(self, &ray)?;
 
         let bvh_ray = bvh::ray::Ray::new(ray.origin, ray.direction);
 

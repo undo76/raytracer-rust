@@ -19,12 +19,11 @@ impl World {
             .collect::<Vec<_>>();
 
         let bvh = BVH::build(&mut bounded_shapes);
-        let world = World {
+        World {
             bounded_shapes,
             lights,
             bvh,
-        };
-        world
+        }
     }
 
     fn intersects_bvh(&self, ray: &Ray) -> Vec<&BoundedShape> {
@@ -93,7 +92,7 @@ impl World {
 
     fn reflected_color(&self, hit: &Hit, remaining: u8) -> ColorRgbFloat {
         if remaining == 0 {
-            return BLACK;
+            BLACK
         } else {
             let object = hit.intersection.object;
             match &object.get_material().reflective {
