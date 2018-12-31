@@ -20,7 +20,11 @@ pub enum Angle {
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
-pub struct Transforms(pub Vec<Transform>);
+#[serde(untagged)]
+pub enum Transforms {
+    ChainedTransform(Vec<Transforms>),
+    SingleTransform(Transform),
+}
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 #[serde(untagged)]
@@ -138,9 +142,19 @@ pub enum Light {
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 #[serde(deny_unknown_fields)]
 pub struct Scene {
+    #[serde(default)]
+    pub fragments: Vec<Fragment>,
     pub shapes: Vec<Shape>,
     pub lights: Vec<Light>,
     pub camera: Camera,
+}
+
+#[derive(Serialize, Deserialize, PartialEq, Debug)]
+#[serde(untagged)]
+pub enum Fragment {
+    MaterialFragment { material: Material },
+    TransformFragment { transform: Transforms },
+    ColorFragment { color: Rgb },
 }
 
 // Defaults
@@ -177,7 +191,7 @@ impl Default for Material {
 
 impl Default for Transforms {
     fn default() -> Transforms {
-        Transforms(vec![Transform::Identity])
+        Transforms::SingleTransform(Transform::Identity)
     }
 }
 
@@ -275,7 +289,9 @@ Sphere:
                         }),
                         ..Material::default()
                     },
-                    transform: Transforms(vec![Transform::Scaling(1., 2., 3.)])
+                    transform: Transforms::ChainedTransform(vec![Transforms::SingleTransform(
+                        Transform::Scaling(1., 2., 3.)
+                    )])
                 }
             }
         );

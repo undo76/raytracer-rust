@@ -12,6 +12,7 @@ where
 
 pub fn build_scene(scene: &Scene) -> (rc::World, rc::Camera) {
     let Scene {
+        fragments: _,
         shapes,
         lights,
         camera,
@@ -82,11 +83,15 @@ fn build_shape(shape: &Shape) -> Box<dyn rc::Shape + Send> {
     }
 }
 
-fn build_transforms(Transforms(transforms): &Transforms) -> rc::Transform {
-    transforms
-        .iter()
-        .map(|t| build_transform(t))
-        .fold(rc::Transform::identity(), |acc, t| t * acc)
+fn build_transforms(transforms: &Transforms) -> rc::Transform {
+    use crate::Transforms::*;
+    match transforms {
+        SingleTransform(t) => build_transform(t),
+        ChainedTransform(ts) => ts
+            .iter()
+            .map(|ts| build_transforms(ts))
+            .fold(rc::Transform::identity(), |acc, t| t * acc),
+    }
 }
 
 fn build_transform(transform: &Transform) -> rc::Transform {
