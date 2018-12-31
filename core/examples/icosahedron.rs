@@ -2,7 +2,6 @@ extern crate rustracer_core;
 
 use rustracer_core::*;
 
-use nalgebra as na;
 use std::f32::consts::*;
 use std::fs::File;
 use std::io::prelude::*;
@@ -22,10 +21,7 @@ fn main() {
     sky_material.color = color(0.4, 0.4, 0.7).into();
     sky_material.ambient = 0.7.into();
     sky_material.attenuation = Attenuation::None;
-    let sky = Box::new(Plane::new(
-        na::convert(translation(0., 100., 0.)),
-        sky_material.clone(),
-    ));
+    let sky = Box::new(Plane::new(translation(0., 100., 0.), sky_material.clone()));
 
     let mut group = Group::new(Transform::identity(), Material::default());
     read_obj_file(&mut group, "./examples/models/icosahedron.obj");

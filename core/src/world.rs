@@ -1,6 +1,5 @@
 use crate::*;
 use bvh::bvh::BVH;
-use nalgebra as na;
 
 pub struct World {
     pub bounded_shapes: Vec<BoundedShape>,
@@ -152,7 +151,7 @@ impl Default for World {
         };
 
         let s1 = Sphere::new(Transform::identity(), m1);
-        let s2 = Sphere::new(na::convert(scaling(0.5, 0.5, 0.5)), Material::default());
+        let s2 = Sphere::new(scaling(0.5, 0.5, 0.5), Material::default());
 
         World::new(
             vec![Box::new(s1), Box::new(s2)],

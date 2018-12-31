@@ -2,7 +2,6 @@ extern crate rustracer_core;
 
 use rustracer_core::*;
 
-use nalgebra as na;
 use std::fs::File;
 use std::io::prelude::*;
 
@@ -11,18 +10,13 @@ const F_PI_3: f32 = std::f32::consts::FRAC_PI_3;
 fn main() {
     let mut floor_material = Material::default();
 
-    floor_material.color = Mapping::checkers(
-        &vec![WHITE * 0.7, WHITE * 0.8],
-        na::convert(scaling(0.2, 0.2, 0.2)),
-    );
+    floor_material.color =
+        Mapping::checkers(&vec![WHITE * 0.7, WHITE * 0.8], scaling(0.2, 0.2, 0.2));
     floor_material.specular = Mapping::from(0.7);
     floor_material.reflective = Some(Mapping::from(0.05));
     floor_material.attenuation = Attenuation::Squared;
 
-    let walls = Box::new(Cube::new(
-        na::convert(scaling(10., 10., 10.)),
-        Material::default(),
-    ));
+    let walls = Box::new(Cube::new(scaling(10., 10., 10.), Material::default()));
 
     let floor = Box::new(Plane::new(Transform::identity(), floor_material.clone()));
 

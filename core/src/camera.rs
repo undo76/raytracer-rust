@@ -2,7 +2,6 @@ use crate::*;
 use std::sync::Arc;
 use std::thread;
 
-use nalgebra as na;
 use num_cpus;
 
 #[derive(Debug, Copy, Clone)]
@@ -95,25 +94,6 @@ impl Camera {
     }
 }
 
-pub fn view_transform(from: Point, to: Point, up: Vector) -> Transform {
-    let forward = normalize(&(to - from));
-    let upn = normalize(&up);
-    let left = cross(&forward, &upn);
-    let true_up = cross(&left, &forward);
-    let translation = translation(-from.x, -from.y, -from.z);
-
-    #[rustfmt::skip]
-  let orientation = Transform::from_matrix_unchecked(
-    na::Matrix4::new(
-      left.x, left.y, left.z, 0., 
-      true_up.x, true_up.y, true_up.z, 0., 
-      -forward.x, -forward.y, -forward.z, 0., 
-      0., 0., 0., 1.,
-    )
-  );
-    orientation * translation
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -124,7 +104,7 @@ mod tests {
         let to = point(0., 0., 1.);
         let up = vector(0., 1., 0.);
         let t = view_transform(from, to, up);
-        assert_relative_eq!(t, na::convert(scaling(-1., 1., -1.)));
+        assert_relative_eq!(t, scaling(-1., 1., -1.));
     }
 
     #[test]
@@ -133,14 +113,14 @@ mod tests {
         let to = point(0., 0., 1.);
         let up = vector(0., 1., 0.);
         let t = view_transform(from, to, up);
-        assert_relative_eq!(t, na::convert(translation(0., 0., -8.)));
+        assert_relative_eq!(t, translation(0., 0., -8.));
     }
 
     #[test]
     fn construct_camera() {
         let hsize = 160;
         let vsize = 120;
-        let field_of_view = na::Real::frac_pi_2();
+        let field_of_view = std::f32::consts::FRAC_PI_2;
         let camera = Camera::new(hsize, vsize, field_of_view);
         assert_eq!(camera.vsize, vsize);
         assert_eq!(camera.hsize, hsize);
@@ -150,19 +130,19 @@ mod tests {
 
     #[test]
     fn pixel_size_horizontal() {
-        let c = Camera::new(200, 125, na::Real::frac_pi_2());
+        let c = Camera::new(200, 125, std::f32::consts::FRAC_PI_2);
         assert_relative_eq!(c.pixel_size, 0.01);
     }
 
     #[test]
     fn pixel_size_vertical() {
-        let c = Camera::new(125, 200, na::Real::frac_pi_2());
+        let c = Camera::new(125, 200, std::f32::consts::FRAC_PI_2);
         assert_relative_eq!(c.pixel_size, 0.01);
     }
 
     #[test]
     fn construct_ray_center() {
-        let c = Camera::new(201, 101, na::Real::frac_pi_2());
+        let c = Camera::new(201, 101, std::f32::consts::FRAC_PI_2);
         let r: Ray = c.ray_for_pixel(100, 50);
         assert_relative_eq!(r.origin, point(0., 0., 0.));
         assert_relative_eq!(r.direction, vector(0., 0., -1.));
@@ -170,7 +150,7 @@ mod tests {
 
     #[test]
     fn construct_ray_corner() {
-        let c = Camera::new(201, 101, na::Real::frac_pi_2());
+        let c = Camera::new(201, 101, std::f32::consts::FRAC_PI_2);
         let r: Ray = c.ray_for_pixel(0, 0);
         assert_relative_eq!(r.origin, point(0., 0., 0.));
         assert_relative_eq!(r.direction, vector(0.6651864, 0.33259323, -0.66851234));
@@ -178,10 +158,8 @@ mod tests {
 
     #[test]
     fn construct_ray_transformed() {
-        let mut c = Camera::new(201, 101, na::Real::frac_pi_2());
-        c.set_transform(na::convert(
-            rotation_y(na::Real::frac_pi_4()) * translation(0., -2., 5.),
-        ));
+        let mut c = Camera::new(201, 101, std::f32::consts::FRAC_PI_2);
+        c.set_transform(rotation_y(std::f32::consts::FRAC_PI_4) * translation(0., -2., 5.));
         let r: Ray = c.ray_for_pixel(100, 50);
         assert_relative_eq!(r.origin, point(0., 2., -5.));
         assert_relative_eq!(
@@ -193,7 +171,7 @@ mod tests {
     #[test]
     fn render_default_world() {
         let world = World::default();
-        let mut camera = Camera::new(11, 11, na::Real::frac_pi_2());
+        let mut camera = Camera::new(11, 11, std::f32::consts::FRAC_PI_2);
         let from = point(0., 0., -5.);
         let to = point(0., 0., 0.);
         let up = vector(0., 1., 0.);

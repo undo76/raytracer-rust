@@ -2,14 +2,13 @@ extern crate rustracer_core;
 
 use rustracer_core::*;
 
-use nalgebra as na;
 use std::fs::File;
 use std::io::prelude::*;
 
 fn clock() -> Vec<Point> {
     let mut points = Vec::with_capacity(12);
     let p = point(200., 0., 0.);
-    let angle: f32 = na::Real::frac_pi_6();
+    let angle: f32 = std::f32::consts::FRAC_PI_6;
 
     for i in 0..12 {
         points.push(rotation_y(angle * i as f32) * p)

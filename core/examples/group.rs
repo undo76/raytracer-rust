@@ -2,7 +2,6 @@ extern crate rustracer_core;
 
 use rustracer_core::*;
 
-use nalgebra as na;
 use std::fs::File;
 use std::io::prelude::*;
 
@@ -15,7 +14,7 @@ fn main() {
 
     floor_material.color = Mapping::checkers(
         &vec![BLACK, WHITE * 0.8],
-        na::convert(rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5)),
+        rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5),
     );
     floor_material.specular = Mapping::from(0.7);
     floor_material.reflective = Some(Mapping::from(0.2));
@@ -25,25 +24,22 @@ fn main() {
     let mut middle_material = Material::default();
     middle_material.color = Mapping::stripes(
         &vec![PURPLE * 0.7, PURPLE * 0.5],
-        na::convert(rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2)),
+        rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2),
     );
     middle_material.specular = Mapping::from(1.);
     middle_material.reflective = Some(Mapping::stripes(
         &vec![0.03, 0.1],
-        na::convert(rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2)),
+        rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2),
     ));
 
     let sphere = Box::new(Sphere::new(
-        na::convert(translation(-0.5, 1., 0.5)),
+        translation(-0.5, 1., 0.5),
         middle_material.clone(),
     ));
 
-    let sphere2 = Box::new(Sphere::new(
-        na::convert(translation(0.5, 2., 2.5)),
-        Material::default(),
-    ));
+    let sphere2 = Box::new(Sphere::new(translation(0.5, 2., 2.5), Material::default()));
 
-    let mut group = Group::new(na::convert(translation(-0.5, 1., 0.5)), Material::default());
+    let mut group = Group::new(translation(-0.5, 1., 0.5), Material::default());
     group.add_shape(sphere);
     group.add_shape(sphere2);
 

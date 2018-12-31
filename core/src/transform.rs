@@ -1,8 +1,6 @@
 use crate::geom::*;
 use nalgebra as na;
 
-pub use nalgebra::inverse;
-
 pub type Transform = na::Projective3<f32>;
 
 #[inline]
@@ -45,6 +43,30 @@ pub fn shearing(xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) -> Transfo
     na::convert(na::Affine3::from_matrix_unchecked(na::Matrix4::new(
         1., xy, xz, 0., yx, 1., yz, 0., zx, zy, 1., 0., 0., 0., 0., 1.,
     )))
+}
+
+#[inline]
+pub fn inverse(transform: &Transform) -> Transform {
+    transform.inverse()
+}
+
+pub fn view_transform(from: Point, to: Point, up: Vector) -> Transform {
+    let forward = normalize(&(to - from));
+    let upn = normalize(&up);
+    let left = cross(&forward, &upn);
+    let true_up = cross(&left, &forward);
+    let translation = translation(-from.x, -from.y, -from.z);
+
+    #[rustfmt::skip]
+    let orientation = Transform::from_matrix_unchecked(
+        na::Matrix4::new(
+        left.x, left.y, left.z, 0., 
+        true_up.x, true_up.y, true_up.z, 0., 
+        -forward.x, -forward.y, -forward.z, 0., 
+        0., 0., 0., 1.,
+        )
+    );
+    orientation * translation
 }
 
 #[cfg(test)]
@@ -100,21 +122,21 @@ mod tests {
     #[test]
     fn rotate_x() {
         let p = point(0., 1., 0.);
-        let full_quarter = rotation_x(na::Real::frac_pi_2());
+        let full_quarter = rotation_x(std::f32::consts::FRAC_PI_2);
         assert_relative_eq!(full_quarter * p, point(0., 0., 1.));
     }
 
     #[test]
     fn rotate_y() {
         let p = point(0., 0., 1.);
-        let full_quarter = rotation_y(na::Real::frac_pi_2());
+        let full_quarter = rotation_y(std::f32::consts::FRAC_PI_2);
         assert_relative_eq!(full_quarter * p, point(1., 0., 0.));
     }
 
     #[test]
     fn rotate_z() {
         let p = point(0., 1., 0.);
-        let full_quarter = rotation_z(na::Real::frac_pi_2());
+        let full_quarter = rotation_z(std::f32::consts::FRAC_PI_2);
         assert_relative_eq!(full_quarter * p, point(-1., 0., 0.));
     }
 
@@ -163,7 +185,7 @@ mod tests {
     #[test]
     fn chain_transformations() {
         let p = point(1., 0., 1.);
-        let a = rotation_x(na::Real::frac_pi_2());
+        let a = rotation_x(std::f32::consts::FRAC_PI_2);
         let b = scaling(5., 5., 5.);
         let c = translation(10., 5., 7.);
         let t = c * b * a;

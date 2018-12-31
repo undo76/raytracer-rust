@@ -1,5 +1,4 @@
 use crate::*;
-use nalgebra as na;
 
 #[derive(Debug)]
 pub struct Sphere {
@@ -34,7 +33,7 @@ impl Shape for Sphere {
     }
 
     fn local_normal_at(&self, local_point: &Point, _intersection: &Intersection) -> UnitVector {
-        na::Unit::new_unchecked(local_point - point(0., 0., 0.))
+        unit_vector_from_vector(local_point - point(0., 0., 0.))
     }
 
     fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {
@@ -66,7 +65,6 @@ impl Shape for Sphere {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use nalgebra as na;
 
     #[test]
     fn ray_intersects_sphere_default() {
@@ -142,15 +140,15 @@ mod tests {
     #[test]
     fn sphere_transform() {
         let mut s = Sphere::default();
-        s.set_transform(na::convert(translation(2., 3., 4.)));
-        assert_eq!(s.get_transform(), na::convert(translation(2., 3., 4.)))
+        s.set_transform(translation(2., 3., 4.));
+        assert_eq!(s.get_transform(), translation(2., 3., 4.))
     }
 
     #[test]
     fn intersect_a_scaled_sphere_with_a_ray() {
         let r = Ray::new(point(0., 0., -5.), vector(0., 0., 1.));
         let mut s = Sphere::default();
-        s.set_transform(na::convert(scaling(2., 2., 2.)));
+        s.set_transform(scaling(2., 2., 2.));
         let xs = s.intersects(&r).unwrap();
         assert_relative_eq!(xs.t, 3.);
     }
@@ -159,7 +157,7 @@ mod tests {
     fn intersect_a_translated_sphere_with_a_ray() {
         let r = Ray::new(point(0., 0., -5.), vector(0., 0., 1.));
         let mut s = Sphere::default();
-        s.set_transform(na::convert(translation(5., 0., 0.)));
+        s.set_transform(translation(5., 0., 0.));
         let xs = s.intersects(&r);
         assert!(xs.is_none());
     }
@@ -178,7 +176,7 @@ mod tests {
     #[test]
     fn normal_sphere_translated() {
         let mut s = Sphere::default();
-        s.set_transform(na::convert(translation(0., 1., 0.)));
+        s.set_transform(translation(0., 1., 0.));
         let n = s.normal_at(
             &point(0., 1.70710677, -0.70710677),
             &Intersection::new(1., &s),
@@ -189,7 +187,7 @@ mod tests {
     #[test]
     fn normal_sphere_scaled() {
         let mut s = Sphere::default();
-        s.set_transform(na::convert(scaling(1., 0.5, 1.)));
+        s.set_transform(scaling(1., 0.5, 1.));
         let n = s.normal_at(
             &point(0., 0.70710677, -0.70710677),
             &Intersection::new(1., &s),

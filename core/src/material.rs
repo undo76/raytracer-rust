@@ -1,7 +1,5 @@
 use crate::*;
 
-use nalgebra as na;
-
 #[derive(Debug, Clone)]
 pub enum Attenuation {
     None,
@@ -28,8 +26,8 @@ impl Material {
         object: &dyn Shape,
         light: &PointLight,
         position: &Point,
-        eyev: &na::Unit<Vector>,
-        normalv: &na::Unit<Vector>,
+        eyev: &UnitVector,
+        normalv: &UnitVector,
         in_shadow: bool,
     ) -> ColorRgbFloat {
         let object_point = object.get_transform_inverse() * position;
@@ -95,8 +93,8 @@ mod tests {
     #[test]
     fn lighting_eye_between_light_and_surface() {
         let position = point(0., 0., 0.);
-        let eyev = na::Unit::new_normalize(vector(0., 0., -1.));
-        let normalv = na::Unit::new_normalize(vector(0., 0., -1.));
+        let eyev = unit_vector_from_vector(vector(0., 0., -1.));
+        let normalv = unit_vector_from_vector(vector(0., 0., -1.));
         let light = PointLight::new(point(0., 0., -10.), WHITE);
         let m = Material::default();
         let sphere = Sphere::default();
@@ -107,8 +105,8 @@ mod tests {
     #[test]
     fn lighting_eye_between_light_offset_45deg() {
         let position = point(0., 0., 0.);
-        let eyev = na::Unit::new_normalize(vector(0., 0., -1.));
-        let normalv = na::Unit::new_normalize(vector(0., 0., -1.));
+        let eyev = unit_vector_from_vector(vector(0., 0., -1.));
+        let normalv = unit_vector_from_vector(vector(0., 0., -1.));
         let light = PointLight::new(point(0., 10., -10.), WHITE);
         let m = Material::default();
         let sphere = Sphere::default();
@@ -119,20 +117,20 @@ mod tests {
     #[test]
     fn lighting_eye_in_reflection_vector() {
         let position = point(0., 0., 0.);
-        let eyev = na::Unit::new_normalize(vector(0., -f32::sqrt(2.) / 2., -f32::sqrt(2.) / 2.));
-        let normalv = na::Unit::new_normalize(vector(0., 0., -1.));
+        let eyev = unit_vector_from_vector(vector(0., -f32::sqrt(2.) / 2., -f32::sqrt(2.) / 2.));
+        let normalv = unit_vector_from_vector(vector(0., 0., -1.));
         let light = PointLight::new(point(0., 10., -10.), WHITE);
         let m = Material::default();
         let sphere = Sphere::default();
         let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, false);
-        assert_relative_eq!(result, color(1.636396, 1.636396, 1.636396));
+        assert_relative_eq!(result, color(1.6363853, 1.6363853, 1.6363853));
     }
 
     #[test]
     fn lighting_light_behind() {
         let position = point(0., 0., 0.);
-        let eyev = na::Unit::new_normalize(vector(0., 0., -1.));
-        let normalv = na::Unit::new_normalize(vector(0., 0., -1.));
+        let eyev = unit_vector_from_vector(vector(0., 0., -1.));
+        let normalv = unit_vector_from_vector(vector(0., 0., -1.));
         let light = PointLight::new(point(0., 0., 10.), WHITE);
         let m = Material::default();
         let sphere = Sphere::default();
@@ -143,8 +141,8 @@ mod tests {
     #[test]
     fn light_with_surface_in_shadow() {
         let position = point(0., 0., 0.);
-        let eyev = na::Unit::new_normalize(vector(0., 0., -1.));
-        let normalv = na::Unit::new_normalize(vector(0., 0., -1.));
+        let eyev = unit_vector_from_vector(vector(0., 0., -1.));
+        let normalv = unit_vector_from_vector(vector(0., 0., -1.));
         let light = PointLight::new(point(0., 0., -10.), color(1., 1., 1.));
         let in_shadow = true;
         let m = Material::default();

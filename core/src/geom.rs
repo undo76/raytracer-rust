@@ -22,6 +22,11 @@ pub fn unit_vector(x: f32, y: f32, z: f32) -> UnitVector {
 }
 
 #[inline]
+pub fn unit_vector_from_vector(vector: Vector) -> UnitVector {
+    na::Unit::new_unchecked(vector)
+}
+
+#[inline]
 pub fn magnitude(v: &Vector) -> f32 {
     na::Matrix::norm(v)
 }

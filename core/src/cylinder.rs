@@ -127,7 +127,6 @@ impl Shape for Cylinder {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use nalgebra as na;
 
     #[test]
     fn ray_intersects_cylinder_default() {
@@ -195,15 +194,15 @@ mod tests {
     #[test]
     fn cylinder_transform() {
         let mut s = Cylinder::default();
-        s.set_transform(na::convert(translation(2., 3., 4.)));
-        assert_eq!(s.get_transform(), na::convert(translation(2., 3., 4.)))
+        s.set_transform(translation(2., 3., 4.));
+        assert_eq!(s.get_transform(), translation(2., 3., 4.))
     }
 
     #[test]
     fn intersect_a_scaled_cylinder_with_a_ray() {
         let r = Ray::new(point(0., 0., -5.), vector(0., 0., 1.));
         let mut s = Cylinder::default();
-        s.set_transform(na::convert(scaling(2., 2., 2.)));
+        s.set_transform(scaling(2., 2., 2.));
         let xs = s.intersects(&r).unwrap();
         assert_relative_eq!(xs.t, 3.);
     }
@@ -212,7 +211,7 @@ mod tests {
     fn intersect_a_translated_cylinder_with_a_ray() {
         let r = Ray::new(point(0., 0., -5.), vector(0., 0., 1.));
         let mut s = Cylinder::default();
-        s.set_transform(na::convert(translation(5., 0., 0.)));
+        s.set_transform(translation(5., 0., 0.));
         let xs = s.intersects(&r);
         assert!(xs.is_none());
     }
