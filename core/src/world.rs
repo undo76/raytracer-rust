@@ -44,40 +44,43 @@ impl World {
             .min_by(|min, x| f32::partial_cmp(&min.t, &x.t).unwrap())
     }
 
-    fn is_shadowed(&self, light: &Light, point: &Point) -> bool {
+    fn is_shadowed(&self, light_hit: &LightHit) -> bool {
         let LightHit {
-            lightv, distance, ..
-        } = light.hit(point);
+            lightv,
+            distance,
+            point,
+            ..
+        } = light_hit;
         let r = Ray::new(
             *point + lightv.into_inner() * 100. * EPS,
             lightv.into_inner(),
         );
-        self.ray_in_shadow(&r, distance).is_some()
+        self.ray_in_shadow(&r, *distance).is_some()
     }
 
-    fn shade_hit(&self, hit: &Hit, remaining: u8) -> ColorRgbFloat {
+    fn shade_hit(&self, object_hit: &Hit, remaining: u8) -> ColorRgbFloat {
         let surface: ColorRgbFloat = self
             .lights
             .iter()
             .map(|light| {
-                let in_shadow = self.is_shadowed(&light, &hit.point);
-                hit.intersection.object.get_material().lighting(
-                    hit.intersection.object,
+                let in_shadow = self.is_shadowed(&light.hit(&object_hit.point));
+                object_hit.intersection.object.get_material().lighting(
+                    object_hit.intersection.object,
                     &light,
-                    &hit.point,
-                    &hit.eyev,
-                    &hit.normalv,
+                    &object_hit.point,
+                    &object_hit.eyev,
+                    &object_hit.normalv,
                     in_shadow,
                 )
             })
             .sum();
 
-        let reflected = self.reflected_color(hit, remaining);
-        let refracted = self.refracted_color(hit, remaining);
+        let reflected = self.reflected_color(object_hit, remaining);
+        let refracted = self.refracted_color(object_hit, remaining);
 
-        let material = hit.intersection.object.get_material();
+        let material = object_hit.intersection.object.get_material();
         if material.transparency.is_some() && material.reflective.is_some() {
-            let reflectance = hit.schlick();
+            let reflectance = object_hit.schlick();
             surface + reflected * reflectance + refracted * (1. - reflectance)
         } else {
             surface + reflected + refracted

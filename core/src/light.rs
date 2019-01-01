@@ -11,6 +11,7 @@ pub struct LightHit {
     pub lightv: UnitVector,
     pub distance: f32,
     pub intensity: ColorRgbFloat,
+    pub point: Point,
 }
 
 pub enum Light {
@@ -30,12 +31,14 @@ impl Light {
                     lightv: unit_vector_from_vector(&light_vector / distance),
                     intensity: light.intensity * attenuation,
                     distance: distance,
+                    point: *hit_point,
                 }
             }
             Light::Directional(light) => LightHit {
                 lightv: light.direction,
                 intensity: light.intensity,
                 distance: std::f32::INFINITY,
+                point: *hit_point,
             },
         }
     }
@@ -71,6 +74,29 @@ impl PointLight {
             attenuation: Attenuation::None,
         }
     }
+}
+
+#[derive(Debug)]
+pub struct AreaLight {
+    u_vec: Vector,
+    v_vec: Vector,
+    u_steps: u8,
+    v_steps: u8,
+    pub position: Point,
+    pub intensity: ColorRgbFloat,
+    pub attenuation: Attenuation,
+}
+
+impl AreaLight {
+    // pub fn new(position: Point, intensity: ColorRgbFloat) -> AreaLight {
+    //     AreaLight {
+    //         u_vec: Vector;
+    //         v_vec: Vector;
+    //         position,
+    //         intensity,
+    //         attenuation: Attenuation::None,
+    //     }
+    // }
 }
 
 fn calculate_attenuation(attenuation: &Attenuation, distance: f32) -> f32 {
