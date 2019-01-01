@@ -9,6 +9,7 @@ pub enum Attenuation {
 
 pub struct LightHit {
     pub lightv: UnitVector,
+    pub distance: f32,
     pub intensity: ColorRgbFloat,
 }
 
@@ -19,19 +20,23 @@ pub enum Light {
 
 impl Light {
     #[inline(always)]
-    pub fn lightv_intensity_distance(&self, hit_point: &Point) -> (UnitVector, ColorRgbFloat, f32) {
+    pub fn hit(&self, hit_point: &Point) -> LightHit {
         match self {
             Light::Point(light) => {
                 let light_vector = light.position - hit_point;
                 let distance = magnitude(&light_vector);
                 let attenuation = calculate_attenuation(&light.attenuation, distance);
-                (
-                    unit_vector_from_vector(&light_vector / distance),
-                    light.intensity * attenuation,
-                    distance,
-                )
+                LightHit {
+                    lightv: unit_vector_from_vector(&light_vector / distance),
+                    intensity: light.intensity * attenuation,
+                    distance: distance,
+                }
             }
-            Light::Directional(light) => (light.direction, light.intensity, std::f32::INFINITY),
+            Light::Directional(light) => LightHit {
+                lightv: light.direction,
+                intensity: light.intensity,
+                distance: std::f32::INFINITY,
+            },
         }
     }
 }

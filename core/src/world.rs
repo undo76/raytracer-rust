@@ -45,10 +45,12 @@ impl World {
     }
 
     fn is_shadowed(&self, light: &Light, point: &Point) -> bool {
-        let (direction, _intensity, distance) = light.lightv_intensity_distance(point);
+        let LightHit {
+            lightv, distance, ..
+        } = light.hit(point);
         let r = Ray::new(
-            *point + direction.into_inner() * 100. * EPS,
-            direction.into_inner(),
+            *point + lightv.into_inner() * 100. * EPS,
+            lightv.into_inner(),
         );
         self.ray_in_shadow(&r, distance).is_some()
     }

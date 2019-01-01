@@ -30,7 +30,9 @@ impl Material {
         let specular = self.specular.map_at_object(&object_point);
         let shininess = self.shininess.map_at_object(&object_point);
 
-        let (lightv, intensity, ..) = light.lightv_intensity_distance(position);
+        let LightHit {
+            lightv, intensity, ..
+        } = light.hit(position);
         let light_dot_normal = dot(&lightv, &normalv);
 
         let mut total = color * ambient;
