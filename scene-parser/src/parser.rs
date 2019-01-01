@@ -21,7 +21,7 @@ pub fn build_scene(scene: &Scene) -> (rc::World, rc::Camera) {
     let rc_shapes: Vec<Box<dyn rc::Shape + Send>> =
         shapes.iter().map(|shape| build_shape(shape)).collect();
 
-    let rc_lights: Vec<rc::PointLight> = build_lights(lights);
+    let rc_lights: Vec<rc::Light> = build_lights(lights);
     let rc_camera: rc::Camera = build_camera(camera);
     (rc::World::new(rc_shapes, rc_lights), rc_camera)
 }
@@ -189,17 +189,27 @@ fn build_vector(v: &Vector) -> rc::Vector {
     rc::vector(x, y, z)
 }
 
-fn build_lights(lights: &[Light]) -> Vec<rc::PointLight> {
+fn build_lights(lights: &[Light]) -> Vec<rc::Light> {
     lights.iter().map(|l| build_light(l)).collect()
 }
 
-fn build_light(light: &Light) -> rc::PointLight {
+fn build_light(light: &Light) -> rc::Light {
     use crate::Light::*;
     match light {
         PointLight {
             position,
             intensity,
-        } => rc::PointLight::new(build_point(position), build_rgb(intensity)),
+        } => rc::Light::Point(rc::PointLight::new(
+            build_point(position),
+            build_rgb(intensity),
+        )),
+        DirectionalLight {
+            direction,
+            intensity,
+        } => rc::Light::Directional(rc::DirectionalLight::new(
+            rc::normalize(&build_vector(direction)),
+            build_rgb(intensity),
+        )),
     }
 }
 

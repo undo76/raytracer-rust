@@ -133,7 +133,11 @@ pub struct Camera {
 pub enum Light {
     PointLight {
         position: Point,
-
+        #[serde(default)]
+        intensity: Rgb,
+    },
+    DirectionalLight {
+        direction: Vector,
         #[serde(default)]
         intensity: Rgb,
     },

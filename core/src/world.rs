@@ -3,12 +3,12 @@ use bvh::bvh::BVH;
 
 pub struct World {
     pub bounded_shapes: Vec<BoundedShape>,
-    pub lights: Vec<PointLight>,
+    pub lights: Vec<Light>,
     bvh: BVH,
 }
 
 impl World {
-    pub fn new(shapes: Vec<Box<dyn Shape + Send>>, lights: Vec<PointLight>) -> World {
+    pub fn new(shapes: Vec<Box<dyn Shape + Send>>, lights: Vec<Light>) -> World {
         let mut bounded_shapes = shapes
             .into_iter()
             .map(|mut s| {
@@ -44,11 +44,12 @@ impl World {
             .min_by(|min, x| f32::partial_cmp(&min.t, &x.t).unwrap())
     }
 
-    fn is_shadowed(&self, light: &PointLight, point: &Point) -> bool {
-        let v = light.position - point;
-        let distance = magnitude(&v);
-        let direction = normalize(&v).into_inner();
-        let r = Ray::new(*point + direction * 100. * EPS, direction);
+    fn is_shadowed(&self, light: &Light, point: &Point) -> bool {
+        let (direction, _intensity, distance) = light.lightv_intensity_distance(point);
+        let r = Ray::new(
+            *point + direction.into_inner() * 100. * EPS,
+            direction.into_inner(),
+        );
         self.ray_in_shadow(&r, distance).is_some()
     }
 
@@ -155,7 +156,7 @@ impl Default for World {
 
         World::new(
             vec![Box::new(s1), Box::new(s2)],
-            vec![PointLight::new(point(-10., 10., -10.), WHITE)],
+            vec![Light::Point(PointLight::new(point(-10., 10., -10.), WHITE))],
         )
     }
 }
@@ -185,7 +186,10 @@ mod tests {
     #[test]
     fn shade_intersection_inside() {
         let mut world = World::default();
-        world.lights = vec![PointLight::new(point(0., 0.25, 0.), color(1., 1., 1.))];
+        world.lights = vec![Light::Point(PointLight::new(
+            point(0., 0.25, 0.),
+            color(1., 1., 1.),
+        ))];
         let ray = Ray::new(point(0., 0., 0.), vector(0., 0., 1.));
         let intersection = Intersection::new(0.5, &(*world.bounded_shapes[1].shape));
         let hit = intersection.prepare_hit(&ray);

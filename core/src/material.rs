@@ -1,13 +1,6 @@
 use crate::*;
 
 #[derive(Debug, Clone)]
-pub enum Attenuation {
-    None,
-    Linear,
-    Squared,
-}
-
-#[derive(Debug, Clone)]
 pub struct Material {
     pub color: Mapping<ColorRgbFloat>,
     pub ambient: Mapping<f32>,
@@ -24,7 +17,7 @@ impl Material {
     pub fn lighting(
         &self,
         object: &dyn Shape,
-        light: &PointLight,
+        light: &Light,
         position: &Point,
         eyev: &UnitVector,
         normalv: &UnitVector,
@@ -37,36 +30,19 @@ impl Material {
         let specular = self.specular.map_at_object(&object_point);
         let shininess = self.shininess.map_at_object(&object_point);
 
-        let light_vector = light.position - position;
-        let attenuation = self.calculate_attenuation(&light_vector);
-        let lightv = normalize(&light_vector);
-        let light_dot_normal = normalv.dot(&lightv);
-        let reflectv = reflect(&-lightv, normalv);
-        let reflect_dot_eye = f32::powf(dot(&reflectv, eyev), shininess);
-        let effective_color = color * light.intensity * attenuation;
-        let mut total = effective_color * ambient;
+        let (lightv, intensity, ..) = light.lightv_intensity_distance(position);
+        let light_dot_normal = dot(&lightv, &normalv);
 
+        let mut total = color * ambient;
         if !in_shadow && light_dot_normal > 0. {
-            total = total + effective_color * diffuse * light_dot_normal;
+            let reflectv = reflect(&-lightv, normalv);
+            total = total + color * intensity * diffuse * light_dot_normal;
+            let reflect_dot_eye = dot(&reflectv, eyev);
             if reflect_dot_eye > 0. {
-                total = total + light.intensity * specular * reflect_dot_eye;
+                total = total + intensity * specular * reflect_dot_eye.powf(shininess);
             }
         }
-        total * attenuation
-    }
-
-    fn calculate_attenuation(&self, light_vector: &Vector) -> f32 {
-        match self.attenuation {
-            Attenuation::None => 1.,
-            Attenuation::Linear => {
-                let light_distance = magnitude(light_vector);
-                10. / light_distance
-            }
-            Attenuation::Squared => {
-                let light_distance = magnitude(light_vector);
-                100. / (light_distance * light_distance)
-            }
-        }
+        total
     }
 }
 
@@ -95,7 +71,7 @@ mod tests {
         let position = point(0., 0., 0.);
         let eyev = unit_vector_from_vector(vector(0., 0., -1.));
         let normalv = unit_vector_from_vector(vector(0., 0., -1.));
-        let light = PointLight::new(point(0., 0., -10.), WHITE);
+        let light = Light::Point(PointLight::new(point(0., 0., -10.), WHITE));
         let m = Material::default();
         let sphere = Sphere::default();
         let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, false);
@@ -107,7 +83,7 @@ mod tests {
         let position = point(0., 0., 0.);
         let eyev = unit_vector_from_vector(vector(0., 0., -1.));
         let normalv = unit_vector_from_vector(vector(0., 0., -1.));
-        let light = PointLight::new(point(0., 10., -10.), WHITE);
+        let light = Light::Point(PointLight::new(point(0., 10., -10.), WHITE));
         let m = Material::default();
         let sphere = Sphere::default();
         let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, false);
@@ -119,7 +95,7 @@ mod tests {
         let position = point(0., 0., 0.);
         let eyev = unit_vector_from_vector(vector(0., -f32::sqrt(2.) / 2., -f32::sqrt(2.) / 2.));
         let normalv = unit_vector_from_vector(vector(0., 0., -1.));
-        let light = PointLight::new(point(0., 10., -10.), WHITE);
+        let light = Light::Point(PointLight::new(point(0., 10., -10.), WHITE));
         let m = Material::default();
         let sphere = Sphere::default();
         let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, false);
@@ -131,7 +107,7 @@ mod tests {
         let position = point(0., 0., 0.);
         let eyev = unit_vector_from_vector(vector(0., 0., -1.));
         let normalv = unit_vector_from_vector(vector(0., 0., -1.));
-        let light = PointLight::new(point(0., 0., 10.), WHITE);
+        let light = Light::Point(PointLight::new(point(0., 0., 10.), WHITE));
         let m = Material::default();
         let sphere = Sphere::default();
         let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, false);
@@ -143,7 +119,7 @@ mod tests {
         let position = point(0., 0., 0.);
         let eyev = unit_vector_from_vector(vector(0., 0., -1.));
         let normalv = unit_vector_from_vector(vector(0., 0., -1.));
-        let light = PointLight::new(point(0., 0., -10.), color(1., 1., 1.));
+        let light = Light::Point(PointLight::new(point(0., 0., -10.), color(1., 1., 1.)));
         let in_shadow = true;
         let m = Material::default();
         let sphere = Sphere::default();

@@ -1,9 +1,56 @@
 use crate::*;
 
+#[derive(Debug, Clone)]
+pub enum Attenuation {
+    None,
+    Linear,
+    Squared,
+}
+
+pub enum Light {
+    Point(PointLight),
+    Directional(DirectionalLight),
+}
+
+impl Light {
+    #[inline(always)]
+    pub fn lightv_intensity_distance(&self, hit_point: &Point) -> (UnitVector, ColorRgbFloat, f32) {
+        match self {
+            Light::Point(light) => {
+                let light_vector = light.position - hit_point;
+                let distance = magnitude(&light_vector);
+                let attenuation = calculate_attenuation(&light.attenuation, distance);
+                (
+                    unit_vector_from_vector(&light_vector / distance),
+                    light.intensity * attenuation,
+                    distance,
+                )
+            }
+            Light::Directional(light) => (light.direction, light.intensity, 1000.),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct DirectionalLight {
+    pub direction: UnitVector,
+    pub intensity: ColorRgbFloat,
+}
+
+impl DirectionalLight {
+    pub fn new(direction: UnitVector, intensity: ColorRgbFloat) -> DirectionalLight {
+        DirectionalLight {
+            direction,
+            intensity,
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct PointLight {
     pub position: Point,
     pub intensity: ColorRgbFloat,
+    pub attenuation: Attenuation,
 }
 
 impl PointLight {
@@ -11,7 +58,16 @@ impl PointLight {
         PointLight {
             position,
             intensity,
+            attenuation: Attenuation::None,
         }
+    }
+}
+
+fn calculate_attenuation(attenuation: &Attenuation, distance: f32) -> f32 {
+    match attenuation {
+        Attenuation::None => 1.,
+        Attenuation::Linear => 10. / distance,
+        Attenuation::Squared => 100. / (distance * distance),
     }
 }
 
