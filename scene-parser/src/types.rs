@@ -130,11 +130,21 @@ pub struct Camera {
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
+#[serde(deny_unknown_fields)]
 pub enum Light {
     PointLight {
         position: Point,
         #[serde(default)]
         intensity: Rgb,
+    },
+
+    AreaLight {
+        position: Point,
+        #[serde(default)]
+        intensity: Rgb,
+        uv: (Vector, Vector),
+        steps: (u8, u8),
+        jitter: u8,
     },
     DirectionalLight {
         direction: Vector,

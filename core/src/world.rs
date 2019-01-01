@@ -44,7 +44,7 @@ impl World {
             .min_by(|min, x| f32::partial_cmp(&min.t, &x.t).unwrap())
     }
 
-    fn is_shadowed(&self, light_hit: &LightHit) -> bool {
+    pub fn is_shadowed(&self, light_hit: &LightHit) -> bool {
         let LightHit {
             lightv,
             distance,
@@ -63,14 +63,15 @@ impl World {
             .lights
             .iter()
             .map(|light| {
-                let in_shadow = self.is_shadowed(&light.hit(&object_hit.point));
+                // let in_shadow = self.is_shadowed(&light.hit(&object_hit.point));
+
                 object_hit.intersection.object.get_material().lighting(
                     object_hit.intersection.object,
                     &light,
                     &object_hit.point,
                     &object_hit.eyev,
                     &object_hit.normalv,
-                    in_shadow,
+                    light.visibility(&self, object_hit.point.clone()),
                 )
             })
             .sum();

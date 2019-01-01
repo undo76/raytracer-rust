@@ -35,7 +35,7 @@ fn metal(color: ColorRgbFloat) -> Material {
     Material {
         color: color.into(),
         diffuse: 0.6.into(),
-        ambient: 0.1.into(),
+        ambient: 0.01.into(),
         specular: 0.4.into(),
         shininess: 7.0.into(),
         reflective: Some(0.1.into()),

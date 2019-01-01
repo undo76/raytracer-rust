@@ -21,7 +21,7 @@ impl Material {
         position: &Point,
         eyev: &UnitVector,
         normalv: &UnitVector,
-        in_shadow: bool,
+        light_visibility: f32,
     ) -> ColorRgbFloat {
         let object_point = object.get_transform_inverse() * position;
         let color = self.color.map_at_object(&object_point);
@@ -30,21 +30,36 @@ impl Material {
         let specular = self.specular.map_at_object(&object_point);
         let shininess = self.shininess.map_at_object(&object_point);
 
-        let LightHit {
-            lightv, intensity, ..
-        } = light.hit(position);
-        let light_dot_normal = dot(&lightv, &normalv);
+        let sum = if light_visibility > 0.0 {
+            light
+                .hits(position.clone())
+                .map(
+                    |LightHit {
+                         lightv, intensity, ..
+                     }| {
+                        let light_dot_normal = dot(&lightv, &normalv);
 
-        let mut total = color * ambient;
-        if !in_shadow && light_dot_normal > 0. {
-            let reflectv = reflect(&-lightv, normalv);
-            total = total + color * intensity * diffuse * light_dot_normal;
-            let reflect_dot_eye = dot(&reflectv, eyev);
-            if reflect_dot_eye > 0. {
-                total = total + intensity * specular * reflect_dot_eye.powf(shininess);
-            }
-        }
-        total
+                        let intensity = intensity * light_visibility;
+
+                        let mut total = BLACK;
+                        if light_dot_normal > 0. {
+                            let reflectv = reflect(&-lightv, normalv);
+                            total = total + color * intensity * diffuse * light_dot_normal;
+
+                            let reflect_dot_eye = dot(&reflectv, eyev);
+                            if reflect_dot_eye > 0. {
+                                total =
+                                    total + intensity * specular * reflect_dot_eye.powf(shininess);
+                            }
+                        }
+                        return total;
+                    },
+                )
+                .fold(BLACK, |sum, c| sum + c)
+        } else {
+            BLACK
+        };
+        sum + color * ambient
     }
 }
 
@@ -76,7 +91,7 @@ mod tests {
         let light = Light::Point(PointLight::new(point(0., 0., -10.), WHITE));
         let m = Material::default();
         let sphere = Sphere::default();
-        let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, false);
+        let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, 1.0);
         assert_relative_eq!(result, color(1.9, 1.9, 1.9));
     }
 
@@ -88,7 +103,7 @@ mod tests {
         let light = Light::Point(PointLight::new(point(0., 10., -10.), WHITE));
         let m = Material::default();
         let sphere = Sphere::default();
-        let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, false);
+        let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, 1.0);
         assert_relative_eq!(result, color(0.7363961, 0.7363961, 0.7363961));
     }
 
@@ -100,7 +115,7 @@ mod tests {
         let light = Light::Point(PointLight::new(point(0., 10., -10.), WHITE));
         let m = Material::default();
         let sphere = Sphere::default();
-        let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, false);
+        let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, 1.0);
         assert_relative_eq!(result, color(1.6363853, 1.6363853, 1.6363853));
     }
 
@@ -112,7 +127,7 @@ mod tests {
         let light = Light::Point(PointLight::new(point(0., 0., 10.), WHITE));
         let m = Material::default();
         let sphere = Sphere::default();
-        let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, false);
+        let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, 1.0);
         assert_relative_eq!(result, color(0.1, 0.1, 0.1));
     }
 
@@ -122,10 +137,9 @@ mod tests {
         let eyev = unit_vector_from_vector(vector(0., 0., -1.));
         let normalv = unit_vector_from_vector(vector(0., 0., -1.));
         let light = Light::Point(PointLight::new(point(0., 0., -10.), color(1., 1., 1.)));
-        let in_shadow = true;
         let m = Material::default();
         let sphere = Sphere::default();
-        let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, in_shadow);
+        let result = m.lighting(&sphere, &light, &position, &eyev, &normalv, 0.0);
         assert_relative_eq!(result, color(0.1, 0.1, 0.1));
     }
 }

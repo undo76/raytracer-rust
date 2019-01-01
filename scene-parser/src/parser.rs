@@ -203,6 +203,19 @@ fn build_light(light: &Light) -> rc::Light {
             build_point(position),
             build_rgb(intensity),
         )),
+        AreaLight {
+            position,
+            intensity,
+            uv,
+            steps,
+            jitter,
+        } => rc::Light::Area(rc::AreaLight::new(
+            build_point(position),
+            build_rgb(intensity),
+            (build_vector(&uv.0), build_vector(&uv.1)),
+            (steps.0, steps.1),
+            *jitter,
+        )),
         DirectionalLight {
             direction,
             intensity,
