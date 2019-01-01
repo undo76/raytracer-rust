@@ -42,8 +42,8 @@ fn main() {
 
     let group = Box::new(group);
 
-    let light = PointLight::new(point(-8., 8., -5.), color(0.9, 0.8, 0.7));
-    let light2 = PointLight::new(point(8., 8., -5.), color(0.3, 0.3, 0.3));
+    let light = Light::Point(PointLight::new(point(-8., 8., -5.), color(0.9, 0.8, 0.7)));
+    let light2 = Light::Point(PointLight::new(point(8., 8., -5.), color(0.3, 0.3, 0.3)));
 
     let world = World::new(vec![sky, floor, group], vec![light, light2]);
 

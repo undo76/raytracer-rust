@@ -45,7 +45,10 @@ fn main() {
 
     let group = Box::new(group);
 
-    let light = PointLight::new(point(-10., 10., -10.), color(0.9, 0.8, 0.7));
+    let light = Light::Point(PointLight::new(
+        point(-10., 10., -10.),
+        color(0.9, 0.8, 0.7),
+    ));
 
     let world = World::new(vec![floor, group], vec![light]);
     // let world = World::new(vec![group], vec![light]);

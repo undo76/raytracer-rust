@@ -7,6 +7,11 @@ pub enum Attenuation {
     Squared,
 }
 
+pub struct LightHit {
+    pub lightv: UnitVector,
+    pub intensity: ColorRgbFloat,
+}
+
 pub enum Light {
     Point(PointLight),
     Directional(DirectionalLight),
@@ -26,7 +31,7 @@ impl Light {
                     distance,
                 )
             }
-            Light::Directional(light) => (light.direction, light.intensity, 1000.),
+            Light::Directional(light) => (light.direction, light.intensity, std::f32::INFINITY),
         }
     }
 }

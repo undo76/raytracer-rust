@@ -8,7 +8,7 @@ use std::f32::consts::*;
 use std::fs::File;
 use std::io::prelude::Write;
 
-const MAX_SPHERES: usize = 5_000;
+const MAX_SPHERES: usize = 2_000;
 const RADIUS: f32 = 12.0;
 
 #[derive(Debug)]
@@ -20,7 +20,7 @@ struct SphereData {
 fn glass(color: ColorRgbFloat) -> Material {
     Material {
         color: color.into(),
-        diffuse: 0.1.into(),
+        diffuse: 0.05.into(),
         ambient: 0.0.into(),
         specular: 0.5.into(),
         shininess: 100.0.into(),
@@ -127,17 +127,23 @@ fn spheres() -> Vec<Box<dyn Shape + Send>> {
         .collect()
 }
 
-fn lights() -> Vec<PointLight> {
+fn lights() -> Vec<Light> {
     vec![
-        PointLight::new(point(-100., 100., -100.), color(0.6, 0.6, 0.6)),
-        PointLight::new(point(150., 30., -50.), color(0.1, 0.1, 0.1)),
-        PointLight::new(point(0.0, 0.0, 0.0), color(0.1, 0.1, 0.1)),
+        Light::Point(PointLight::new(
+            point(-100., 100., -100.),
+            color(0.6, 0.6, 0.6),
+        )),
+        Light::Point(PointLight::new(
+            point(150., 30., -50.),
+            color(0.5, 0.5, 0.5),
+        )),
+        Light::Point(PointLight::new(point(0.0, 0.0, 0.0), color(0.1, 0.1, 0.1))),
     ]
 }
 
 fn main() {
     let world = World::new(spheres(), lights());
-    let mut camera = Camera::new(3000, 3000, FRAC_PI_6);
+    let mut camera = Camera::new(1600, 1200, FRAC_PI_6);
     camera.set_transform(view_transform(
         point(50., 15., -50.),
         point(0.0, 0.0, 0.0),

@@ -109,8 +109,11 @@ fn main() {
     read_obj_file(&mut group, "./examples/models/teapot.obj");
     let group = Box::new(group);
 
-    let light = PointLight::new(point(-10., 10., -10.), color(0.9, 0.8, 0.7));
-    let light2 = PointLight::new(point(5., 5., -10.), color(0.3, 0.5, 0.5));
+    let light = Light::Point(PointLight::new(
+        point(-10., 10., -10.),
+        color(0.9, 0.8, 0.7),
+    ));
+    let light2 = Light::Point(PointLight::new(point(5., 5., -10.), color(0.3, 0.5, 0.5)));
 
     let world = World::new(
         vec![

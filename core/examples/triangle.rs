@@ -34,7 +34,7 @@ fn main() {
 
     let group = Box::new(group);
 
-    let light = PointLight::new(point(-8., 8., -8.), color(0.9, 0.8, 0.7));
+    let light = Light::Point(PointLight::new(point(-8., 8., -8.), color(0.9, 0.8, 0.7)));
     let world = World::new(vec![floor, walls, group], vec![light]);
 
     let mut camera = Camera::new(1000, 800, F_PI_3);
