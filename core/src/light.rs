@@ -26,11 +26,11 @@ impl Light {
             Light::Point(light) => {
                 let light_vector = light.position - hit_point;
                 let distance = magnitude(&light_vector);
-                let attenuation = calculate_attenuation(&light.attenuation, distance);
                 LightHit {
-                    lightv: unit_vector_from_vector(&light_vector / distance),
-                    intensity: light.intensity * attenuation,
-                    distance: distance,
+                    lightv: unit_vector_from_vector(light_vector / distance),
+                    intensity: light.intensity
+                        * calculate_attenuation(&light.attenuation, distance),
+                    distance,
                     point: *hit_point,
                 }
             }

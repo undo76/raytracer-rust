@@ -3,7 +3,7 @@ use std::fs::File;
 use std::io::Read;
 
 pub fn read_obj_file(group: &mut Group, file: &str) {
-    let mut obj_file = File::open(file).expect(&format!("'File {}' not found", file));
+    let mut obj_file = File::open(file).unwrap_or_else(|_| panic!("'File {}' not found", file));
     let mut obj_str = String::new();
     let _res = obj_file.read_to_string(&mut obj_str).unwrap();
     let obj = parse(&obj_str);
