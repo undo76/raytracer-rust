@@ -59,11 +59,10 @@ impl World {
     }
 
     fn shade_hit(&self, object_hit: &Hit, remaining: u8) -> ColorRgbFloat {
-        let is_not_shadowed = |lh: &LightHit| !self.is_shadowed(lh);
         let surface: ColorRgbFloat = self
             .lights
             .iter()
-            .map(|light| light.lighting(object_hit, is_not_shadowed))
+            .map(|light| light.lighting(object_hit, self))
             .sum();
 
         let reflected = self.reflected_color(object_hit, remaining);
