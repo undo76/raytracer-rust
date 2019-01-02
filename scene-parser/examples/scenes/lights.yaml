@@ -62,7 +62,7 @@ lights:
         - [-0.2, 0, -2]
         - [0, 0.2, 0]
       steps: [5, 5]
-      jitter: 3
+      jitter: 1
 camera:
   size: [1600, 1200]
   from: [0, 3, -8]

@@ -10,13 +10,14 @@ shapes:
               - Scaling: [0.25, 0.25, 0.25]
         ambient: 0.01
 
-
   - Sphere:
       material: 
-        color: [1, 0, 0]
+        color: [1, 0.1, 0.1]
         ambient: 0.01
-        reflective: 0.8
-        shininess: 200
+        diffuse: 0.6
+        specular: 0.4
+        reflective: 0.1
+        shininess: 7
       transform:
         - Scaling: [0.8, 0.8, 0.8]
         - Translation: [-0.8, 0.8, 0]
@@ -30,7 +31,6 @@ shapes:
       transform:
         - Translation: [1, 1, 0]
 
-  
   - Sphere:
       material: 
         color: [1, 1, 1]
@@ -46,8 +46,9 @@ lights:
       uv: 
         - [-1, 0, -1]
         - [0, 1.5, 0]
-      steps: [5, 5]
-      jitter: 5
+      steps: [4, 4]
+      jitter: 4
+
 camera:
   size: [1600, 1200]
   from: [2, 2.1, -7]

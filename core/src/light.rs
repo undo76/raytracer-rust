@@ -40,6 +40,20 @@ impl Light {
             Light::Area(area_light) => Box::new(area_light.hits(hit_point)),
         }
     }
+
+    pub fn lighting<F>(&self, object_hit: &Hit, is_not_shadowed: F) -> ColorRgbFloat
+    where
+        F: Fn(&LightHit) -> bool,
+    {
+        object_hit.intersection.object.get_material().lighting(
+            object_hit.intersection.object,
+            &self,
+            &object_hit.point,
+            &object_hit.eyev,
+            &object_hit.normalv,
+            is_not_shadowed,
+        )
+    }
 }
 
 #[derive(Debug)]
