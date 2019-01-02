@@ -144,24 +144,48 @@ impl AreaLight {
     }
 
     pub fn lighting(&self, hm: &HitMaterial, world: &World) -> ColorRgbFloat {
-        let hit_point = hm.hit.point;
-        let ligh_corner_vector = self.position - hit_point;
+        let steps = (self.u_steps, self.v_steps);
         let u_vec = self.u_vec / (self.u_steps as f32);
         let v_vec = self.v_vec / (self.u_steps as f32);
+        let vecs = (u_vec, v_vec);
 
-        let u_steps = self.u_steps;
-        let v_steps = self.v_steps;
+        let acc = BLACK;
+        self.lighting_rec(acc, hm, world, steps, vecs, 4, 4) + hm.color * hm.ambient
+    }
+
+    fn lighting_rec(
+        &self,
+        mut acc: ColorRgbFloat,
+        hm: &HitMaterial,
+        world: &World,
+        steps: (u8, u8),
+        vecs: (Vector, Vector),
+        depth: u8,
+        max_depth: u8,
+    ) -> ColorRgbFloat {
+        if depth == 0 {
+            return acc;
+        }
+
+        let (u_steps, v_steps) = steps;
+        let (u_vec, v_vec) = vecs;
+
+        let hit_point = hm.hit.point;
+        let ligh_corner_vector = self.position - hit_point;
+
         let jitter = self.jitter;
-        let intensity = self.intensity;
-        let frac = 1. / (u_steps as f32 * v_steps as f32 * jitter as f32);
+        let frac = 1. / (max_depth as f32 * u_steps as f32 * v_steps as f32 * jitter as f32);
         let mut rng = rand::thread_rng();
 
-        let mut sum = hm.color * hm.ambient;
+        let mut shadowed = 0;
+        let mut not_shadowed = 0;
+        let mut val = BLACK;
         for u in 0..u_steps {
             for v in 0..v_steps {
                 for _ in 0..jitter {
                     let ru = rng.gen_range(0., 1.0);
                     let rv = rng.gen_range(0., 1.0);
+
                     let light_vector =
                         ligh_corner_vector + u_vec * (u as f32 + ru) + v_vec * (v as f32 + rv);
                     let distance = magnitude(&light_vector);
@@ -169,17 +193,25 @@ impl AreaLight {
                     let light_hit = LightHit {
                         lightv: unit_vector_from_vector(light_vector / distance),
                         distance,
-                        intensity: intensity * frac,
+                        intensity: self.intensity * frac,
                         point: hit_point,
                     };
 
-                    if !world.is_shadowed(&light_hit) {
-                        sum = sum + hm.shading(&light_hit);
+                    if world.is_shadowed(&light_hit) {
+                        shadowed += 1;
+                    } else {
+                        not_shadowed += 1;
+                        val = val + hm.shading(&light_hit);
                     }
                 }
             }
         }
-        sum
+        acc = acc + val;
+        if shadowed == 0 || not_shadowed == 0 {
+            return acc * ((max_depth as f32) / (1. + max_depth as f32 - depth as f32));
+        } else {
+            self.lighting_rec(acc, hm, world, steps, vecs, depth - 1, max_depth)
+        }
     }
 }
 

@@ -66,6 +66,7 @@ impl<'a> HitMaterial<'a> {
         if light_dot_normal > 0. {
             let reflectv = reflect(&-lightv, normalv);
             total = total + self.color * intensity * self.diffuse * light_dot_normal;
+            // total = total + self.color * intensity;
 
             let reflect_dot_eye = dot(&reflectv, eyev);
             if reflect_dot_eye > 0. {
