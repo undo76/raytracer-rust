@@ -74,11 +74,13 @@ fn build_shape(shape: &Shape) -> Box<dyn rc::Shape + Send> {
                 material,
             },
         } => {
-            let mut group = rc::Group::new(build_transforms(transform), build_material(material));
+            let group = rc::Group::new(build_transforms(transform), build_material(material));
+            let mut boxed_group = Box::new(group);
             for s in shapes {
-                group.add_shape(build_shape(s))
+                let shape = build_shape(s);
+                boxed_group.add_shape(shape);
             }
-            Box::new(group)
+            boxed_group
         }
     }
 }

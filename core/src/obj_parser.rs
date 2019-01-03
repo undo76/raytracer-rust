@@ -152,8 +152,6 @@ pub fn parse(input: &str) -> Object {
                 Command::VertexNormal(VertexNormalCommand(n)) => obj.normals.push(n),
                 Command::Face(FaceCommand(f)) => obj.faces.push(f),
                 _ => ()
-                // Command::Group(name) => obj.vertices.push(p)
-                // Command::Vertex(VertexCommand(p)) => obj.vertices.push(p)
             }
         });
     obj

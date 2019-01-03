@@ -73,7 +73,7 @@ impl Shape for Group {
     }
 
     fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {
-        bounds_intersects(self, &ray)?;
+        // bounds_intersects(self, &ray)?;
 
         let bvh_ray = bvh::ray::Ray::new(ray.origin, ray.direction);
 
