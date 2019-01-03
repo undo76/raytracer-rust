@@ -31,13 +31,18 @@ shapes:
       transform:
         - Translation: [1, 1, 0]
 
-  - Sphere:
+  - Sphere: &fake_light
       material: 
         color: [1, 1, 1]
         ambient: 1
+        diffuse: 0
       transform:
         - Scaling: [0.8, 0.8, 0.8]
         - Translation: [-9, 9, -9]
+  - Sphere:
+      <<: *fake_light
+      transform:
+        - Translation: [-9, 9, -4]
 
 lights:
   # - PointLight:
@@ -51,7 +56,16 @@ lights:
         - [-0.5, 0, -0.5]
         - [0, 0.7, 0]
       steps: [4, 4]
-      jitter: 1
+      jitter: 3
+
+  - AreaLight:
+      position: [-7, 7, -4]
+      intensity: [0.6, 0.6, 0.6]
+      uv: 
+        - [-0.3, 0, -0.3]
+        - [0, 0.5, 0]
+      steps: [4, 4]
+      jitter: 3
 
 camera:
   size: [1600, 1200]
