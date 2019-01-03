@@ -73,19 +73,7 @@ impl Shape for Group {
     }
 
     fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {
-        // bounds_intersects(self, &ray)?;
-
-        let bvh_ray = bvh::ray::Ray::new(ray.origin, ray.direction);
-
-        let bounded_shapes = self
-            .bvh
-            .as_ref()
-            .unwrap()
-            .traverse(&bvh_ray, &self.bounded_shapes);
-        // let bounded_shapes = &self.bounded_shapes;
-
-        bounded_shapes
-            .iter()
+        bvh_intersects(self.bvh.as_ref().unwrap(), &self.bounded_shapes, &ray)
             .filter_map(|s| s.get_shape().intersects(ray))
             .min_by(|min, x| f32::partial_cmp(&min.t, &x.t).unwrap())
     }

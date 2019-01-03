@@ -25,21 +25,14 @@ impl World {
         }
     }
 
-    fn intersects_bvh(&self, ray: &Ray) -> Vec<&BoundedShape> {
-        let bvh_ray = bvh::ray::Ray::new(ray.origin, ray.direction);
-        self.bvh.traverse(&bvh_ray, &self.bounded_shapes)
-    }
-
     fn ray_in_shadow(&self, ray: &Ray, light_distance: f32) -> Option<Intersection> {
-        self.intersects_bvh(&ray)
-            .iter()
+        bvh_intersects(&self.bvh, &self.bounded_shapes, &ray)
             .filter_map(|s| s.get_shape().intersects(ray))
             .find(|x| x.t < light_distance)
     }
 
     fn intersects(&self, ray: &Ray) -> Option<Intersection> {
-        self.intersects_bvh(&ray)
-            .iter()
+        bvh_intersects(&self.bvh, &self.bounded_shapes, &ray)
             .filter_map(|s| s.get_shape().intersects(ray))
             .min_by(|min, x| f32::partial_cmp(&min.t, &x.t).unwrap())
     }

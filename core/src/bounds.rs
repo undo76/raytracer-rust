@@ -2,6 +2,7 @@ use crate::*;
 use bvh::aabb::Bounded;
 use bvh::aabb::AABB;
 use bvh::bounding_hierarchy::BHShape;
+use bvh::bvh::BVH;
 
 pub fn no_bounds() -> Bounds {
     (
@@ -128,4 +129,16 @@ impl BHShape for BoundedShape {
     fn bh_node_index(&self) -> usize {
         self.node_index
     }
+}
+
+pub fn bvh_intersects<'a>(
+    bvh: &BVH,
+    bounded_shapes: &'a [BoundedShape],
+    ray: &Ray,
+) -> impl Iterator<Item = &'a BoundedShape> {
+    let bvh_ray = bvh::ray::Ray::new(ray.origin, ray.direction);
+
+    let mut indices = Vec::new();
+    bvh::bvh::BVHNode::traverse_recursive(&bvh.nodes, 0, &bvh_ray, &mut indices);
+    indices.into_iter().map(move |index| &bounded_shapes[index])
 }
