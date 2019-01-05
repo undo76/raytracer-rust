@@ -2,6 +2,7 @@ use crate::*;
 use bvh::aabb::Bounded;
 use bvh::aabb::AABB;
 use bvh::bounding_hierarchy::BHShape;
+use bvh::bvh::BVHNode;
 use bvh::bvh::BVH;
 
 pub fn no_bounds() -> Bounds {
@@ -131,14 +132,106 @@ impl BHShape for BoundedShape {
     }
 }
 
+#[inline(always)]
 pub fn bvh_intersects<'a>(
-    bvh: &BVH,
+    bvh: &'a BVH,
     bounded_shapes: &'a [BoundedShape],
     ray: &Ray,
 ) -> impl Iterator<Item = &'a BoundedShape> {
     let bvh_ray = bvh::ray::Ray::new(ray.origin, ray.direction);
+    bvh_iterator(bounded_shapes, &bvh.nodes, bvh_ray)
+    // .map(move |index| &bounded_shapes[index])
+}
 
-    let mut indices = Vec::new();
-    bvh::bvh::BVHNode::traverse_recursive(&bvh.nodes, 0, &bvh_ray, &mut indices);
-    indices.into_iter().map(move |index| &bounded_shapes[index])
+#[inline(always)]
+fn bvh_iterator<'a>(
+    bounded_shapes: &'a [BoundedShape],
+    nodes: &'a [BVHNode],
+    ray: bvh::ray::Ray,
+) -> BvhIterator<'a> {
+    BvhIterator {
+        bounded_shapes,
+        nodes,
+        ray,
+        node_index: 0,
+        traversal: NodeTraversal::FromParent,
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+enum NodeTraversal {
+    FromParent,
+    FromBottom(usize),
+}
+
+struct BvhIterator<'a> {
+    bounded_shapes: &'a [BoundedShape],
+    nodes: &'a [BVHNode],
+    ray: bvh::ray::Ray,
+    node_index: usize,
+    traversal: NodeTraversal,
+}
+
+impl<'a> Iterator for BvhIterator<'a> {
+    type Item = &'a BoundedShape;
+
+    fn next(&mut self) -> Option<&'a BoundedShape> {
+        let mut traversal = self.traversal;
+        let mut node_index = self.node_index;
+
+        loop {
+            let node = &self.nodes[node_index];
+
+            match *node {
+                BVHNode::Node {
+                    ref child_l_aabb,
+                    child_l_index,
+                    ref child_r_aabb,
+                    child_r_index,
+                    parent_index,
+                    ..
+                } => match traversal {
+                    NodeTraversal::FromParent => {
+                        node_index = {
+                            if self.ray.intersects_aabb(child_l_aabb) {
+                                child_l_index
+                            } else if self.ray.intersects_aabb(child_r_aabb) {
+                                child_r_index
+                            } else {
+                                traversal = NodeTraversal::FromBottom(child_r_index);
+                                node_index
+                            }
+                        }
+                    }
+                    NodeTraversal::FromBottom(child_index) => {
+                        node_index = {
+                            if child_l_index == child_index {
+                                if self.ray.intersects_aabb(child_r_aabb) {
+                                    traversal = NodeTraversal::FromParent;
+                                    child_r_index
+                                } else {
+                                    traversal = NodeTraversal::FromBottom(child_r_index);
+                                    node_index
+                                }
+                            } else if child_index == 0 {
+                                return None;
+                            } else {
+                                traversal = NodeTraversal::FromBottom(node_index);
+                                parent_index
+                            }
+                        }
+                    }
+                },
+                BVHNode::Leaf {
+                    shape_index,
+                    parent_index,
+                    ..
+                } => {
+                    self.traversal = NodeTraversal::FromBottom(node_index);
+                    self.node_index = parent_index;
+                    return Some(&self.bounded_shapes[shape_index]);
+                }
+            }
+        }
+    }
 }
