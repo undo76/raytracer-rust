@@ -69,7 +69,7 @@ impl DirectionalLight {
             point: hm.hit.point,
         };
 
-        if !world.is_shadowed(&light_hit) {
+        if world.is_shadowed(&light_hit, None).is_none() {
             sum = sum + hm.shading(&light_hit);
         }
         sum
@@ -104,7 +104,7 @@ impl PointLight {
             point: hm.hit.point,
         };
 
-        if !world.is_shadowed(&light_hit) {
+        if world.is_shadowed(&light_hit, None).is_none() {
             sum = sum + hm.shading(&light_hit);
         }
         sum
@@ -183,6 +183,9 @@ impl AreaLight {
         let mut shadowed = 0;
         let mut not_shadowed = 0;
         let mut val = BLACK;
+
+        let mut curr_shadow_obj: Option<&(dyn Shape)> = None;
+
         for u in 0..u_steps {
             for v in 0..v_steps {
                 for _ in 0..jitter {
@@ -200,7 +203,8 @@ impl AreaLight {
                         point: hit_point,
                     };
 
-                    if world.is_shadowed(&light_hit) {
+                    curr_shadow_obj = world.is_shadowed(&light_hit, curr_shadow_obj);
+                    if curr_shadow_obj.is_some() {
                         shadowed += 1;
                     } else {
                         not_shadowed += 1;

@@ -129,13 +129,23 @@ fn spheres() -> Vec<Box<dyn Shape + Send>> {
 
 fn lights() -> Vec<Light> {
     vec![
-        Light::Point(PointLight::new(
+        Light::Area(AreaLight::new(
             point(-100., 100., -100.),
             color(0.6, 0.6, 0.6),
+            (vector(10., 0., -10.), vector(0., 14., 0.)),
+            (4, 4),
+            3,
         )),
-        Light::Point(PointLight::new(
+        // Light::Point(PointLight::new(
+        //     point(150., 30., -50.),
+        //     color(0.5, 0.5, 0.5),
+        // )),
+        Light::Area(AreaLight::new(
             point(150., 30., -50.),
-            color(0.5, 0.5, 0.5),
+            color(0.6, 0.6, 0.6),
+            (vector(-10., 0., -10.), vector(0., 14., 0.)),
+            (4, 4),
+            3,
         )),
         Light::Point(PointLight::new(point(0.0, 0.0, 0.0), color(0.1, 0.1, 0.1))),
     ]
@@ -143,7 +153,7 @@ fn lights() -> Vec<Light> {
 
 fn main() {
     let world = World::new(spheres(), lights());
-    let mut camera = Camera::new(1600, 1200, FRAC_PI_6);
+    let mut camera = Camera::new(3000, 3000, FRAC_PI_6);
     camera.set_transform(view_transform(
         point(50., 15., -50.),
         point(0.0, 0.0, 0.0),

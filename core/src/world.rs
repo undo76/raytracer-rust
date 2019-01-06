@@ -25,9 +25,17 @@ impl World {
         }
     }
 
-    fn ray_in_shadow(&self, ray: &Ray, light_distance: f32) -> Option<Intersection> {
-        bvh_intersects(&self.bvh, &self.bounded_shapes, &ray)
-            .filter_map(|s| s.get_shape().intersects(ray))
+    fn ray_in_shadow<'a>(
+        &'a self,
+        ray: &Ray,
+        light_distance: f32,
+        cached_shape: Option<&'a (dyn Shape)>,
+    ) -> Option<Intersection> {
+        let it = cached_shape.into_iter();
+        let it2 = bvh_intersects(&self.bvh, &self.bounded_shapes, &ray)
+            .map(|s| s.get_shape() as &dyn Shape);
+        it.chain(it2)
+            .filter_map(|s| s.intersects(ray))
             .find(|x| x.t < light_distance)
     }
 
@@ -37,7 +45,11 @@ impl World {
             .min_by(|min, x| f32::partial_cmp(&min.t, &x.t).unwrap())
     }
 
-    pub fn is_shadowed(&self, light_hit: &LightHit) -> bool {
+    pub fn is_shadowed<'a>(
+        &'a self,
+        light_hit: &LightHit,
+        cached_shape: Option<&'a (dyn Shape)>,
+    ) -> Option<&(dyn Shape)> {
         let LightHit {
             lightv,
             distance,
@@ -48,7 +60,8 @@ impl World {
             *point + lightv.into_inner() * 100. * EPS,
             lightv.into_inner(),
         );
-        self.ray_in_shadow(&r, *distance).is_some()
+        self.ray_in_shadow(&r, *distance, cached_shape)
+            .map(|i| i.object as &dyn Shape)
     }
 
     fn shade_hit(&self, object_hit: &Hit, remaining: u8) -> ColorRgbFloat {
@@ -87,9 +100,8 @@ impl World {
                 Some(reflective) => {
                     let reflectv = hit.reflectv.into_inner();
                     let reflect_ray = Ray::new(hit.point + reflectv * EPS * 100., reflectv);
-                    let object_point = object.get_transform_inverse() * hit.point;
                     self.color_at(&reflect_ray, remaining - 1)
-                        * reflective.map_at_object(&object_point)
+                        * reflective.map_at_object(&hit.object_point)
                 }
                 None => BLACK,
             }
@@ -120,9 +132,8 @@ impl World {
                     let origin = hit.point - (normal * EPS);
                     let refract_ray = Ray::new(origin + direction * EPS * 100., direction);
 
-                    let object_point = object.get_transform_inverse() * hit.point;
                     self.color_at(&refract_ray, remaining - 1)
-                        * transparency.map_at_object(&object_point)
+                        * transparency.map_at_object(&hit.object_point)
                 }
             }
             None => BLACK,
