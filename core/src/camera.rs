@@ -75,8 +75,8 @@ impl Camera {
             let world = Arc::clone(&world);
             let camera = Arc::clone(&camera);
             let handle = thread::spawn(move || {
-                for y in 0..camera.vsize {
-                    for x in (i..=camera.hsize - n_threads + i).step_by(n_threads) {
+                for y in (i..=camera.vsize - n_threads + i).step_by(n_threads) {
+                    for x in 0..camera.hsize {
                         let ray = camera.ray_for_pixel(x, y);
                         let color = world.color_at(&ray, camera.max_reflects).into();
                         shared_canvas.set(x, y, color);
