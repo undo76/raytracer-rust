@@ -1,5 +1,5 @@
 use crate::*;
-use rand::*;
+use rand::prelude::*;
 
 #[derive(Debug, Clone)]
 pub enum Attenuation {
@@ -121,6 +121,7 @@ pub struct AreaLight {
     u_steps: u8,
     v_steps: u8,
     jitter: u8,
+    rng: SmallRng,
 }
 
 impl AreaLight {
@@ -140,6 +141,7 @@ impl AreaLight {
             position,
             intensity,
             attenuation: Attenuation::None,
+            rng: SmallRng::from_entropy(),
         }
     }
 
@@ -175,7 +177,8 @@ impl AreaLight {
 
         let jitter = self.jitter;
         let frac = 1. / (max_depth as f32 * u_steps as f32 * v_steps as f32 * jitter as f32);
-        let mut rng = rand::thread_rng();
+
+        let mut rng = SmallRng::from_rng(rand::thread_rng()).unwrap();
 
         let mut shadowed = 0;
         let mut not_shadowed = 0;
