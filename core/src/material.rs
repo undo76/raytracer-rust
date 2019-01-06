@@ -15,15 +15,14 @@ pub struct Material {
 
 impl Material {
     pub fn get_hit_material<'a>(&self, hit: &'a Hit) -> HitMaterial<'a> {
-        // TODO: Move this calculation to hit?
-        let object_point = hit.intersection.object.get_transform_inverse() * hit.point;
+        let object_point = &hit.object_point;
         HitMaterial {
             hit,
-            color: self.color.map_at_object(&object_point),
-            ambient: self.ambient.map_at_object(&object_point),
-            diffuse: self.diffuse.map_at_object(&object_point),
-            specular: self.specular.map_at_object(&object_point),
-            shininess: self.shininess.map_at_object(&object_point),
+            color: self.color.map_at_object(object_point),
+            ambient: self.ambient.map_at_object(object_point),
+            diffuse: self.diffuse.map_at_object(object_point),
+            specular: self.specular.map_at_object(object_point),
+            shininess: self.shininess.map_at_object(object_point),
         }
     }
 }
@@ -66,7 +65,6 @@ impl<'a> HitMaterial<'a> {
         if light_dot_normal > 0. {
             let reflectv = reflect(&-lightv, normalv);
             total = total + self.color * intensity * self.diffuse * light_dot_normal;
-            // total = total + self.color * intensity;
 
             let reflect_dot_eye = dot(&reflectv, eyev);
             if reflect_dot_eye > 0. {

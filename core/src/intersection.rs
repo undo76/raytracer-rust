@@ -3,6 +3,7 @@ use crate::*;
 pub struct Hit<'a> {
     pub intersection: &'a Intersection<'a>,
     pub point: Point,
+    pub object_point: Point,
     pub eyev: UnitVector,
     pub normalv: UnitVector,
     pub inside: bool,
@@ -56,6 +57,7 @@ impl<'a> Intersection<'a> {
 
     pub fn prepare_hit(&self, ray: &Ray) -> Hit {
         let point = ray.position(self.t);
+        let object_point = self.object.get_transform_inverse() * point;
         let eyev = UnitVector::new_normalize(-ray.direction);
         let normalv = self.object.normal_at(&point, &self);
         let inside = dot(&normalv, &eyev) < 0.;
@@ -81,6 +83,7 @@ impl<'a> Intersection<'a> {
         Hit {
             intersection: &self,
             point,
+            object_point,
             eyev,
             inside,
             normalv,
