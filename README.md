@@ -7,11 +7,11 @@ Ray tracer written in Rust based on [Jamis Buck](https://twitter.com/jamis)’s 
 ## To do
 - [ ] CSG 
 - [ ] Antialiasing
-- [ ] Area lights and soft shadows
 - [ ] Texture mapping
 - [ ] Depth of field
 - [ ] Particle emission
 - [ ] Scripting
+- [X] Area lights and soft shadows
 
 ## Ideas
 - [ ] Migrate to Webassembly
