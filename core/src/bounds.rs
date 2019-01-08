@@ -182,7 +182,7 @@ impl<'a> Iterator for BvhIterator<'a> {
         loop {
             let node = &self.nodes[node_index];
 
-            match *node {
+            match node {
                 BVHNode::Node {
                     ref child_l_aabb,
                     child_l_index,
@@ -194,31 +194,24 @@ impl<'a> Iterator for BvhIterator<'a> {
                     NodeTraversal::FromParent => {
                         node_index = {
                             if self.ray.intersects_aabb(child_l_aabb) {
-                                child_l_index
+                                *child_l_index
                             } else if self.ray.intersects_aabb(child_r_aabb) {
-                                child_r_index
+                                *child_r_index
                             } else {
-                                traversal = NodeTraversal::FromBottom(child_r_index);
-                                node_index
+                                traversal = NodeTraversal::FromBottom(node_index);
+                                *parent_index
                             }
                         }
                     }
                     NodeTraversal::FromBottom(child_index) => {
-                        node_index = {
-                            if child_l_index == child_index {
-                                if self.ray.intersects_aabb(child_r_aabb) {
-                                    traversal = NodeTraversal::FromParent;
-                                    child_r_index
-                                } else {
-                                    traversal = NodeTraversal::FromBottom(child_r_index);
-                                    node_index
-                                }
-                            } else if child_index == 0 {
-                                return None;
-                            } else {
-                                traversal = NodeTraversal::FromBottom(node_index);
-                                parent_index
-                            }
+                        if *child_l_index == child_index && self.ray.intersects_aabb(child_r_aabb) {
+                            traversal = NodeTraversal::FromParent;
+                            node_index = *child_r_index;
+                        } else if child_index == 0 {
+                            return None;
+                        } else {
+                            traversal = NodeTraversal::FromBottom(node_index);
+                            node_index = *parent_index
                         }
                     }
                 },
@@ -228,8 +221,8 @@ impl<'a> Iterator for BvhIterator<'a> {
                     ..
                 } => {
                     self.traversal = NodeTraversal::FromBottom(node_index);
-                    self.node_index = parent_index;
-                    return Some(&self.bounded_shapes[shape_index]);
+                    self.node_index = *parent_index;
+                    return Some(&self.bounded_shapes[*shape_index]);
                 }
             }
         }

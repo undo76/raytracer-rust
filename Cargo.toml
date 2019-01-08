@@ -1,2 +1,7 @@
 [workspace]
 members = ["./core", "./scene-parser"]
+
+[profile.release]
+lto = true
+debug = true
+opt-level = 2
