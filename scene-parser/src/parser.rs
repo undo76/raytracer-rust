@@ -5,7 +5,7 @@ pub fn parse_yaml<T>(yaml_str: &str) -> Result<T, serde_yaml::Error>
 where
     for<'de> T: serde::de::Deserialize<'de>,
 {
-    let value = serde_yaml::from_str(&yaml_str)?;
+    let value = serde_yaml::from_str(yaml_str)?;
     let merged = yaml_merge_keys::merge_keys_serde(value).expect("Error while merging YAML");
     serde_yaml::from_value(merged)
 }
@@ -18,8 +18,7 @@ pub fn build_scene(scene: &Scene) -> (rc::World, rc::Camera) {
         ..
     } = scene;
 
-    let rc_shapes: Vec<Box<dyn rc::Shape + Send>> =
-        shapes.iter().map(|shape| build_shape(shape)).collect();
+    let rc_shapes: Vec<Box<dyn rc::Shape + Send>> = shapes.iter().map(build_shape).collect();
 
     let rc_lights: Vec<rc::Light> = build_lights(lights);
     let rc_camera: rc::Camera = build_camera(camera);
@@ -91,7 +90,7 @@ fn build_transforms(transforms: &Transforms) -> rc::Transform {
         SingleTransform(t) => build_transform(t),
         ChainedTransform(ts) => ts
             .iter()
-            .map(|ts| build_transforms(ts))
+            .map(build_transforms)
             .fold(rc::Transform::identity(), |acc, t| t * acc),
     }
 }
@@ -115,39 +114,40 @@ fn build_material(material: &Material) -> rc::Material {
         diffuse: build_mapping(&material.diffuse),
         specular: build_mapping(&material.specular),
         shininess: build_mapping(&material.shininess),
-        reflective: material.reflective.as_ref().map(|v| build_mapping(v)),
-        transparency: material.transparency.as_ref().map(|v| build_mapping(v)),
+        reflective: material.reflective.as_ref().map(build_mapping),
+        transparency: material.transparency.as_ref().map(build_mapping),
         refractive_index: material.refractive_index,
         attenuation: rc::Attenuation::None,
     }
 }
 
-fn build_mapping<F, T>(mapping: &Mapping<F>) -> rc::Mapping<T>
-where
+fn build_mapping<
     F: Copy,
     T: Copy
         + core::ops::Sub<Output = T>
         + core::ops::Add<Output = T>
         + core::ops::Mul<f32, Output = T>
-        + std::convert::From<F>,
-{
+        + From<F>,
+>(
+    mapping: &Mapping<F>,
+) -> rc::Mapping<T> {
     use crate::Mapping::*;
     use crate::PatternMapping::*;
     match mapping {
         Uniform(value) => rc::Mapping::uniform((*value).into()),
         Pattern(Stripes { values, transform }) => {
-            rc::Mapping::stripes(&map_vector(&values), build_transforms(&transform))
+            rc::Mapping::stripes(&map_vector(values), build_transforms(transform))
         }
         Pattern(Gradient { values, transform }) => {
-            let v = map_vector(&values);
+            let v = map_vector(values);
             let tuple = (v[0], v[1]);
-            rc::Mapping::gradient(tuple, build_transforms(&transform))
+            rc::Mapping::gradient(tuple, build_transforms(transform))
         }
         Pattern(Checkers { values, transform }) => {
-            rc::Mapping::checkers(&map_vector(&values), build_transforms(&transform))
+            rc::Mapping::checkers(&map_vector(values), build_transforms(transform))
         }
         Pattern(Rings { values, transform }) => {
-            rc::Mapping::rings(&map_vector(&values), build_transforms(&transform))
+            rc::Mapping::rings(&map_vector(values), build_transforms(transform))
         }
     }
 }
@@ -170,7 +170,7 @@ fn build_camera(camera: &Camera) -> rc::Camera {
         to,
         up,
     } = camera;
-    let transform = rc::view_transform(build_point(&from), build_point(&to), build_vector(&up));
+    let transform = rc::view_transform(build_point(from), build_point(to), build_vector(up));
     let mut camera = rc::Camera::new(*h, *w, build_angle(*field_of_view));
     camera.set_transform(transform);
     camera
@@ -192,7 +192,7 @@ fn build_vector(v: &Vector) -> rc::Vector {
 }
 
 fn build_lights(lights: &[Light]) -> Vec<rc::Light> {
-    lights.iter().map(|l| build_light(l)).collect()
+    lights.iter().map(build_light).collect()
 }
 
 fn build_light(light: &Light) -> rc::Light {

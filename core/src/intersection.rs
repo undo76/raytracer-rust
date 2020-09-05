@@ -59,7 +59,7 @@ impl<'a> Intersection<'a> {
         let point = ray.position(self.t);
         let object_point = self.object.get_transform_inverse() * point;
         let eyev = UnitVector::new_normalize(-ray.direction);
-        let normalv = self.object.normal_at(&point, &self);
+        let normalv = self.object.normal_at(&point, self);
         let inside = dot(&normalv, &eyev) < 0.;
         let normalv = if inside { -normalv } else { normalv };
         let reflectv = UnitVector::new_unchecked(reflect(&ray.direction, &normalv));
@@ -81,7 +81,7 @@ impl<'a> Intersection<'a> {
         };
 
         Hit {
-            intersection: &self,
+            intersection: self,
             point,
             object_point,
             eyev,

@@ -39,12 +39,13 @@ fn to_byte(x: f32) -> Byte {
     (clamp(x) * 255.).round() as Byte
 }
 
-impl Into<ColorRgbByte> for ColorRgbFloat {
-    fn into(self) -> ColorRgbByte {
+
+impl From<ColorRgbFloat> for ColorRgbByte {
+    fn from(c: ColorRgbFloat) -> Self {
         ColorRgbByte {
-            r: to_byte(self.r),
-            g: to_byte(self.g),
-            b: to_byte(self.b),
+            r: to_byte(c.r),
+            g: to_byte(c.g),
+            b: to_byte(c.b),
         }
     }
 }

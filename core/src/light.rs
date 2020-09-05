@@ -1,5 +1,7 @@
+use rand::{Rng, SeedableRng};
+use rand::rngs::StdRng;
+
 use crate::*;
-use rand::prelude::*;
 
 #[derive(Debug, Clone)]
 pub enum Attenuation {
@@ -64,7 +66,7 @@ impl DirectionalLight {
         let mut sum = hm.color * hm.ambient;
         let light_hit = LightHit {
             lightv: light_vector,
-            distance: std::f32::INFINITY,
+            distance: f32::INFINITY,
             intensity: self.intensity,
             point: hm.hit.point,
         };
@@ -121,7 +123,6 @@ pub struct AreaLight {
     u_steps: u8,
     v_steps: u8,
     jitter: u8,
-    rng: SmallRng,
 }
 
 impl AreaLight {
@@ -141,7 +142,6 @@ impl AreaLight {
             position,
             intensity,
             attenuation: Attenuation::None,
-            rng: SmallRng::from_entropy(),
         }
     }
 
@@ -178,7 +178,7 @@ impl AreaLight {
         let jitter = self.jitter;
         let frac = 1. / (max_depth as f32 * u_steps as f32 * v_steps as f32 * jitter as f32);
 
-        let mut rng = SmallRng::from_rng(rand::thread_rng()).unwrap();
+        let mut rng = StdRng::from_rng(rand::thread_rng()).unwrap();
 
         let mut shadowed = 0;
         let mut not_shadowed = 0;
@@ -189,8 +189,8 @@ impl AreaLight {
         for u in 0..u_steps {
             for v in 0..v_steps {
                 for _ in 0..jitter {
-                    let ru = rng.gen_range(0., 1.0);
-                    let rv = rng.gen_range(0., 1.0);
+                    let ru = rng.gen_range(0.0..=1.0);
+                    let rv = rng.gen_range(0.0..=1.0);
 
                     let light_vector =
                         ligh_corner_vector + u_vec * (u as f32 + ru) + v_vec * (v as f32 + rv);
@@ -229,7 +229,7 @@ mod tests {
     #[test]
     fn point_light_creation() {
         let light = PointLight::new(point(0., 0., 0.), WHITE);
-        assert_eq!(light.position, point(0., 0., 0.,));
+        assert_eq!(light.position, point(0., 0., 0.));
         assert_eq!(light.intesity, WHITE);
     }
 }

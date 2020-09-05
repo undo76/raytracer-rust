@@ -110,7 +110,7 @@ pub enum Shape {
     },
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Debug)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Default)]
 #[serde(default, deny_unknown_fields)]
 pub struct BaseShape {
     pub material: Material,
@@ -179,15 +179,6 @@ impl Default for Rgb {
     }
 }
 
-impl Default for BaseShape {
-    fn default() -> BaseShape {
-        BaseShape {
-            material: Material::default(),
-            transform: Transforms::default(),
-        }
-    }
-}
-
 impl Default for Material {
     fn default() -> Material {
         Material {
@@ -227,8 +218,6 @@ impl Default for Camera {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use serde_json;
-    use serde_yaml;
 
     #[test]
     fn test_point() {

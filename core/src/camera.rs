@@ -2,13 +2,10 @@ use crate::*;
 use std::sync::Arc;
 use std::thread;
 
-use num_cpus;
-
 #[derive(Debug, Copy, Clone)]
 pub struct Camera {
-    hsize: usize,
-    vsize: usize,
-    field_of_view: f32,
+    h_size: usize,
+    v_size: usize,
     transform_inverse: Transform,
     half_width: f32,
     half_height: f32,
@@ -17,11 +14,11 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new(hsize: usize, vsize: usize, field_of_view: f32) -> Camera {
+    pub fn new(h_size: usize, v_size: usize, field_of_view: f32) -> Camera {
         let half_width;
         let half_height;
         let half_view = f32::tan(field_of_view / 2.);
-        let aspect = (hsize as f32) / (vsize as f32);
+        let aspect = (h_size as f32) / (v_size as f32);
         if aspect >= 1. {
             half_width = half_view;
             half_height = half_view / aspect;
@@ -30,12 +27,11 @@ impl Camera {
             half_height = half_view;
         }
 
-        let pixel_size = half_width * 2.0 / (hsize as f32);
+        let pixel_size = half_width * 2.0 / (h_size as f32);
 
         Camera {
-            hsize,
-            vsize,
-            field_of_view,
+            h_size,
+            v_size,
             transform_inverse: Transform::identity(),
             half_width,
             half_height,
@@ -63,7 +59,7 @@ impl Camera {
     }
 
     pub fn render(self, world: World) -> Canvas {
-        let canvas = Canvas::new(self.hsize, self.vsize);
+        let canvas = Canvas::new(self.h_size, self.v_size);
         let canvas = Arc::new(canvas);
         let world = Arc::new(world);
         let camera = Arc::new(self);
@@ -75,8 +71,8 @@ impl Camera {
             let world = Arc::clone(&world);
             let camera = Arc::clone(&camera);
             let handle = thread::spawn(move || {
-                for y in (i..=camera.vsize - n_threads + i).step_by(n_threads) {
-                    for x in 0..camera.hsize {
+                for y in (i..=camera.v_size - n_threads + i).step_by(n_threads) {
+                    for x in 0..camera.h_size {
                         let ray = camera.ray_for_pixel(x, y);
                         let color = world.color_at(&ray, camera.max_reflects).into();
                         shared_canvas.set(x, y, color);
@@ -122,9 +118,8 @@ mod tests {
         let vsize = 120;
         let field_of_view = std::f32::consts::FRAC_PI_2;
         let camera = Camera::new(hsize, vsize, field_of_view);
-        assert_eq!(camera.vsize, vsize);
-        assert_eq!(camera.hsize, hsize);
-        assert_relative_eq!(camera.field_of_view, field_of_view);
+        assert_eq!(camera.v_size, vsize);
+        assert_eq!(camera.h_size, hsize);
         assert_relative_eq!(camera.transform_inverse, Transform::identity());
     }
 

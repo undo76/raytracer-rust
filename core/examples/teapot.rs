@@ -8,7 +8,7 @@ use std::io::prelude::*;
 
 fn main() {
     let floor_material = Material {
-        color: Mapping::checkers(&vec![WHITE * 0.7, WHITE * 0.8], scaling(0.2, 0.2, 0.2)),
+        color: Mapping::checkers(&[WHITE * 0.7, WHITE * 0.8], scaling(0.2, 0.2, 0.2)),
         specular: Mapping::from(0.7),
         reflective: Some(Mapping::from(0.05)),
         attenuation: Attenuation::Squared,

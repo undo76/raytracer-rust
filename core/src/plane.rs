@@ -38,7 +38,7 @@ impl Shape for Plane {
     }
 
     fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {
-        if f32::abs(ray.direction.y) < core::f32::EPSILON {
+        if f32::abs(ray.direction.y) < f32::EPSILON {
             None
         } else {
             let t = -ray.origin.y / ray.direction.y;

@@ -13,7 +13,7 @@ fn main() {
     let mut floor_material = Material::default();
 
     floor_material.color = Mapping::checkers(
-        &vec![BLACK, WHITE * 0.8],
+        &[BLACK, WHITE * 0.8],
         rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5),
     );
     floor_material.specular = Mapping::from(0.7);
@@ -23,12 +23,12 @@ fn main() {
 
     let mut middle_material = Material::default();
     middle_material.color = Mapping::stripes(
-        &vec![PURPLE * 0.7, PURPLE * 0.5],
+        &[PURPLE * 0.7, PURPLE * 0.5],
         rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2),
     );
     middle_material.specular = Mapping::from(1.);
     middle_material.reflective = Some(Mapping::stripes(
-        &vec![0.03, 0.1],
+        &[0.03, 0.1],
         rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2),
     ));
 

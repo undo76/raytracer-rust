@@ -160,10 +160,10 @@ where
         use self::Mapping::*;
         match self {
             Uniform(u) => u.value,
-            Striped(s) => s.map_at_object(&object_point),
-            Gradient(g) => g.map_at_object(&object_point),
-            Ring(r) => r.map_at_object(&object_point),
-            Checkered(c) => c.map_at_object(&object_point),
+            Striped(s) => s.map_at_object(object_point),
+            Gradient(g) => g.map_at_object(object_point),
+            Ring(r) => r.map_at_object(object_point),
+            Checkered(c) => c.map_at_object(object_point),
         }
     }
 }
@@ -186,7 +186,7 @@ mod tests {
 
     #[test]
     fn stripe_pattern_is_constant_in_z() {
-        let pattern = Mapping::stripes(&vec![WHITE, BLACK], Transform::identity());
+        let pattern = Mapping::stripes(&[WHITE, BLACK], Transform::identity());
         assert_eq!(pattern.map_at_object(&point(0., 0., 0.)), WHITE);
         assert_eq!(pattern.map_at_object(&point(0., 0., 2.)), WHITE);
         assert_eq!(pattern.map_at_object(&point(0., 0., 3.)), WHITE);
@@ -194,7 +194,7 @@ mod tests {
 
     #[test]
     fn stripe_pattern_alternates_in_z() {
-        let pattern = Mapping::stripes(&vec![WHITE, BLACK], Transform::identity());
+        let pattern = Mapping::stripes(&[WHITE, BLACK], Transform::identity());
         assert_eq!(pattern.map_at_object(&point(0., 0., 0.)), WHITE);
         assert_eq!(pattern.map_at_object(&point(0.9, 0., 0.)), WHITE);
         assert_eq!(pattern.map_at_object(&point(1., 0., 0.)), BLACK);

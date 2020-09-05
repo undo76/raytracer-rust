@@ -14,18 +14,18 @@ fn main() {
     let mut wall_material = Material::default();
 
     floor_material.color = Mapping::checkers(
-        &vec![WHITE * 0.6, WHITE * 0.8],
+        &[WHITE * 0.6, WHITE * 0.8],
         rotation_y(F_PI_4) * scaling(0.2, 0.2, 0.2),
     );
     floor_material.specular = Mapping::from(0.6);
     floor_material.reflective = Some(Mapping::from(0.1));
 
     wall_material.color = Mapping::rings(
-        &vec![RED * 0.7, BLUE * 0.5, WHITE * 0.5],
+        &[RED * 0.7, BLUE * 0.5, WHITE * 0.5],
         rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5),
     );
     wall_material.reflective = Some(Mapping::rings(
-        &vec![0.1, 0.01, 0.4],
+        &[0.1, 0.01, 0.4],
         rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5),
     ));
 
@@ -49,13 +49,13 @@ fn main() {
 
     let mut middle_material = Material::default();
     middle_material.color = Mapping::stripes(
-        &vec![PURPLE * 0.7, PURPLE * 0.5],
+        &[PURPLE * 0.7, PURPLE * 0.5],
         rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2),
     );
     middle_material.specular =
-        Mapping::stripes(&vec![0.1, 1.], rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2));
+        Mapping::stripes(&[0.1, 1.], rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2));
     middle_material.reflective = Some(Mapping::stripes(
-        &vec![0.03, 0.1],
+        &[0.03, 0.1],
         rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2),
     ));
     let middle = Box::new(Sphere::new(
@@ -92,9 +92,9 @@ fn main() {
     ));
 
     let mut cube_material = Material::default();
-    cube_material.color = Mapping::checkers(&vec![BLUE * 0.7, RED * 0.6], scaling(0.5, 0.5, 0.5));
+    cube_material.color = Mapping::checkers(&[BLUE * 0.7, RED * 0.6], scaling(0.5, 0.5, 0.5));
     cube_material.diffuse = 0.8.into();
-    cube_material.transparency = Some(Mapping::checkers(&vec![0.01, 0.5], scaling(0.5, 0.5, 0.5)));
+    cube_material.transparency = Some(Mapping::checkers(&[0.01, 0.5], scaling(0.5, 0.5, 0.5)));
     cube_material.reflective = Some((0.5).into());
     let cube = Box::new(Cube::new(
         translation(-0.2, 0.3001, -1.) * scaling(0.3, 0.3, 0.3) * rotation_y(-0.5),

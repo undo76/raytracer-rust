@@ -1,5 +1,3 @@
-extern crate rustracer_core;
-
 use rustracer_core::*;
 
 use rand::distributions::Uniform;
@@ -26,7 +24,7 @@ fn glass(color: ColorRgbFloat) -> Material {
         shininess: 100.0.into(),
         reflective: Some(0.9.into()),
         transparency: Some(0.9.into()),
-        refractive_index: 1.5.into(),
+        refractive_index: 1.5,
         ..Material::default()
     }
 }
@@ -44,7 +42,7 @@ fn metal(color: ColorRgbFloat) -> Material {
 }
 
 fn random_color() -> ColorRgbFloat {
-    let mut rng = thread_rng();
+    let rng = thread_rng();
     let c: Vec<f32> = rng.sample_iter(&Uniform::from(0.0..0.8)).take(3).collect();
     color(c[0], c[1], c[2])
 }
@@ -69,16 +67,16 @@ fn spheres() -> Vec<Box<dyn Shape + Send>> {
     let mut attempts = 0;
     while spheres.len() < MAX_SPHERES {
         let (r_min, r_max): (f32, f32) = match attempts {
-            0...999 => (0.5, 1.5),
-            1_000...2_999 => (0.5 * 0.5, 1.5 * 0.5),
-            3_000...4_999 => (0.5 * 0.25, 1.5 * 0.25),
-            5_000...10_000 => (0.5 * 0.125, 1.5 * 0.125),
+            0..=999 => (0.5, 1.5),
+            1_000..=2_999 => (0.5 * 0.5, 1.5 * 0.5),
+            3_000..=4_999 => (0.5 * 0.25, 1.5 * 0.25),
+            5_000..=10_000 => (0.5 * 0.125, 1.5 * 0.125),
             _ => break,
         };
 
-        let theta = rng.gen_range(0.0, PI);
-        let phi = rng.gen_range(0.0, PI * 2.);
-        let r = r_min + (rng.gen_range(0.0, 1.0) * (r_max - r_min));
+        let theta = rng.gen_range(0.0..PI);
+        let phi = rng.gen_range(0.0..PI * 2.);
+        let r = r_min + (rng.gen_range(0.0..1.0) * (r_max - r_min));
 
         let x = RADIUS * theta.sin() * phi.cos();
         let y = RADIUS * theta.cos();

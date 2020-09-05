@@ -43,7 +43,7 @@ pub fn dot(v1: &Vector, v2: &Vector) -> f32 {
 
 #[inline]
 pub fn cross(v1: &Vector, v2: &Vector) -> Vector {
-    v1.cross(&v2)
+    v1.cross(v2)
 }
 
 #[inline]
@@ -56,21 +56,21 @@ mod tests {
     use super::*;
 
     #[test]
-    fn substracting_two_points() {
+    fn subtracting_two_points() {
         let p1 = point(3., 2., 1.);
         let p2 = point(5., 6., 7.);
         assert_relative_eq!(p1 - p2, vector(-2., -4., -6.));
     }
 
     #[test]
-    fn substracting_vector_from_point() {
+    fn subtracting_vector_from_point() {
         let p = point(3., 2., 1.);
         let v = vector(5., 6., 7.);
         assert_relative_eq!(p - v, point(-2., -4., -6.));
     }
 
     #[test]
-    fn substracting_two_vectors() {
+    fn subtracting_two_vectors() {
         let v1 = point(3., 2., 1.);
         let v2 = point(5., 6., 7.);
         assert_relative_eq!(v1 - v2, vector(-2., -4., -6.));

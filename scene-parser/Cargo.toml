@@ -2,7 +2,7 @@
 name = "rustracer-parser"
 version = "0.1.0"
 authors = ["Manolo Santos <manolo.santos@gmail.com>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 serde = "1.0.83"

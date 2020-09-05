@@ -10,8 +10,7 @@ const F_PI_3: f32 = std::f32::consts::FRAC_PI_3;
 fn main() {
     let mut floor_material = Material::default();
 
-    floor_material.color =
-        Mapping::checkers(&vec![WHITE * 0.7, WHITE * 0.8], scaling(0.2, 0.2, 0.2));
+    floor_material.color = Mapping::checkers(&[WHITE * 0.7, WHITE * 0.8], scaling(0.2, 0.2, 0.2));
     floor_material.specular = Mapping::from(0.7);
     floor_material.reflective = Some(Mapping::from(0.05));
     floor_material.attenuation = Attenuation::Squared;

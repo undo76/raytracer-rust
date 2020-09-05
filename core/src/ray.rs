@@ -1,6 +1,6 @@
-use crate::*;
+use nalgebra::{Projective3};
 
-use alga;
+use crate::*;
 
 pub struct Ray {
     pub origin: Point,
@@ -18,10 +18,7 @@ impl Ray {
     }
 
     #[inline(always)]
-    pub fn transform<T>(&self, trans: &T) -> Ray
-    where
-        T: alga::linear::ProjectiveTransformation<Point>,
-    {
+    pub fn transform(&self, trans: &Projective3<f32>) -> Ray {
         Ray::new(
             trans.transform_point(&self.origin),
             trans.transform_vector(&self.direction),
@@ -54,7 +51,7 @@ mod tests {
     }
 
     #[test]
-    fn traslating_ray() {
+    fn translating_ray() {
         let origin = point(1., 2., 3.);
         let direction = vector(0., 1., 0.);
         let r = Ray::new(origin, direction);

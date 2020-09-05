@@ -1,14 +1,15 @@
 extern crate rustracer_core;
 
-use rustracer_core::*;
-
-use std::f32::consts::*;
+use core::f32::consts::*;
 use std::fs::File;
-use std::io::prelude::*;
+use std::io::Write;
+
+use rustracer_core::color;
+use rustracer_core::*;
 
 fn main() {
     let floor_material = Material {
-        color: Mapping::checkers(&vec![WHITE * 0.7, WHITE * 0.8], scaling(0.2, 0.2, 0.2)),
+        color: Mapping::checkers(&[WHITE * 0.7, WHITE * 0.8], scaling(0.2, 0.2, 0.2)),
         specular: Mapping::from(0.7),
         reflective: Some(Mapping::from(0.05)),
         attenuation: Attenuation::Squared,
@@ -17,10 +18,12 @@ fn main() {
 
     let floor = Box::new(Plane::new(Transform::identity(), floor_material.clone()));
 
-    let mut sky_material = Material::default();
-    sky_material.color = color(0.4, 0.4, 0.7).into();
-    sky_material.ambient = 0.7.into();
-    sky_material.attenuation = Attenuation::None;
+    let sky_material = Material {
+        color: color(0.4, 0.4, 0.7).into(),
+        ambient: 0.7.into(),
+        attenuation: Attenuation::None,
+        ..Default::default()
+    };
     let sky = Box::new(Plane::new(translation(0., 100., 0.), sky_material.clone()));
 
     let mut group = Group::new(Transform::identity(), Material::default());

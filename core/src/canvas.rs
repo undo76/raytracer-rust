@@ -1,5 +1,6 @@
-use crate::*;
 use std::sync::{Mutex, MutexGuard};
+
+use crate::*;
 
 const N_CHANNELS: usize = 3;
 
@@ -53,7 +54,7 @@ impl Canvas {
         }
     }
 
-    pub fn to_string(&self) -> String {
+    fn buffer_as_ppm_string(&self) -> String {
         let fb = self.get_frame_buffer();
         fb.chunks(10)
             .map(|chunk| {
@@ -69,7 +70,7 @@ impl Canvas {
 
     pub fn to_ppm_string(&self) -> String {
         let header = format!("P3\n{} {}\n255\n", self.width, self.height);
-        header + &self.to_string() + "\n"
+        header + &self.buffer_as_ppm_string() + "\n"
     }
 
     fn get_frame_buffer(&self) -> MutexGuard<Vec<u8>> {

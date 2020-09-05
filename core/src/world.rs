@@ -1,5 +1,6 @@
-use crate::*;
 use bvh::bvh::BVH;
+
+use crate::*;
 
 pub struct World {
     pub bounded_shapes: Vec<BoundedShape>,
@@ -32,7 +33,7 @@ impl World {
         cached_shape: Option<&'a (dyn Shape)>,
     ) -> Option<Intersection> {
         let it = cached_shape.into_iter();
-        let it2 = bvh_intersects(&self.bvh, &self.bounded_shapes, &ray)
+        let it2 = bvh_intersects(&self.bvh, &self.bounded_shapes, ray)
             .map(|s| s.get_shape() as &dyn Shape);
         it.chain(it2)
             .filter_map(|s| s.intersects(ray))
@@ -40,7 +41,7 @@ impl World {
     }
 
     fn intersects(&self, ray: &Ray) -> Option<Intersection> {
-        bvh_intersects(&self.bvh, &self.bounded_shapes, &ray)
+        bvh_intersects(&self.bvh, &self.bounded_shapes, ray)
             .filter_map(|s| s.get_shape().intersects(ray))
             .min_by(|min, x| f32::partial_cmp(&min.t, &x.t).unwrap())
     }
@@ -61,7 +62,7 @@ impl World {
             lightv.into_inner(),
         );
         self.ray_in_shadow(&r, *distance, cached_shape)
-            .map(|i| i.object as &dyn Shape)
+            .map(|i| i.object)
     }
 
     fn shade_hit(&self, object_hit: &Hit, remaining: u8) -> ColorRgbFloat {
@@ -84,7 +85,7 @@ impl World {
     }
 
     pub fn color_at(&self, ray: &Ray, remaining: u8) -> ColorRgbFloat {
-        let hit = self.intersects(&ray);
+        let hit = self.intersects(ray);
         match hit {
             Some(h) => self.shade_hit(&h.prepare_hit(ray), remaining),
             None => BLACK,
@@ -184,11 +185,13 @@ mod tests {
 
     #[test]
     fn shade_intersection_inside() {
-        let mut world = World::default();
-        world.lights = vec![Light::Point(PointLight::new(
-            point(0., 0.25, 0.),
-            color(1., 1., 1.),
-        ))];
+        let world = World {
+            lights: vec![Light::Point(PointLight::new(
+                point(0., 0.25, 0.),
+                color(1., 1., 1.),
+            ))],
+            ..World::default()
+        };
         let ray = Ray::new(point(0., 0., 0.), vector(0., 0., 1.));
         let intersection = Intersection::new(0.5, &(*world.bounded_shapes[1].shape));
         let hit = intersection.prepare_hit(&ray);
@@ -207,10 +210,12 @@ mod tests {
     #[test]
     fn color_at_behind() {
         let mut world = World::default();
-        let mut material = Material::default();
-        material.ambient = Mapping::from(1.);
-        material.diffuse = Mapping::from(0.);
-        material.specular = Mapping::from(0.);
+        let material = Material {
+            ambient: Mapping::from(1.),
+            diffuse: Mapping::from(0.),
+            specular: Mapping::from(0.),
+            ..Material::default()
+        };
         world.bounded_shapes[1].shape.set_material(material);
         let ray = Ray::new(point(0., 0., -0.75), vector(0., 0., 1.));
         let c = world.color_at(&ray, 0);

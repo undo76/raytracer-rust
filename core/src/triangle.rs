@@ -85,13 +85,13 @@ impl Shape for Triangle {
     fn intersects(&self, ray: &Ray) -> Option<Intersection> {
         let dir_cross_e2 = cross(&ray.direction, &self.e2);
         let det = dot(&self.e1, &dir_cross_e2);
-        if f32::abs(det) < core::f32::EPSILON {
+        if f32::abs(det) < f32::EPSILON {
             return None;
         }
         let f = 1.0 / det;
         let p1_to_origin = ray.origin - self.p1;
         let u = f * dot(&p1_to_origin, &dir_cross_e2);
-        if u < 0. || u > 1. {
+        if !(0. ..=1.).contains(&u) {
             return None;
         }
         let origin_cross_e1 = cross(&p1_to_origin, &self.e1);

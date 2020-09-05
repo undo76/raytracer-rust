@@ -65,6 +65,7 @@ impl Shape for Sphere {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use core::f32::consts::FRAC_1_SQRT_2;
 
     #[test]
     fn ray_intersects_sphere_default() {
@@ -106,7 +107,7 @@ mod tests {
     }
 
     #[test]
-    fn intesections() {
+    fn intersections() {
         let s1 = Sphere::default();
         let s2 = Sphere::default();
         let xs = vec![
@@ -119,7 +120,7 @@ mod tests {
     }
 
     #[test]
-    fn intesections_none() {
+    fn intersections_none() {
         let s1 = Sphere::default();
         let s2 = Sphere::default();
         let xs = vec![
@@ -178,7 +179,7 @@ mod tests {
         let mut s = Sphere::default();
         s.set_transform(translation(0., 1., 0.));
         let n = s.normal_at(
-            &point(0., 1.70710677, -0.70710677),
+            &point(0., 1. + FRAC_1_SQRT_2, -FRAC_1_SQRT_2),
             &Intersection::new(1., &s),
         );
         assert_relative_eq!(n.into_inner(), vector(0., 0.70710677, -0.70710677));
@@ -189,7 +190,7 @@ mod tests {
         let mut s = Sphere::default();
         s.set_transform(scaling(1., 0.5, 1.));
         let n = s.normal_at(
-            &point(0., 0.70710677, -0.70710677),
+            &point(0., FRAC_1_SQRT_2, -FRAC_1_SQRT_2),
             &Intersection::new(1., &s),
         );
         assert_relative_eq!(n.into_inner(), vector(0., 0.97014254, -0.24253564));

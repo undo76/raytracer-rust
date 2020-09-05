@@ -60,7 +60,7 @@ impl<'a> HitMaterial<'a> {
         }: &LightHit,
     ) -> ColorRgbFloat {
         let Hit { eyev, normalv, .. } = self.hit;
-        let light_dot_normal = dot(&lightv, &normalv);
+        let light_dot_normal = dot(&lightv, normalv);
         let mut total = BLACK;
         if light_dot_normal > 0. {
             let reflectv = reflect(&-lightv, normalv);

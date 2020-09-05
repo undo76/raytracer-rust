@@ -14,7 +14,8 @@ Usage:  parse_yaml <file_name>
         std::process::exit(1);
     }
     let file_name = args.get(1).expect("File name required");
-    let file_contents = std::fs::read(file_name).expect(&format!("Couldn't open {}", &file_name));
+    let file_contents =
+        std::fs::read(file_name).unwrap_or_else(|_| panic!("Couldn't open {}", &file_name));
     let yaml_str = String::from_utf8(file_contents).expect("Couldn't read contents");
 
     match parse_yaml::<Scene>(&yaml_str) {

@@ -72,12 +72,12 @@ fn check_axis(origin: f32, direction: f32) -> (f32, f32) {
     let tmin_numerator = -1. - origin;
     let tmax_numerator = 1. - origin;
 
-    if direction.abs() > std::f32::EPSILON {
+    if direction.abs() > f32::EPSILON {
         tmin = tmin_numerator / direction;
         tmax = tmax_numerator / direction;
     } else {
-        tmin = tmin_numerator * std::f32::INFINITY;
-        tmax = tmax_numerator * std::f32::INFINITY;
+        tmin = tmin_numerator * f32::INFINITY;
+        tmax = tmax_numerator * f32::INFINITY;
     }
     if tmin > tmax {
         std::mem::swap(&mut tmin, &mut tmax);
