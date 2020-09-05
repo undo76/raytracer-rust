@@ -4,6 +4,9 @@
 
 Ray tracer written in Rust based on [Jamis Buck](https://twitter.com/jamis)’s book: [The Ray Tracer Challenge](https://pragprog.com/book/jbtracer/the-ray-tracer-challenge)
 
+![](https://github.com/undo76/raytracer-rust/blob/master/core/spheres.jpg)
+
+
 ## To do
 - [ ] CSG 
 - [ ] Antialiasing
