@@ -95,19 +95,6 @@ impl Shape for Cylinder {
         &mut self.base
     }
 
-    fn local_normal_at(&self, local_point: &Point, _intersection: &Intersection) -> UnitVector {
-        let dist = local_point.x * local_point.x + local_point.z * local_point.z;
-
-        if dist < 1. {
-            if local_point.y >= 1. - EPS {
-                return unit_vector(0., 1., 0.);
-            } else if local_point.y <= -1. + EPS {
-                return unit_vector(0., -1., 0.);
-            }
-        }
-        unit_vector(local_point.x, 0., local_point.z)
-    }
-
     fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {
         let t_cap = self.intersect_caps(ray);
         let t_side = self.intersect_side(ray);
@@ -121,6 +108,19 @@ impl Shape for Cylinder {
             (None, Some(_)) => t_side,
             (None, None) => None,
         }
+    }
+
+    fn local_normal_at(&self, local_point: &Point, _intersection: &Intersection) -> UnitVector {
+        let dist = local_point.x * local_point.x + local_point.z * local_point.z;
+
+        if dist < 1. {
+            if local_point.y >= 1. - EPS {
+                return unit_vector(0., 1., 0.);
+            } else if local_point.y <= -1. + EPS {
+                return unit_vector(0., -1., 0.);
+            }
+        }
+        unit_vector(local_point.x, 0., local_point.z)
     }
 }
 

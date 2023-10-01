@@ -1,5 +1,6 @@
-use approx::{AbsDiffEq, RelativeEq};
 use std::ops::{Add, Mul, Sub};
+
+use approx::{AbsDiffEq, RelativeEq};
 
 const DEFAULT_GAMMA: f32 = 2.2;
 
@@ -38,7 +39,6 @@ fn clamp(x: f32) -> f32 {
 fn to_byte(x: f32) -> Byte {
     (clamp(x) * 255.).round() as Byte
 }
-
 
 impl From<ColorRgbFloat> for ColorRgbByte {
     fn from(c: ColorRgbFloat) -> Self {
@@ -86,7 +86,7 @@ impl Sub for ColorRgbFloat {
 }
 
 impl std::iter::Sum for ColorRgbFloat {
-    fn sum<I: Iterator<Item = ColorRgbFloat>>(iter: I) -> Self {
+    fn sum<I: Iterator<Item=ColorRgbFloat>>(iter: I) -> Self {
         iter.fold(BLACK, |acc, c| acc + c)
     }
 }

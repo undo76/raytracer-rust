@@ -33,10 +33,6 @@ impl Shape for Plane {
         &mut self.base
     }
 
-    fn local_normal_at(&self, _local_point: &Point, _intersection: &Intersection) -> UnitVector {
-        unit_vector(0., 1., 0.)
-    }
-
     fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {
         if f32::abs(ray.direction.y) < f32::EPSILON {
             None
@@ -48,6 +44,10 @@ impl Shape for Plane {
                 None
             }
         }
+    }
+
+    fn local_normal_at(&self, _local_point: &Point, _intersection: &Intersection) -> UnitVector {
+        unit_vector(0., 1., 0.)
     }
 }
 

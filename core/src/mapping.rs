@@ -1,5 +1,6 @@
-use self::Mapping::*;
 use crate::*;
+
+use self::Mapping::*;
 
 #[derive(Debug, Clone)]
 pub struct UniformMapping<T> {
@@ -31,8 +32,8 @@ pub struct RingMapping<T> {
 }
 
 pub trait PatternMapping<T>
-where
-    T: Copy,
+    where
+        T: Copy,
 {
     fn get_transform_inverse(&self) -> Transform;
     fn map_at(&self, pattern_point: &Point) -> T;
@@ -43,8 +44,8 @@ where
 }
 
 impl<T> PatternMapping<T> for StripeMapping<T>
-where
-    T: Copy,
+    where
+        T: Copy,
 {
     fn get_transform_inverse(&self) -> Transform {
         self.transform_inverse
@@ -57,8 +58,8 @@ where
 }
 
 impl<T> PatternMapping<T> for CheckersMapping<T>
-where
-    T: Copy,
+    where
+        T: Copy,
 {
     fn get_transform_inverse(&self) -> Transform {
         self.transform_inverse
@@ -74,11 +75,11 @@ where
 }
 
 impl<T> PatternMapping<T> for GradientMapping<T>
-where
-    T: Copy
-        + core::ops::Sub<Output = T>
-        + core::ops::Add<Output = T>
-        + core::ops::Mul<f32, Output = T>,
+    where
+        T: Copy
+        + core::ops::Sub<Output=T>
+        + core::ops::Add<Output=T>
+        + core::ops::Mul<f32, Output=T>,
 {
     fn get_transform_inverse(&self) -> Transform {
         self.transform_inverse
@@ -91,11 +92,11 @@ where
 }
 
 impl<T> PatternMapping<T> for RingMapping<T>
-where
-    T: Copy
-        + core::ops::Sub<Output = T>
-        + core::ops::Add<Output = T>
-        + core::ops::Mul<f32, Output = T>,
+    where
+        T: Copy
+        + core::ops::Sub<Output=T>
+        + core::ops::Add<Output=T>
+        + core::ops::Mul<f32, Output=T>,
 {
     fn get_transform_inverse(&self) -> Transform {
         self.transform_inverse
@@ -117,12 +118,13 @@ pub enum Mapping<T: Copy> {
     Ring(RingMapping<T>),
     Checkered(CheckersMapping<T>),
 }
+
 impl<T> Mapping<T>
-where
-    T: Copy
-        + core::ops::Sub<Output = T>
-        + core::ops::Add<Output = T>
-        + core::ops::Mul<f32, Output = T>,
+    where
+        T: Copy
+        + core::ops::Sub<Output=T>
+        + core::ops::Add<Output=T>
+        + core::ops::Mul<f32, Output=T>,
 {
     pub fn uniform(value: T) -> Self {
         Uniform(UniformMapping { value })
@@ -169,11 +171,11 @@ where
 }
 
 impl<T> From<T> for Mapping<T>
-where
-    T: Copy
-        + core::ops::Sub<Output = T>
-        + core::ops::Add<Output = T>
-        + core::ops::Mul<f32, Output = T>,
+    where
+        T: Copy
+        + core::ops::Sub<Output=T>
+        + core::ops::Add<Output=T>
+        + core::ops::Mul<f32, Output=T>,
 {
     fn from(value: T) -> Mapping<T> {
         Mapping::uniform(value)

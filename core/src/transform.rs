@@ -1,5 +1,6 @@
-use crate::geom::*;
 use nalgebra as na;
+
+use crate::geom::*;
 
 pub type Transform = na::Projective3<f32>;
 
@@ -43,8 +44,8 @@ pub fn scaling(x: f32, y: f32, z: f32) -> Transform {
 pub fn shearing(xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) -> Transform {
     na::convert(na::Affine3::from_matrix_unchecked(na::Matrix4::new(
         1., xy, xz, 0.,
-        yx, 1., yz, 0., 
-        zx, zy, 1., 0., 
+        yx, 1., yz, 0.,
+        zx, zy, 1., 0.,
         0., 0., 0., 1.,
     )))
 }
@@ -62,12 +63,12 @@ pub fn view_transform(from: Point, to: Point, up: Vector) -> Transform {
     let translation = translation(-from.x, -from.y, -from.z);
 
     #[rustfmt::skip]
-    let orientation = Transform::from_matrix_unchecked(
+        let orientation = Transform::from_matrix_unchecked(
         na::Matrix4::new(
-        left.x, left.y, left.z, 0., 
-        true_up.x, true_up.y, true_up.z, 0., 
-        -forward.x, -forward.y, -forward.z, 0., 
-        0., 0., 0., 1.,
+            left.x, left.y, left.z, 0.,
+            true_up.x, true_up.y, true_up.z, 0.,
+            -forward.x, -forward.y, -forward.z, 0.,
+            0., 0., 0., 1.,
         )
     );
     orientation * translation

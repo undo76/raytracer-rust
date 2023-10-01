@@ -2,9 +2,6 @@ extern crate rustracer_core;
 
 use rustracer_core::*;
 
-use std::fs::File;
-use std::io::prelude::*;
-
 fn clock() -> Vec<Point> {
     let mut points = Vec::with_capacity(12);
     let p = point(200., 0., 0.);
@@ -13,7 +10,7 @@ fn clock() -> Vec<Point> {
     for i in 0..12 {
         points.push(rotation_y(angle * i as f32) * p)
     }
-    return points;
+    points
 }
 
 fn main() {
@@ -27,7 +24,5 @@ fn main() {
             color(1., 1., 1.).into(),
         );
     }
-    let mut file = File::create("clock.ppm").expect("Couldn't create file");
-    file.write_all(c.to_ppm_string().as_bytes())
-        .expect("Couldn't write canvas");
+    c.save("clock.png")
 }

@@ -1,6 +1,7 @@
-use crate::*;
 use std::sync::Arc;
 use std::thread;
+
+use crate::*;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Camera {

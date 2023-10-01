@@ -2,9 +2,6 @@ extern crate rustracer_core;
 
 use rustracer_core::*;
 
-use std::fs::File;
-use std::io::prelude::*;
-
 #[derive(Debug)]
 struct Projectile {
     position: Point,
@@ -56,7 +53,5 @@ fn main() {
         );
         p = tick(&w, &p);
     }
-    let mut file = File::create("projectile.ppm").expect("Couldn't create file");
-    file.write_all(c.to_ppm_string().as_bytes())
-        .expect("Couldn't write canvas");
+    c.save("projectile.png")
 }

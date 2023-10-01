@@ -1,6 +1,7 @@
-use crate::*;
 use core::sync::atomic::AtomicPtr;
 use core::sync::atomic::Ordering;
+
+use crate::*;
 
 #[derive(Debug)]
 pub enum NormalType {
@@ -66,6 +67,10 @@ impl Shape for Triangle {
         unimplemented!()
     }
 
+    fn local_intersects(&self, _ray: &Ray) -> Option<Intersection> {
+        unimplemented!("Triangles don't need local_intersects")
+    }
+
     fn local_normal_at(&self, _local_point: &Point, hit: &Intersection) -> UnitVector {
         match self.normal {
             NormalType::Uniform(n) => n,
@@ -78,10 +83,6 @@ impl Shape for Triangle {
         }
     }
 
-    fn local_intersects(&self, _ray: &Ray) -> Option<Intersection> {
-        unimplemented!("Triangles don't need local_intersects")
-    }
-
     fn intersects(&self, ray: &Ray) -> Option<Intersection> {
         let dir_cross_e2 = cross(&ray.direction, &self.e2);
         let det = dot(&self.e1, &dir_cross_e2);
@@ -91,7 +92,7 @@ impl Shape for Triangle {
         let f = 1.0 / det;
         let p1_to_origin = ray.origin - self.p1;
         let u = f * dot(&p1_to_origin, &dir_cross_e2);
-        if !(0. ..=1.).contains(&u) {
+        if !(0.0..=1.0).contains(&u) {
             return None;
         }
         let origin_cross_e1 = cross(&p1_to_origin, &self.e1);

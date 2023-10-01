@@ -1,9 +1,9 @@
 extern crate rustracer_core;
 
-use rustracer_core::*;
-
 use std::fs::File;
 use std::io::prelude::*;
+
+use rustracer_core::*;
 
 const F_PI_4: f32 = std::f32::consts::FRAC_PI_4;
 
@@ -52,8 +52,5 @@ fn main() {
     ));
 
     let canvas = camera.render(world);
-
-    let mut file = File::create("coca-cola.ppm").expect("Couldn't create file");
-    file.write_all(canvas.to_ppm_string().as_bytes())
-        .expect("Couldn't write canvas");
+    canvas.save("coca-cola.png");
 }

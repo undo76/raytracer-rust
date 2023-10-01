@@ -71,6 +71,6 @@ impl<'a> HitMaterial<'a> {
                 total = total + intensity * self.specular * reflect_dot_eye.powf(self.shininess);
             }
         }
-        return total;
+        total
     }
 }

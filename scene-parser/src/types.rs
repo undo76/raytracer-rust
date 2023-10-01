@@ -255,11 +255,11 @@ mod tests {
                         color: Mapping::Uniform(Rgb(1., 1., 0.0)),
                         ambient: Mapping::Pattern(PatternMapping::Stripes {
                             values: vec![0.0, 1.0],
-                            transform: Transforms::default()
+                            transform: Transforms::default(),
                         }),
                         ..Material::default()
                     },
-                    transform: Transforms::default()
+                    transform: Transforms::default(),
                 }
             }
         );
@@ -269,7 +269,7 @@ mod tests {
     fn test_sphere() {
         let yaml = r#"
 ---
-Sphere: 
+Sphere:
     material:
         color: [1.0, 1.0, 0.0]
         specular: 
@@ -288,13 +288,13 @@ Sphere:
                         color: Mapping::Uniform(Rgb(1., 1., 0.0)),
                         specular: Mapping::Pattern(PatternMapping::Stripes {
                             values: vec![0.0, 1.0],
-                            transform: Transforms::default()
+                            transform: Transforms::default(),
                         }),
                         ..Material::default()
                     },
                     transform: Transforms::ChainedTransform(vec![Transforms::SingleTransform(
                         Transform::Scaling(1., 2., 3.)
-                    )])
+                    )]),
                 }
             }
         );
@@ -315,7 +315,7 @@ from: [10, 10, 10]
                 field_of_view: Angle::FPi4,
                 from: Point(10.0, 10.0, 10.0),
                 to: Point(0.0, 0.0, 0.0),
-                up: Vector(0.0, 1.0, 0.0)
+                up: Vector(0.0, 1.0, 0.0),
             }
         );
     }

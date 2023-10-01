@@ -1,10 +1,9 @@
-use rustracer_core::*;
-
-use rand::distributions::Uniform;
-use rand::*;
 use std::f32::consts::*;
-use std::fs::File;
-use std::io::prelude::Write;
+
+use rand::*;
+use rand::distributions::Uniform;
+
+use rustracer_core::*;
 
 const MAX_SPHERES: usize = 2_000;
 const RADIUS: f32 = 12.0;
@@ -111,9 +110,9 @@ fn spheres() -> Vec<Box<dyn Shape + Send>> {
         .iter()
         .map(
             |&SphereData {
-                 center: c,
-                 radius: r,
-             }| {
+                center: c,
+                radius: r,
+            }| {
                 let boxed: Box<dyn Shape + Send> = Box::new(Sphere::new(
                     translation(c.x, c.y, c.z) * scaling(r, r, r),
                     random_material(),
@@ -158,8 +157,5 @@ fn main() {
         vector(0., 1., 0.),
     ));
     let canvas = camera.render(world);
-
-    let mut file = File::create("spheres.ppm").expect("Couldn't create file");
-    file.write_all(canvas.to_ppm_string().as_bytes())
-        .expect("Couldn't write canvas");
+    canvas.save("spheres.png");
 }

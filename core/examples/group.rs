@@ -2,9 +2,6 @@ extern crate rustracer_core;
 
 use rustracer_core::*;
 
-use std::fs::File;
-use std::io::prelude::*;
-
 const F_PI_4: f32 = std::f32::consts::FRAC_PI_4;
 const F_PI_3: f32 = std::f32::consts::FRAC_PI_3;
 const F_PI_2: f32 = std::f32::consts::FRAC_PI_2;
@@ -51,7 +48,6 @@ fn main() {
     ));
 
     let world = World::new(vec![floor, group], vec![light]);
-    // let world = World::new(vec![group], vec![light]);
 
     let mut camera = Camera::new(1000, 800, F_PI_3);
     camera.set_transform(view_transform(
@@ -61,8 +57,5 @@ fn main() {
     ));
 
     let canvas = camera.render(world);
-
-    let mut file = File::create("group.ppm").expect("Couldn't create file");
-    file.write_all(canvas.to_ppm_string().as_bytes())
-        .expect("Couldn't write canvas");
+    canvas.save("group.png");
 }

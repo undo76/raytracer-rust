@@ -1,6 +1,7 @@
-use crate::*;
 use std::fs::File;
 use std::io::Read;
+
+use crate::*;
 
 pub fn read_obj_file(group: &mut Group, file: &str) {
     let mut obj_file = File::open(file).unwrap_or_else(|_| panic!("'File {}' not found", file));

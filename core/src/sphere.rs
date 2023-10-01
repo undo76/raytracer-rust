@@ -32,10 +32,6 @@ impl Shape for Sphere {
         &mut self.base
     }
 
-    fn local_normal_at(&self, local_point: &Point, _intersection: &Intersection) -> UnitVector {
-        unit_vector_from_vector(local_point - point(0., 0., 0.))
-    }
-
     fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {
         let sphere_to_ray = ray.origin - point(0., 0., 0.);
         let a = dot(&ray.direction, &ray.direction);
@@ -60,12 +56,17 @@ impl Shape for Sphere {
             }
         }
     }
+
+    fn local_normal_at(&self, local_point: &Point, _intersection: &Intersection) -> UnitVector {
+        unit_vector_from_vector(local_point - point(0., 0., 0.))
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use core::f32::consts::FRAC_1_SQRT_2;
+
+    use super::*;
 
     #[test]
     fn ray_intersects_sphere_default() {
@@ -225,6 +226,6 @@ mod tests {
         assert_relative_eq!(hit.point, point(0., 0., 1.));
         assert_relative_eq!(hit.eyev.into_inner(), vector(0., 0., -1.));
         assert_relative_eq!(hit.normalv.into_inner(), vector(0., 0., -1.));
-        assert_eq!(hit.inside, true);
+        assert!(hit.inside);
     }
 }

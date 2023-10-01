@@ -97,7 +97,7 @@ impl<'a> Intersection<'a> {
 // TODO: Remove
 pub type Intersections<'a> = &'a [Intersection<'a>];
 
-// Returns the closest, not negative intersection
+// Returns the closest non-negative intersection
 pub fn hit<'a>(xs: &'a [Intersection]) -> Option<&'a Intersection<'a>> {
     xs.iter()
         .filter(|&x| x.t > 0.)

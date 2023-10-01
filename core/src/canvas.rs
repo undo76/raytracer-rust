@@ -1,5 +1,7 @@
 use std::sync::{Mutex, MutexGuard};
 
+use image::ImageBuffer;
+
 use crate::*;
 
 const N_CHANNELS: usize = 3;
@@ -56,16 +58,9 @@ impl Canvas {
 
     fn buffer_as_ppm_string(&self) -> String {
         let fb = self.get_frame_buffer();
-        fb.chunks(10)
-            .map(|chunk| {
-                chunk
-                    .iter()
-                    .map(|byte| byte.to_string())
-                    .collect::<Vec<String>>()
-                    .join(" ")
-            })
-            .collect::<Vec<String>>()
-            .join("\n")
+        fb.chunks(10).map(|chunk| {
+            chunk.iter().map(|byte| byte.to_string()).collect::<Vec<String>>().join(" ")
+        }).collect::<Vec<String>>().join("\n")
     }
 
     pub fn to_ppm_string(&self) -> String {
@@ -75,6 +70,22 @@ impl Canvas {
 
     fn get_frame_buffer(&self) -> MutexGuard<Vec<u8>> {
         self.frame_buffer.lock().unwrap()
+    }
+
+    pub fn save(&self, filename: &str) {
+        let image: ImageBuffer<image::Rgb<u8>, Vec<u8>> = self.into();
+        image.save(filename).unwrap();
+    }
+}
+
+impl From<&Canvas> for ImageBuffer<image::Rgb<u8>, Vec<u8>> {
+    fn from(canvas: &Canvas) -> Self {
+        let mut img = ImageBuffer::new(canvas.width as u32, canvas.height as u32);
+        for (x, y, pixel) in img.enumerate_pixels_mut() {
+            let c = canvas.get(x as usize, y as usize);
+            *pixel = image::Rgb([c.r, c.g, c.b]);
+        }
+        img
     }
 }
 
@@ -101,5 +112,15 @@ mod tests {
 0 0 0 0 0
 "
         );
+    }
+
+    #[test]
+    fn write_image() {
+        let canvas = Canvas::new(5, 3);
+        canvas.set(0, 0, color(0.5, 0., 0.).into());
+        canvas.set(2, 1, color(0., 0.5, 0.).into());
+        assert_eq!(canvas.get(0, 0), color(0.5, 0., 0.).into());
+        canvas.save("test.png");
+        std::fs::remove_file("test.png").unwrap();
     }
 }

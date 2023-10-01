@@ -3,9 +3,12 @@
 /target
 **/*.rs.bk
 
-/target
 **/target
-*.ppm
-**/*.rs.bk
 Cargo.lock
 .vscode/tasks.json
+
+*.png
+*.jpg
+*.ppm
+
+.idea/

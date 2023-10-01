@@ -1,10 +1,8 @@
 extern crate rustracer_core;
 
-use rustracer_core::*;
-
 use std::f32::consts::*;
-use std::fs::File;
-use std::io::prelude::*;
+
+use rustracer_core::*;
 
 fn main() {
     let floor_material = Material {
@@ -55,8 +53,5 @@ fn main() {
     ));
 
     let canvas = camera.render(world);
-
-    let mut file = File::create("teapot.ppm").expect("Couldn't create file");
-    file.write_all(canvas.to_ppm_string().as_bytes())
-        .expect("Couldn't write canvas");
+    canvas.save("teapot.png");
 }

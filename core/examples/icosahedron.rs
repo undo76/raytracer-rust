@@ -1,11 +1,9 @@
 extern crate rustracer_core;
 
 use core::f32::consts::*;
-use std::fs::File;
-use std::io::Write;
 
-use rustracer_core::color;
 use rustracer_core::*;
+use rustracer_core::color;
 
 fn main() {
     let floor_material = Material {
@@ -58,8 +56,5 @@ fn main() {
     ));
 
     let canvas = camera.render(world);
-
-    let mut file = File::create("icosahedron.ppm").expect("Couldn't create file");
-    file.write_all(canvas.to_ppm_string().as_bytes())
-        .expect("Couldn't write canvas");
+    canvas.save("icosahedron.png");
 }

@@ -2,9 +2,6 @@ extern crate rustracer_core;
 
 use rustracer_core::*;
 
-use std::fs::File;
-use std::io::prelude::*;
-
 const F_PI_4: f32 = std::f32::consts::FRAC_PI_4;
 const F_PI_3: f32 = std::f32::consts::FRAC_PI_3;
 const F_PI_2: f32 = std::f32::consts::FRAC_PI_2;
@@ -32,18 +29,18 @@ fn main() {
     let floor = Box::new(Plane::new(Transform::identity(), floor_material.clone()));
 
     #[rustfmt::skip]
-    let left_wall = Box::new(Plane::new(
+        let left_wall = Box::new(Plane::new(
         translation(0., 0., 5.)
-        * rotation_y(-F_PI_4)
-        * rotation_x(-F_PI_2),
+            * rotation_y(-F_PI_4)
+            * rotation_x(-F_PI_2),
         wall_material.clone(),
     ));
 
     #[rustfmt::skip]
-    let right_wall = Box::new(Plane::new(
+        let right_wall = Box::new(Plane::new(
         translation(0., 0., 4.)
-        * rotation_y(F_PI_4)
-        * rotation_x(F_PI_2),
+            * rotation_y(F_PI_4)
+            * rotation_x(F_PI_2),
         wall_material.clone(),
     ));
 
@@ -130,8 +127,5 @@ fn main() {
     ));
 
     let canvas = camera.render(world);
-
-    let mut file = File::create("scene.ppm").expect("Couldn't create file");
-    file.write_all(canvas.to_ppm_string().as_bytes())
-        .expect("Couldn't write canvas");
+    canvas.save("scene.png");
 }

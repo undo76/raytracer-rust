@@ -1,4 +1,4 @@
-use nalgebra::{Projective3};
+use nalgebra::Projective3;
 
 use crate::*;
 

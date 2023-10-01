@@ -1,6 +1,6 @@
 fragments:
   - material: &white-material
-      color: [1, 1, 1]
+      color: [ 1, 1, 1 ]
       diffuse: 0.7
       ambient: 0.1
       specular: 0.0
@@ -8,48 +8,48 @@ fragments:
 
   - material: &blue-material
       <<: *white-material
-      color: [0.537, 0.831, 0.914]
+      color: [ 0.537, 0.831, 0.914 ]
 
   - material: &red-material
       <<: *white-material
-      color: [0.941, 0.322, 0.388]
+      color: [ 0.941, 0.322, 0.388 ]
 
   - material: &purple-material
       <<: *white-material
-      color: [0.373, 0.404, 0.550]
+      color: [ 0.373, 0.404, 0.550 ]
 
   - transform: &standard-transform
-      - Translation: [1, -1, 1]
-      - Scaling: [0.5, 0.5, 0.5]
+      - Translation: [ 1, -1, 1 ]
+      - Scaling: [ 0.5, 0.5, 0.5 ]
 
   - transform: &large-object
       - *standard-transform
-      - Scaling: [3.5, 3.5, 3.5]
+      - Scaling: [ 3.5, 3.5, 3.5 ]
 
   - transform: &medium-object
       - *standard-transform
-      - Scaling: [3, 3, 3]
+      - Scaling: [ 3, 3, 3 ]
 
   - transform: &small-object
       - *standard-transform
-      - Scaling: [2, 2, 2]
+      - Scaling: [ 2, 2, 2 ]
 
 shapes:
   # White backdrop for scene
   - Plane:
       material:
-        ambient: 1
-        color: [1, 1, 1]
+        ambient: 0.5
+        color: [ 1, 1, 0.5 ]
         diffuse: 0
         specular: 0
       transform:
         - RotationX: { Deg: 90 }
-        - Translation: [0, 0, 500]
+        - Translation: [ 0, 0, 500 ]
 
   # Glass sphere
-  - Sphere: &glass_sphere
+  - Sphere:
       material:
-        color: [0.373, 0.404, 0.550]
+        color: [ 0.373, 0.404, 0.550 ]
         diffuse: 0.2
         ambient: 0.0
         specular: 1.0
@@ -64,114 +64,114 @@ shapes:
       material: *white-material
       transform:
         - *medium-object
-        - Translation: [4, 0, 0]
+        - Translation: [ 4, 0, 0 ]
 
   - Cube:
       material: *blue-material
       transform:
         - *large-object
-        - Translation: [8.5, 1.5, -0.5]
+        - Translation: [ 8.5, 1.5, -0.5 ]
 
   - Cube:
       material: *red-material
       transform:
         - *large-object
-        - Translation: [0, 0, 4]
+        - Translation: [ 0, 0, 4 ]
 
   - Cube:
       material: *white-material
       transform:
         - *small-object
-        - Translation: [4, 0, 4]
+        - Translation: [ 4, 0, 4 ]
 
   - Cube:
       material: *purple-material
       transform:
         - *medium-object
-        - Translation: [7.5, 0.5, 4]
+        - Translation: [ 7.5, 0.5, 4 ]
 
   - Cube:
       material: *white-material
       transform:
         - *medium-object
-        - Translation: [-0.25, 0.25, 8]
+        - Translation: [ -0.25, 0.25, 8 ]
 
   - Cube:
       material: *blue-material
       transform:
         - *large-object
-        - Translation: [4, 1, 7.5]
+        - Translation: [ 4, 1, 7.5 ]
 
   - Cube:
       material: *red-material
       transform:
         - *medium-object
-        - Translation: [10, 2, 7.5]
+        - Translation: [ 10, 2, 7.5 ]
 
   - Cube:
       material: *white-material
       transform:
         - *small-object
-        - Translation: [8, 2, 12]
+        - Translation: [ 8, 2, 12 ]
 
   - Cube:
       material: *white-material
       transform:
         - *small-object
-        - Translation: [20, 1, 9]
+        - Translation: [ 20, 1, 9 ]
 
   - Cube:
       material: *blue-material
       transform:
         - *large-object
-        - Translation: [-0.5, -5, 0.25]
+        - Translation: [ -0.5, -5, 0.25 ]
 
   - Cube:
       material: *red-material
       transform:
         - *large-object
-        - Translation: [4, -4, 0]
+        - Translation: [ 4, -4, 0 ]
 
   - Cube:
       material: *white-material
       transform:
         - *large-object
-        - Translation: [8.5, -4, 0]
+        - Translation: [ 8.5, -4, 0 ]
 
   - Cube:
       material: *white-material
       transform:
         - *large-object
-        - Translation: [0, -4, 4]
+        - Translation: [ 0, -4, 4 ]
 
   - Cube:
       material: *purple-material
       transform:
         - *large-object
-        - Translation: [-0.5, -4.5, 8]
+        - Translation: [ -0.5, -4.5, 8 ]
 
   - Cube:
       material: *white-material
       transform:
         - *large-object
-        - Translation: [0, -8, 4]
+        - Translation: [ 0, -8, 4 ]
 
   - Cube:
       material: *white-material
       transform:
         - *large-object
-        - Translation: [-0.5, -8.5, 8]
+        - Translation: [ -0.5, -8.5, 8 ]
 
 lights:
   - PointLight:
-      position: [50, 100, -50]
-      intensity: [1, 1, 1]
+      position: [ 50, 100, -50 ]
+      intensity: [ 1, 1, 1 ]
   - PointLight:
-      position: [-400, 50, -10]
-      intensity: [0.2, 0.2, 0.2]
+      position: [ -400, 50, -10 ]
+      intensity: [ 0.2, 0.2, 0.2 ]
 camera:
-  size: [1600, 1600]
-  from: [-6, 6, -10]
-  to: [6, 0, 6]
-  up: [-0.45, 1, 0]
+  size: [ 1600, 1600 ]
+  from: [ -6, 6, -10 ]
+  to: [ 6, 0, 6 ]
+  up: [ -0.45, 1, 0 ]
   field_of_view: { Rad: 0.785 }

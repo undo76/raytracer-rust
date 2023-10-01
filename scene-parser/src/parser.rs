@@ -1,9 +1,10 @@
-use crate::types::*;
 use rustracer_core as rc;
 
+use crate::types::*;
+
 pub fn parse_yaml<T>(yaml_str: &str) -> Result<T, serde_yaml::Error>
-where
-    for<'de> T: serde::de::Deserialize<'de>,
+    where
+            for<'de> T: serde::de::Deserialize<'de>,
 {
     let value = serde_yaml::from_str(yaml_str)?;
     let merged = yaml_merge_keys::merge_keys_serde(value).expect("Error while merging YAML");
@@ -124,10 +125,10 @@ fn build_material(material: &Material) -> rc::Material {
 fn build_mapping<
     F: Copy,
     T: Copy
-        + core::ops::Sub<Output = T>
-        + core::ops::Add<Output = T>
-        + core::ops::Mul<f32, Output = T>
-        + From<F>,
+    + core::ops::Sub<Output=T>
+    + core::ops::Add<Output=T>
+    + core::ops::Mul<f32, Output=T>
+    + From<F>,
 >(
     mapping: &Mapping<F>,
 ) -> rc::Mapping<T> {

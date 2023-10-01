@@ -2,13 +2,14 @@
 
 [![Build Status](https://travis-ci.org/undo76/raytracer-rust.svg?branch=master)](https://travis-ci.org/undo76/raytracer-rust)
 
-Ray tracer written in Rust based on [Jamis Buck](https://twitter.com/jamis)’s book: [The Ray Tracer Challenge](https://pragprog.com/book/jbtracer/the-ray-tracer-challenge)
+Ray tracer written in Rust based on [Jamis Buck](https://twitter.com/jamis)’s
+book: [The Ray Tracer Challenge](https://pragprog.com/book/jbtracer/the-ray-tracer-challenge)
 
 ![](https://github.com/undo76/raytracer-rust/blob/master/core/spheres.jpg)
 
-
 ## To do
-- [ ] CSG 
+
+- [ ] CSG
 - [ ] Antialiasing
 - [ ] Texture mapping
 - [ ] Depth of field
@@ -17,6 +18,7 @@ Ray tracer written in Rust based on [Jamis Buck](https://twitter.com/jamis)’s 
 - [X] Area lights and soft shadows
 
 ## Ideas
+
 - [ ] Migrate to Webassembly
 - [ ] CLI interface
 - [ ] AWS Lambda renderer

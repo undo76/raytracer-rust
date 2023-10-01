@@ -19,7 +19,7 @@ fn main() {
         Ok(scene) => {
             let (world, camera) = build_scene(&scene);
             let canvas = camera.render(world);
-            std::fs::write(output_file, canvas.to_ppm_string()).unwrap();
+            canvas.save(output_file)
         }
         Err(err) => {
             eprintln!("{}", &err);

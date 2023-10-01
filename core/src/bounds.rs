@@ -9,16 +9,8 @@ use crate::*;
 
 pub fn no_bounds() -> Bounds {
     (
-        point(
-            f32::INFINITY,
-            f32::INFINITY,
-            f32::INFINITY,
-        ),
-        point(
-            f32::NEG_INFINITY,
-            f32::NEG_INFINITY,
-            f32::NEG_INFINITY,
-        ),
+        point(f32::INFINITY, f32::INFINITY, f32::INFINITY),
+        point(f32::NEG_INFINITY, f32::NEG_INFINITY, f32::NEG_INFINITY),
     )
 }
 
@@ -120,7 +112,10 @@ impl BoundedShape {
 impl Bounded for BoundedShape {
     fn aabb(&self) -> AABB {
         let (min, max) = self.bounds;
-        AABB::with_bounds(Point3::from_array(min.into()), Point3::from_array(max.into()))
+        AABB::with_bounds(
+            Point3::from_array(min.into()),
+            Point3::from_array(max.into()),
+        )
     }
 }
 
@@ -175,7 +170,6 @@ struct BvhIterator<'a> {
     node_index: usize,
     traversal: NodeTraversal,
 }
-
 
 impl<'a> Iterator for BvhIterator<'a> {
     type Item = &'a BoundedShape;

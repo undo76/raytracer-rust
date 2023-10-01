@@ -1,6 +1,8 @@
-use crate::*;
-use bvh::bvh::BVH;
 use core::fmt::Debug;
+
+use bvh::bvh::BVH;
+
+use crate::*;
 
 pub struct Group {
     base: BaseShape,
@@ -68,14 +70,14 @@ impl Shape for Group {
         &mut self.base
     }
 
-    fn local_normal_at(&self, _local_point: &Point, _intersection: &Intersection) -> UnitVector {
-        panic!("Local normal called for group.")
-    }
-
     fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {
         bvh_intersects(self.bvh.as_ref().unwrap(), &self.bounded_shapes, ray)
             .filter_map(|s| s.get_shape().intersects(ray))
             .min_by(|min, x| f32::partial_cmp(&min.t, &x.t).unwrap())
+    }
+
+    fn local_normal_at(&self, _local_point: &Point, _intersection: &Intersection) -> UnitVector {
+        panic!("Local normal called for group.")
     }
 }
 

@@ -32,20 +32,6 @@ impl Shape for Cube {
         &mut self.base
     }
 
-    fn local_normal_at(&self, local_point: &Point, _intersection: &Intersection) -> UnitVector {
-        if local_point.x.abs() >= local_point.y.abs() {
-            if local_point.x.abs() >= local_point.z.abs() {
-                unit_vector(local_point.x, 0., 0.)
-            } else {
-                unit_vector(0., 0., local_point.z)
-            }
-        } else if local_point.y.abs() >= local_point.z.abs() {
-            unit_vector(0., local_point.y, 0.)
-        } else {
-            unit_vector(0., 0., local_point.z)
-        }
-    }
-
     fn local_intersects(&self, ray: &Ray) -> Option<Intersection> {
         let (xtmin, xtmax) = check_axis(ray.origin.x, ray.direction.x);
         let (ytmin, ytmax) = check_axis(ray.origin.y, ray.direction.y);
@@ -62,6 +48,20 @@ impl Shape for Cube {
             Some(Intersection::new(tmax, self))
         } else {
             None
+        }
+    }
+
+    fn local_normal_at(&self, local_point: &Point, _intersection: &Intersection) -> UnitVector {
+        if local_point.x.abs() >= local_point.y.abs() {
+            if local_point.x.abs() >= local_point.z.abs() {
+                unit_vector(local_point.x, 0., 0.)
+            } else {
+                unit_vector(0., 0., local_point.z)
+            }
+        } else if local_point.y.abs() >= local_point.z.abs() {
+            unit_vector(0., local_point.y, 0.)
+        } else {
+            unit_vector(0., 0., local_point.z)
         }
     }
 }

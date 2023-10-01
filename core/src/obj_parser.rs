@@ -12,7 +12,6 @@ use nom::sequence::{preceded, tuple};
 /// Parser for a small subset of the Wavefront .OBJ format
 ///
 /// http://www.martinreddy.net/gfx/3d/OBJ.spec
-
 use crate::*;
 
 #[derive(Debug, PartialEq)]
@@ -55,15 +54,20 @@ pub struct Object {
 fn vertex(input: &str) -> IResult<&str, Command> {
     let (input, _) = tag("v")(input)?;
     let (input, _) = space1(input)?;
-    let (input, (x, y, z)) = tuple((float, preceded(space1, float), preceded(space1, float)))(input)?;
+    let (input, (x, y, z)) =
+        tuple((float, preceded(space1, float), preceded(space1, float)))(input)?;
     Ok((input, Command::Vertex(VertexCommand(point(x, y, z)))))
 }
 
 fn vertex_normal(input: &str) -> IResult<&str, Command> {
     let (input, _) = tag("vn")(input)?;
     let (input, _) = space1(input)?;
-    let (input, (x, y, z)) = tuple((float, preceded(space1, float), preceded(space1, float)))(input)?;
-    Ok((input, Command::VertexNormal(VertexNormalCommand(normalize(&vector(x, y, z))))))
+    let (input, (x, y, z)) =
+        tuple((float, preceded(space1, float), preceded(space1, float)))(input)?;
+    Ok((
+        input,
+        Command::VertexNormal(VertexNormalCommand(normalize(&vector(x, y, z)))),
+    ))
 }
 
 fn other(input: &str) -> IResult<&str, Command> {
@@ -88,7 +92,14 @@ fn from_usize(input: &str) -> Result<usize, std::num::ParseIntError> {
 
 fn parse_face_vertex_1(input: &str) -> IResult<&str, FaceVertex> {
     let (input, idx) = parse_usize(input)?;
-    Ok((input, FaceVertex { idx, texture_idx: None, normal_idx: None }))
+    Ok((
+        input,
+        FaceVertex {
+            idx,
+            texture_idx: None,
+            normal_idx: None,
+        },
+    ))
 }
 
 fn parse_face_vertex_2(input: &str) -> IResult<&str, FaceVertex> {
@@ -97,7 +108,14 @@ fn parse_face_vertex_2(input: &str) -> IResult<&str, FaceVertex> {
         preceded(character::complete::char('/'), opt(parse_usize)),
         preceded(character::complete::char('/'), opt(parse_usize)),
     ))(input)?;
-    Ok((input, FaceVertex { idx, texture_idx, normal_idx }))
+    Ok((
+        input,
+        FaceVertex {
+            idx,
+            texture_idx,
+            normal_idx,
+        },
+    ))
 }
 
 fn parse_face_vertex(input: &str) -> IResult<&str, FaceVertex> {
@@ -111,16 +129,9 @@ fn face(input: &str) -> IResult<&str, Command> {
     Ok((input, Command::Face(FaceCommand(face_vertices))))
 }
 
-
 /// Parse a single line of an OBJ file
 fn parse_line(input: &str) -> IResult<&str, Command> {
-    let (_, cmd) = all_consuming(alt((
-        vertex,
-        vertex_normal,
-        group,
-        face,
-        other
-    )))(input)?;
+    let (_, cmd) = all_consuming(alt((vertex, vertex_normal, group, face, other)))(input)?;
     Ok((input, cmd))
 }
 
@@ -141,7 +152,7 @@ pub fn parse(input: &str) -> Object {
                 Command::VertexNormal(VertexNormalCommand(n)) => obj.normals.push(n),
                 Command::Face(FaceCommand(f)) => obj.faces.push(f),
                 Command::Other(_texts) => (),
-                _ => ()
+                _ => (),
             }
         });
     obj
@@ -154,13 +165,22 @@ mod tests {
     #[test]
     fn parse_vertex() {
         let v = vertex("v 1.0 2.0 3.0");
-        assert_eq!(v, Ok(("", Command::Vertex(VertexCommand(point(1.0, 2.0, 3.0))))));
+        assert_eq!(
+            v,
+            Ok(("", Command::Vertex(VertexCommand(point(1.0, 2.0, 3.0)))))
+        );
     }
 
     #[test]
     fn parse_vertex_normal() {
         let v = vertex_normal("vn 1.0 2.0 3.0");
-        assert_eq!(v, Ok(("", Command::VertexNormal(VertexNormalCommand(normalize(&vector(1.0, 2.0, 3.0)))))));
+        assert_eq!(
+            v,
+            Ok((
+                "",
+                Command::VertexNormal(VertexNormalCommand(normalize(&vector(1.0, 2.0, 3.0))))
+            ))
+        );
     }
 
     #[test]
@@ -178,11 +198,38 @@ mod tests {
     #[test]
     fn parse_face() {
         let v = face("f 1 2 3 4 55");
-        assert_eq!(v, Ok(("", Command::Face(FaceCommand(vec![
-            FaceVertex { idx: 1, texture_idx: None, normal_idx: None },
-            FaceVertex { idx: 2, texture_idx: None, normal_idx: None },
-            FaceVertex { idx: 3, texture_idx: None, normal_idx: None },
-            FaceVertex { idx: 4, texture_idx: None, normal_idx: None },
-            FaceVertex { idx: 55, texture_idx: None, normal_idx: None }])))));
+        assert_eq!(
+            v,
+            Ok((
+                "",
+                Command::Face(FaceCommand(vec![
+                    FaceVertex {
+                        idx: 1,
+                        texture_idx: None,
+                        normal_idx: None,
+                    },
+                    FaceVertex {
+                        idx: 2,
+                        texture_idx: None,
+                        normal_idx: None,
+                    },
+                    FaceVertex {
+                        idx: 3,
+                        texture_idx: None,
+                        normal_idx: None,
+                    },
+                    FaceVertex {
+                        idx: 4,
+                        texture_idx: None,
+                        normal_idx: None,
+                    },
+                    FaceVertex {
+                        idx: 55,
+                        texture_idx: None,
+                        normal_idx: None,
+                    },
+                ]))
+            ))
+        );
     }
 }

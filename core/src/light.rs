@@ -215,7 +215,7 @@ impl AreaLight {
         }
         acc = acc + val;
         if shadowed == 0 || not_shadowed == 0 {
-            return acc * ((max_depth as f32) / (1. + max_depth as f32 - depth as f32));
+            acc * ((max_depth as f32) / (1. + max_depth as f32 - depth as f32))
         } else {
             self.lighting_rec(acc, hm, world, steps, vecs, depth - 1, max_depth)
         }

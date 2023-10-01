@@ -4,45 +4,45 @@ shapes:
         reflective: 0.05
         color:
           Checkers:
-            values: [[0.7, 0.7, 0.7], [0.6, 0.6, 0.6]]
+            values: [ [ 0.7, 0.7, 0.7 ], [ 0.6, 0.6, 0.6 ] ]
             transform:
-              - Translation: [1, 1, 1]
-              - Scaling: [0.25, 0.25, 0.25]
+              - Translation: [ 1, 1, 1 ]
+              - Scaling: [ 0.25, 0.25, 0.25 ]
         ambient: 0.01
 
   - Sphere:
-      material: 
-        color: [1, 0.1, 0.1]
+      material:
+        color: [ 1, 0.1, 0.1 ]
         ambient: 0.01
         diffuse: 0.6
         specular: 0.4
         reflective: 0.1
         shininess: 7
       transform:
-        - Scaling: [0.8, 0.8, 0.8]
-        - Translation: [-0.8, 0.8, 0]
+        - Scaling: [ 0.8, 0.8, 0.8 ]
+        - Translation: [ -0.8, 0.8, 0 ]
 
   - Sphere:
-      material: 
-        color: [0.3, 0.3, 1]
+      material:
+        color: [ 0.3, 0.3, 1 ]
         ambient: 0.01
         reflective: 0.8
         shininess: 200
       transform:
-        - Translation: [1, 1, 0]
+        - Translation: [ 1, 1, 0 ]
 
   - Sphere: &fake_light
-      material: 
-        color: [1, 1, 1]
+      material:
+        color: [ 1, 1, 1 ]
         ambient: 1
         diffuse: 0
       transform:
-        - Scaling: [0.8, 0.8, 0.8]
-        - Translation: [-9, 9, -9]
+        - Scaling: [ 0.8, 0.8, 0.8 ]
+        - Translation: [ -9, 9, -9 ]
   - Sphere:
       <<: *fake_light
       transform:
-        - Translation: [-9, 9, -4]
+        - Translation: [ -9, 9, -4 ]
 
 lights:
   # - PointLight:
@@ -50,25 +50,25 @@ lights:
   #     intensity: [0.8, 0.8, 0.8]
 
   - AreaLight:
-      position: [-7, 7, -7]
-      intensity: [0.8, 0.8, 0.8]
-      uv: 
-        - [-0.5, 0, -0.5]
-        - [0, 0.7, 0]
-      steps: [4, 4]
+      position: [ -7, 7, -7 ]
+      intensity: [ 0.8, 0.8, 0.8 ]
+      uv:
+        - [ -0.5, 0, -0.5 ]
+        - [ 0, 0.7, 0 ]
+      steps: [ 4, 4 ]
       jitter: 3
 
   - AreaLight:
-      position: [-7, 7, -4]
-      intensity: [0.6, 0.6, 0.6]
-      uv: 
-        - [-0.3, 0, -0.3]
-        - [0, 0.5, 0]
-      steps: [4, 4]
+      position: [ -7, 7, -4 ]
+      intensity: [ 0.6, 0.6, 0.6 ]
+      uv:
+        - [ -0.3, 0, -0.3 ]
+        - [ 0, 0.5, 0 ]
+      steps: [ 4, 4 ]
       jitter: 3
 
 camera:
-  size: [1600, 1200]
-  from: [2, 2.1, -7]
-  to: [1, 1, 0]
+  size: [ 1600, 1200 ]
+  from: [ 2, 2.1, -7 ]
+  to: [ 1, 1, 0 ]
   field_of_view: { Deg: 45 }

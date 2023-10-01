@@ -1,7 +1,8 @@
-use crate::*;
 use core::fmt::Debug;
 use core::sync::atomic::AtomicPtr;
 use std::sync::atomic::Ordering;
+
+use crate::*;
 
 #[derive(Debug)]
 pub struct BaseShape {
