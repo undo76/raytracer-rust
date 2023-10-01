@@ -4,7 +4,6 @@
 **/*.rs.bk
 
 **/target
-Cargo.lock
 .vscode/tasks.json
 
 *.png
