@@ -53,5 +53,5 @@ fn main() {
         );
         p = tick(&w, &p);
     }
-    c.save("projectile.png")
+    c.save("./output/projectile.png")
 }

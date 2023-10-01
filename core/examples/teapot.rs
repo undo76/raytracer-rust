@@ -15,14 +15,16 @@ fn main() {
 
     let floor = Box::new(Plane::new(Transform::identity(), floor_material.clone()));
 
-    let mut sky_material = Material::default();
-    sky_material.color = color(0.4, 0.4, 0.7).into();
-    sky_material.ambient = 0.7.into();
-    sky_material.attenuation = Attenuation::None;
+    let sky_material = Material {
+        color: color(0.4, 0.4, 0.7).into(),
+        ambient: 0.7.into(),
+        attenuation: Attenuation::None,
+        ..Default::default()
+    };
     let sky = Box::new(Plane::new(translation(0., 100., 0.), sky_material.clone()));
 
     let mut group = Group::new(Transform::identity(), Material::default());
-    read_obj_file(&mut group, "./examples/models/teapot.obj");
+    read_obj_from_bytes(&mut group, include_bytes!("./models/teapot.obj"));
 
     group.set_transform(translation(0., 1., 0.) * scaling(0.01, 0.01, 0.01));
 
@@ -53,5 +55,5 @@ fn main() {
     ));
 
     let canvas = camera.render(world);
-    canvas.save("teapot.png");
+    canvas.save("./output/teapot.png");
 }

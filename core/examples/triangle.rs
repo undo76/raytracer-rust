@@ -41,5 +41,5 @@ fn main() {
     ));
 
     let canvas = camera.render(world);
-    canvas.save("triangle.png");
+    canvas.save("./output/triangle.png");
 }

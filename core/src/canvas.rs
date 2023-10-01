@@ -58,9 +58,16 @@ impl Canvas {
 
     fn buffer_as_ppm_string(&self) -> String {
         let fb = self.get_frame_buffer();
-        fb.chunks(10).map(|chunk| {
-            chunk.iter().map(|byte| byte.to_string()).collect::<Vec<String>>().join(" ")
-        }).collect::<Vec<String>>().join("\n")
+        fb.chunks(10)
+            .map(|chunk| {
+                chunk
+                    .iter()
+                    .map(|byte| byte.to_string())
+                    .collect::<Vec<String>>()
+                    .join(" ")
+            })
+            .collect::<Vec<String>>()
+            .join("\n")
     }
 
     pub fn to_ppm_string(&self) -> String {
@@ -120,7 +127,7 @@ mod tests {
         canvas.set(0, 0, color(0.5, 0., 0.).into());
         canvas.set(2, 1, color(0., 0.5, 0.).into());
         assert_eq!(canvas.get(0, 0), color(0.5, 0., 0.).into());
-        canvas.save("test.png");
-        std::fs::remove_file("test.png").unwrap();
+        canvas.save("./output/test.png");
+        std::fs::remove_file("./output/test.png").unwrap();
     }
 }

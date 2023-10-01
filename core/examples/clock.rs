@@ -24,5 +24,5 @@ fn main() {
             color(1., 1., 1.).into(),
         );
     }
-    c.save("clock.png")
+    c.save("./output/clock.png")
 }

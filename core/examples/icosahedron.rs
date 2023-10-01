@@ -2,8 +2,8 @@ extern crate rustracer_core;
 
 use core::f32::consts::*;
 
-use rustracer_core::*;
 use rustracer_core::color;
+use rustracer_core::*;
 
 fn main() {
     let floor_material = Material {
@@ -25,8 +25,7 @@ fn main() {
     let sky = Box::new(Plane::new(translation(0., 100., 0.), sky_material.clone()));
 
     let mut group = Group::new(Transform::identity(), Material::default());
-    read_obj_file(&mut group, "./examples/models/icosahedron.obj");
-
+    read_obj_from_bytes(&mut group, include_bytes!("./models/icosahedron.obj"));
     group.set_transform(translation(0., 1., 0.));
 
     group.set_material(Material {
@@ -56,5 +55,5 @@ fn main() {
     ));
 
     let canvas = camera.render(world);
-    canvas.save("icosahedron.png");
+    canvas.save("./output/icosahedron.png");
 }

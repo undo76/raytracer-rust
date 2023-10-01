@@ -7,66 +7,63 @@ const F_PI_3: f32 = std::f32::consts::FRAC_PI_3;
 const F_PI_2: f32 = std::f32::consts::FRAC_PI_2;
 
 fn main() {
-    let mut floor_material = Material::default();
-    let mut wall_material = Material::default();
+    let floor_material = Material {
+        color: Mapping::checkers(
+            &[WHITE * 0.6, WHITE * 0.8],
+            rotation_y(F_PI_4) * scaling(0.2, 0.2, 0.2),
+        ),
+        specular: Mapping::from(0.6),
+        reflective: Some(Mapping::from(0.1)),
+        ..Material::default()
+    };
 
-    floor_material.color = Mapping::checkers(
-        &[WHITE * 0.6, WHITE * 0.8],
-        rotation_y(F_PI_4) * scaling(0.2, 0.2, 0.2),
-    );
-    floor_material.specular = Mapping::from(0.6);
-    floor_material.reflective = Some(Mapping::from(0.1));
-
-    wall_material.color = Mapping::rings(
-        &[RED * 0.7, BLUE * 0.5, WHITE * 0.5],
-        rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5),
-    );
-    wall_material.reflective = Some(Mapping::rings(
-        &[0.1, 0.01, 0.4],
-        rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5),
-    ));
+    let wall_material = Material {
+        color: Mapping::rings(
+            &[RED * 0.7, BLUE * 0.5, WHITE * 0.5],
+            rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5),
+        ),
+        specular: Mapping::rings(
+            &[0.1, 0.01, 0.1],
+            rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5),
+        ),
+        reflective: Some(Mapping::rings(
+            &[0.1, 0.01, 0.1],
+            rotation_y(F_PI_4) * scaling(0.5, 0.5, 0.5),
+        )),
+        ..Material::default()
+    };
 
     let floor = Box::new(Plane::new(Transform::identity(), floor_material.clone()));
 
-    #[rustfmt::skip]
-        let left_wall = Box::new(Plane::new(
-        translation(0., 0., 5.)
-            * rotation_y(-F_PI_4)
-            * rotation_x(-F_PI_2),
+    let left_wall = Box::new(Plane::new(
+        translation(0., 0., 5.) * rotation_y(-F_PI_4) * rotation_x(-F_PI_2),
         wall_material.clone(),
     ));
 
-    #[rustfmt::skip]
-        let right_wall = Box::new(Plane::new(
-        translation(0., 0., 4.)
-            * rotation_y(F_PI_4)
-            * rotation_x(F_PI_2),
+    let right_wall = Box::new(Plane::new(
+        translation(0., 0., 4.) * rotation_y(F_PI_4) * rotation_x(F_PI_2),
         wall_material.clone(),
     ));
 
-    let mut middle_material = Material::default();
-    middle_material.color = Mapping::stripes(
-        &[PURPLE * 0.7, PURPLE * 0.5],
-        rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2),
-    );
-    middle_material.specular =
-        Mapping::stripes(&[0.1, 1.], rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2));
-    middle_material.reflective = Some(Mapping::stripes(
-        &[0.03, 0.1],
-        rotation_z(F_PI_2) * scaling(0.2, 0.2, 0.2),
-    ));
+    let middle_material = Material {
+        color: Mapping::stripes(&[PURPLE * 0.7, PURPLE * 0.5], scaling(0.2, 0.2, 0.2)),
+        specular: Mapping::stripes(&[0.1, 1.], scaling(0.2, 0.2, 0.2)),
+        reflective: Some(Mapping::stripes(&[0.03, 0.1], scaling(0.2, 0.2, 0.2))),
+        ..Material::default()
+    };
+
     let middle = Box::new(Sphere::new(
         translation(-0.5, 1., 0.5) * rotation_z(0.2) * rotation_x(0.2),
         middle_material,
     ));
 
-    let mut right_material = Material::default();
-    right_material.color = Mapping::from(RED * 0.5);
-    right_material.specular = Mapping::from(1.);
-    right_material.diffuse = Mapping::from(0.5);
-
-    right_material.reflective = Some(Mapping::from(0.3));
-    right_material.diffuse = (0.8).into();
+    let right_material = Material {
+        color: Mapping::from(RED * 0.5),
+        specular: Mapping::from(1.),
+        reflective: Some(0.3.into()),
+        diffuse: (0.8).into(),
+        ..Material::default()
+    };
 
     let right = Box::new(Cylinder::new(
         translation(1.2, 0.2, -1.0) * scaling(0.2, 0.2, 0.2),
@@ -74,43 +71,52 @@ fn main() {
         true,
     ));
 
-    let mut left_material = Material::default();
-    left_material.color = Mapping::from(color(1., 0.2, 0.2));
-    left_material.ambient = Mapping::from(0.0);
-    left_material.diffuse = Mapping::from(0.0);
-    left_material.specular = Mapping::from(1.);
-    left_material.reflective = Some(Mapping::from(0.7));
-    left_material.transparency = Some(Mapping::from(0.9));
-    left_material.refractive_index = 1.5;
+    let left_material = Material {
+        color: Mapping::from(color(1., 0.2, 0.2)),
+        ambient: Mapping::from(0.0),
+        diffuse: Mapping::from(0.0),
+        specular: Mapping::from(1.),
+        shininess: Mapping::from(100.),
+        reflective: Some(0.7.into()),
+        transparency: Some(0.9.into()),
+        refractive_index: 1.5,
+        attenuation: Attenuation::Squared,
+    };
 
     let left = Box::new(Sphere::new(
         translation(-1.5, 0.333, -0.75) * scaling(0.333, 0.333, 0.333),
         left_material.clone(),
     ));
 
-    let mut cube_material = Material::default();
-    cube_material.color = Mapping::checkers(&[BLUE * 0.7, RED * 0.6], scaling(0.5, 0.5, 0.5));
-    cube_material.diffuse = 0.8.into();
-    cube_material.transparency = Some(Mapping::checkers(&[0.01, 0.5], scaling(0.5, 0.5, 0.5)));
-    cube_material.reflective = Some((0.5).into());
+    let cube_material = Material {
+        color: Mapping::checkers(&[BLUE * 0.7, RED * 0.6], scaling(0.5, 0.5, 0.5)),
+        ambient: Mapping::from(0.0),
+        diffuse: Mapping::from(0.8),
+        specular: Mapping::from(1.),
+        shininess: Mapping::from(10000.),
+        reflective: Some(0.5.into()),
+        transparency: Some(Mapping::checkers(&[0.01, 0.5], scaling(0.5, 0.5, 0.5))),
+        refractive_index: 1.2,
+        attenuation: Attenuation::Squared,
+    };
+
     let cube = Box::new(Cube::new(
         translation(-0.2, 0.3001, -1.) * scaling(0.3, 0.3, 0.3) * rotation_y(-0.5),
         cube_material.clone(),
     ));
-    cube_material.refractive_index = 1.;
 
     let mut group = Group::new(
         translation(1.7, 0.3, 0.2) * scaling(0.007, 0.007, 0.007),
         Material::default(),
     );
-    read_obj_file(&mut group, "./examples/models/teapot.obj");
+    read_obj_from_bytes(&mut group, include_bytes!("./models/teapot.obj"));
     let group = Box::new(group);
 
     let light = Light::Point(PointLight::new(
         point(-10., 10., -10.),
-        color(0.9, 0.8, 0.7),
+        color(0.5, 0.5, 0.1),
     ));
-    let light2 = Light::Point(PointLight::new(point(5., 5., -10.), color(0.3, 0.5, 0.5)));
+    let light2 = Light::Point(PointLight::new(point(5., 5., -10.), color(0.3, 0.3, 0.3)));
 
     let world = World::new(
         vec![
@@ -127,5 +133,5 @@ fn main() {
     ));
 
     let canvas = camera.render(world);
-    canvas.save("scene.png");
+    canvas.save("./output/scene.png");
 }

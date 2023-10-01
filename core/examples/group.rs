@@ -57,5 +57,5 @@ fn main() {
     ));
 
     let canvas = camera.render(world);
-    canvas.save("group.png");
+    canvas.save("./output/group.png");
 }

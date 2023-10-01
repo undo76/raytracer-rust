@@ -1,7 +1,7 @@
 use std::f32::consts::*;
 
-use rand::*;
 use rand::distributions::Uniform;
+use rand::*;
 
 use rustracer_core::*;
 
@@ -110,9 +110,9 @@ fn spheres() -> Vec<Box<dyn Shape + Send>> {
         .iter()
         .map(
             |&SphereData {
-                center: c,
-                radius: r,
-            }| {
+                 center: c,
+                 radius: r,
+             }| {
                 let boxed: Box<dyn Shape + Send> = Box::new(Sphere::new(
                     translation(c.x, c.y, c.z) * scaling(r, r, r),
                     random_material(),
@@ -157,5 +157,5 @@ fn main() {
         vector(0., 1., 0.),
     ));
     let canvas = camera.render(world);
-    canvas.save("spheres.png");
+    canvas.save("./output/spheres.png");
 }

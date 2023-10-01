@@ -1,12 +1,13 @@
-use std::fs::File;
-use std::io::Read;
-
 use crate::*;
 
 pub fn read_obj_file(group: &mut Group, file: &str) {
-    let mut obj_file = File::open(file).unwrap_or_else(|_| panic!("'File {}' not found", file));
-    let mut obj_str = String::new();
-    let _res = obj_file.read_to_string(&mut obj_str).unwrap();
+    let bytes = std::fs::read(file).unwrap_or_else(|_| panic!("'File {}' not found", file));
+    read_obj_from_bytes(group, &bytes);
+}
+
+pub fn read_obj_from_bytes(group: &mut Group, bytes: &[u8]) {
+    let obj_str = String::from_utf8(bytes.to_vec())
+        .unwrap_or_else(|_| panic!("Failed to convert byte array to string"));
     let obj = parse(&obj_str);
 
     for f in &obj.faces {
